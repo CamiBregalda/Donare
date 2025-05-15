@@ -1,19 +1,8 @@
-package com.utfpr.entities;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+package com.utfpr.donare.domain;
+
+import jakarta.persistence.*;
+
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-//import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "tb_necessidade")
