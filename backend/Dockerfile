@@ -1,4 +1,7 @@
-FROM ubuntu:latest
-LABEL authors="Vinicius"
+FROM postgres:15
 
-ENTRYPOINT ["top", "-b"]
+COPY ./initdb /docker-entrypoint-initdb.d/
+
+EXPOSE 5432
+
+CMD ["postgres"]
