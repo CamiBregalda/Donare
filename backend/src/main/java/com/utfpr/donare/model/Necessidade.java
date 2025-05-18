@@ -1,22 +1,15 @@
-package com.utfpr.entities;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+package com.utfpr.donare.model;
+import java.time.LocalDateTime;
 import java.util.Objects;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 //import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import com.utfpr.donare.controller.NecessidadeController;
+import jakarta.persistence.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "tb_necessidade")
+@Table(name = "necessidade")
 public class Necessidade {
 
     private static final long serialVersionUID = 1L;
@@ -24,21 +17,32 @@ public class Necessidade {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String nome;
     private Integer quantidadeNecessaria;
     private Integer quantidadeRecebida;
+    @Column(nullable = false)
     private String unidadeMedida;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "campanha_id",  nullable = false)
+    private Campanha campanha;
+
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime dataCriacao;
 
     public Necessidade(){
 
     }
 
-    public Necessidade(Long id, String nome, Integer quantidadeNecessaria, Integer quantidadeRecebida, String unidadeMedida) {
+    public Necessidade(Long id, String nome, Integer quantidadeNecessaria, Integer quantidadeRecebida, String unidadeMedida, Campanha campanha) {
         this.id = id;
         this.nome = nome;
         this.quantidadeNecessaria = quantidadeNecessaria;
         this.quantidadeRecebida = quantidadeRecebida;
         this.unidadeMedida = unidadeMedida;
+        this.campanha = campanha;
     }
 
     public Long getId() {
@@ -79,6 +83,22 @@ public class Necessidade {
 
     public void setUnidadeMedida(String unidadeMedida) {
         this.unidadeMedida = unidadeMedida;
+    }
+
+    public Campanha getCampanha() {
+        return campanha;
+    }
+
+    public void setCampanha(Campanha campanha) {
+        this.campanha = campanha;
+    }
+
+    public LocalDateTime getDataCriacao() {
+        return dataCriacao;
+    }
+
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
     @Override
