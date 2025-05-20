@@ -1,13 +1,11 @@
 package com.utfpr.donare.service;
 
+import com.utfpr.donare.config.jwt.JwtTokenUtil;
 import com.utfpr.donare.domain.User;
 import com.utfpr.donare.dto.UserDTO;
 import com.utfpr.donare.mapper.UserMapper;
 import com.utfpr.donare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -25,7 +22,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Transactional
     public UserDTO save(UserDTO dto) {
@@ -72,8 +69,8 @@ public class UserService implements UserDetailsService {
         if (!passwordEncoder.matches(senha, user.getPassword())) {
             throw new RuntimeException("Credenciais inválidas");
         }
-        return jwtService.autenticar(user);
 
+        return jwtTokenUtil.autenticar(user);
     }
 
     public User findByEmail(String email) {

@@ -1,4 +1,4 @@
-package com.utfpr.donare.service;
+package com.utfpr.donare.config.jwt;
 
 import com.utfpr.donare.domain.User;
 import io.jsonwebtoken.Claims;
@@ -8,7 +8,6 @@ import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -20,7 +19,7 @@ import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
-public class JwtService {
+public class JwtTokenUtil {
 
     @Value("${jwt.secret}")
     private String secret;
