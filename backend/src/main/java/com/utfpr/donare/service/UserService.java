@@ -2,7 +2,8 @@ package com.utfpr.donare.service;
 
 import com.utfpr.donare.config.jwt.JwtTokenUtil;
 import com.utfpr.donare.domain.User;
-import com.utfpr.donare.dto.UserDTO;
+import com.utfpr.donare.dto.UserResponseDTO;
+import com.utfpr.donare.dto.UserRequestDTO;
 import com.utfpr.donare.mapper.UserMapper;
 import com.utfpr.donare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ public class UserService implements UserDetailsService {
     private final JwtTokenUtil jwtTokenUtil;
 
     @Transactional
-    public UserDTO save(UserDTO dto) {
+    public UserResponseDTO save(UserRequestDTO dto) {
 
         User user = User.builder()
                 .nome(dto.getNome())
@@ -38,7 +39,7 @@ public class UserService implements UserDetailsService {
 
         userRepository.save(user);
 
-        return userMapper.toUserDTO(user);
+        return userMapper.toUserResponseDTO(user);
     }
 
     @Transactional
@@ -47,7 +48,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User update(Long id, UserDTO dto) {
+    public User update(Long id, UserRequestDTO dto) {
 
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
         user.setNome(dto.getNome());

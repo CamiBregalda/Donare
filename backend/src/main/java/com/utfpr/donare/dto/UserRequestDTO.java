@@ -3,7 +3,7 @@ package com.utfpr.donare.dto;
 import lombok.Data;
 
 @Data
-public class UserDTO {
+public class UserRequestDTO {
     private String nome;
     private String email;
     private String cpfOuCnpj;

@@ -1,14 +1,12 @@
 package com.utfpr.donare.controller;
 
 import com.utfpr.donare.domain.User;
-import com.utfpr.donare.dto.UserDTO;
+import com.utfpr.donare.dto.UserRequestDTO;
+import com.utfpr.donare.dto.UserResponseDTO;
 import com.utfpr.donare.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,13 +19,13 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping(path = "/create")
-    public ResponseEntity<UserDTO> save(@RequestBody UserDTO userDTO) {
-        return new ResponseEntity<UserDTO>(userService.save(userDTO), HttpStatus.CREATED);
+    public ResponseEntity<UserResponseDTO> save(@RequestBody UserRequestDTO userRequestDTO) {
+        return new ResponseEntity<>(userService.save(userRequestDTO), HttpStatus.CREATED);
     }
 
     @PostMapping(path = "/autenticate")
-    public String autenticate(@RequestBody UserDTO userDTO) {
-        return userService.autenticar(userDTO.getEmail(), userDTO.getPassword());
+    public String autenticate(@RequestBody UserRequestDTO userRequestDTO) {
+        return userService.autenticar(userRequestDTO.getEmail(), userRequestDTO.getPassword());
     }
 
     @GetMapping("/all")
@@ -36,13 +34,13 @@ public class UserController {
     }
 
     @PutMapping(path = "/{id}")
-    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
-        userService.update(id, userDTO);
-        return new ResponseEntity<>(userDTO, HttpStatus.NO_CONTENT);
+    public ResponseEntity<Void> update(@PathVariable Long id, @RequestBody UserRequestDTO userRequestDTO) {
+        userService.update(id, userRequestDTO);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @DeleteMapping(path = "/{id}")
-    public ResponseEntity<UserDTO> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         userService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
