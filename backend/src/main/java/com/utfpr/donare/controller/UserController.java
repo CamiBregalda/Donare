@@ -34,4 +34,16 @@ public class UserController {
     public ResponseEntity<List<User>> findAll() {
         return ResponseEntity.ok(userService.findAll());
     }
+
+    @PutMapping(path = "/{id}")
+    public ResponseEntity<UserDTO> update(@PathVariable Long id, @RequestBody UserDTO userDTO) {
+        userService.update(id, userDTO);
+        return new ResponseEntity<>(userDTO, HttpStatus.NO_CONTENT);
+    }
+
+    @DeleteMapping(path = "/{id}")
+    public ResponseEntity<UserDTO> delete(@PathVariable Long id) {
+        userService.delete(id);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
