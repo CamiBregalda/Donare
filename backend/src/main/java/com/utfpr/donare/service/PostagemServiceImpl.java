@@ -7,21 +7,20 @@ import com.utfpr.donare.model.Campanha;
 import com.utfpr.donare.model.Postagem;
 import com.utfpr.donare.repository.CampanhaRepository;
 import com.utfpr.donare.repository.PostagemRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class PostagemServiceImpl implements PostagemService {
 
-    @Autowired
-    private PostagemRepository postagemRepository;
-
-    @Autowired
-    private CampanhaRepository campanhaRepository;
+    private final PostagemRepository postagemRepository;
+    private final CampanhaRepository campanhaRepository;
 
     @Override
     public PostagemResponseDTO criarPostagem(Long idCampanha, PostagemRequestDTO postagemRequestDTO, String organizadorEmail) {
@@ -34,10 +33,13 @@ public class PostagemServiceImpl implements PostagemService {
         postagem.setCampanha(campanha);
         postagem.setOrganizadorEmail(organizadorEmail);
 
-        if (postagemRequestDTO.getMidiasUrls() != null) {
-            postagem.setMidias(new ArrayList<>(postagemRequestDTO.getMidiasUrls()));
-        } else {
-            postagem.setMidias(new ArrayList<>());
+        if (postagemRequestDTO.getMidia() != null && !postagemRequestDTO.getMidia().isEmpty()) {
+            try {
+                MultipartFile arquivo = postagemRequestDTO.getMidia();
+                postagem.setMidia(arquivo.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("Erro ao processar arquivo de mídia", e);
+            }
         }
 
         Postagem postagemSalva = postagemRepository.save(postagem);
@@ -68,14 +70,19 @@ public class PostagemServiceImpl implements PostagemService {
     public PostagemResponseDTO editarPostagem(Long idPostagem, PostagemRequestDTO postagemRequestDTO, String organizadorEmail) {
         Postagem postagem = postagemRepository.findById(idPostagem)
                 .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
+
         postagem.setTitulo(postagemRequestDTO.getTitulo());
         postagem.setConteudo(postagemRequestDTO.getConteudo());
 
-        if (postagemRequestDTO.getMidiasUrls() != null) {
-            postagem.setMidias(new ArrayList<>(postagemRequestDTO.getMidiasUrls()));
-        } else {
-            postagem.setMidias(new ArrayList<>());
+        if (postagemRequestDTO.getMidia() != null && !postagemRequestDTO.getMidia().isEmpty()) {
+            try {
+                MultipartFile arquivo = postagemRequestDTO.getMidia();
+                postagem.setMidia(arquivo.getBytes());
+            } catch (IOException e) {
+                throw new RuntimeException("Erro ao processar arquivo de mídia", e);
+            }
         }
+
         Postagem postagemAtualizada = postagemRepository.save(postagem);
         return converterParaResponseDTO(postagemAtualizada);
     }
@@ -89,14 +96,16 @@ public class PostagemServiceImpl implements PostagemService {
 
     private PostagemResponseDTO converterParaResponseDTO(Postagem postagem) {
         Campanha campanha = postagem.getCampanha();
-        String organizadorCampanha = (campanha != null && campanha.getOrganizador() != null) ? campanha.getOrganizador() : "Organizador não disponível";
+        String organizadorCampanha = (campanha != null && campanha.getOrganizador() != null)
+                ? campanha.getOrganizador() : "Organizador não disponível";
+
         return new PostagemResponseDTO(
                 postagem.getId(),
                 postagem.getTitulo(),
                 postagem.getConteudo(),
                 postagem.getDataCriacao(),
                 postagem.getOrganizadorEmail(),
-                postagem.getMidias(),
+                postagem.getMidia(),
                 campanha != null ? campanha.getId() : null,
                 campanha != null ? campanha.getTitulo() : "Campanha não associada",
                 campanha != null ? campanha.getCategoriaCampanha() : "N/A",
@@ -109,4 +118,3 @@ public class PostagemServiceImpl implements PostagemService {
         );
     }
 }
-

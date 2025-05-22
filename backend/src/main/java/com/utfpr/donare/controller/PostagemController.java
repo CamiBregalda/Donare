@@ -10,12 +10,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,31 +32,41 @@ public class PostagemController {
     }
 
     @Operation(summary = "Criar uma nova postagem para uma campanha",
-               description = "Cria uma nova postagem associada a uma campanha específica. As mídias devem ser fornecidas como uma lista de URLs no corpo JSON.")
+            description = "Cria uma nova postagem associada a uma campanha específica. A mídia deve ser enviada como arquivo via form-data.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Postagem criada com sucesso",
-                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                          schema = @Schema(implementation = PostagemResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Requisição inválida (ex: campos obrigatórios ausentes ou URLs inválidas)"),
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = PostagemResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida (ex: campos obrigatórios ausentes)"),
             @ApiResponse(responseCode = "404", description = "Campanha não encontrada")
     })
-    @PostMapping(value = "/campanhas/{idCampanha}/post", consumes = MediaType.APPLICATION_JSON_VALUE) // Alterado para APPLICATION_JSON_VALUE
+    @PostMapping(value = "/campanhas/{idCampanha}/post", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostagemResponseDTO> criarPostagem(
             @Parameter(description = "ID da campanha à qual a postagem será associada", required = true)
             @PathVariable Long idCampanha,
-            @Parameter(description = "Dados da postagem, incluindo título, conteúdo e uma lista de URLs de mídias (midiasUrls)", required = true)
-            @Valid @RequestBody PostagemRequestDTO postagemRequestDTO) {
+            @Parameter(description = "Título da postagem", required = true)
+            @RequestPart("titulo") String titulo,
+            @Parameter(description = "Conteúdo da postagem", required = true)
+            @RequestPart("conteudo") String conteudo,
+            @Parameter(description = "Arquivo de mídia (opcional)")
+            @RequestPart(value = "midia", required = false) MultipartFile midia) {
+
+        PostagemRequestDTO postagemRequestDTO = new PostagemRequestDTO();
+        postagemRequestDTO.setTitulo(titulo);
+        postagemRequestDTO.setConteudo(conteudo);
+        postagemRequestDTO.setMidia(midia);
+
         String organizadorEmail = obterMockOrganizadorEmail();
         PostagemResponseDTO novaPostagem = postagemService.criarPostagem(idCampanha, postagemRequestDTO, organizadorEmail);
         return new ResponseEntity<>(novaPostagem, HttpStatus.CREATED);
     }
 
     @Operation(summary = "Listar todas as postagens de uma campanha",
-               description = "Retorna uma lista de todas as postagens associadas a uma campanha específica, ordenadas da mais recente para a mais antiga.")
+            description = "Retorna uma lista de todas as postagens associadas a uma campanha específica, ordenadas da mais recente para a mais antiga.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de postagens retornada com sucesso",
-                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                          schema = @Schema(implementation = PostagemResponseDTO.class))),
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = PostagemResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Campanha não encontrada")
     })
     @GetMapping("/campanhas/{idCampanha}/post")
@@ -68,11 +78,11 @@ public class PostagemController {
     }
 
     @Operation(summary = "Visualizar uma postagem específica de uma campanha",
-               description = "Retorna os detalhes completos de uma postagem específica.")
+            description = "Retorna os detalhes completos de uma postagem específica.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Postagem retornada com sucesso",
-                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                          schema = @Schema(implementation = PostagemResponseDTO.class))),
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = PostagemResponseDTO.class))),
             @ApiResponse(responseCode = "404", description = "Campanha ou Postagem não encontrada")
     })
     @GetMapping("/campanhas/{idCampanha}/post/{idPostagem}")
@@ -84,25 +94,36 @@ public class PostagemController {
     }
 
     @Operation(summary = "Editar uma postagem existente",
-               description = "Atualiza o título, conteúdo e/ou URLs de mídias de uma postagem existente.")
+            description = "Atualiza o título, conteúdo e/ou mídia de uma postagem existente.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Postagem atualizada com sucesso",
-                         content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                                          schema = @Schema(implementation = PostagemResponseDTO.class))),
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = PostagemResponseDTO.class))),
             @ApiResponse(responseCode = "400", description = "Requisição inválida"),
             @ApiResponse(responseCode = "404", description = "Postagem não encontrada")
     })
-    @PutMapping("/postagens/{idPostagem}")
+    @PutMapping(value = "/postagens/{idPostagem}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostagemResponseDTO> editarPostagem(
             @Parameter(description = "ID da postagem a ser editada", required = true) @PathVariable Long idPostagem,
-            @Valid @RequestBody PostagemRequestDTO postagemRequestDTO) {
+            @Parameter(description = "Título da postagem", required = true)
+            @RequestPart("titulo") String titulo,
+            @Parameter(description = "Conteúdo da postagem", required = true)
+            @RequestPart("conteudo") String conteudo,
+            @Parameter(description = "Arquivo de mídia (opcional - se não fornecido, mantém a mídia atual)")
+            @RequestPart(value = "midia", required = false) MultipartFile midia) {
+
+        PostagemRequestDTO postagemRequestDTO = new PostagemRequestDTO();
+        postagemRequestDTO.setTitulo(titulo);
+        postagemRequestDTO.setConteudo(conteudo);
+        postagemRequestDTO.setMidia(midia);
+
         String organizadorEmail = obterMockOrganizadorEmail();
         PostagemResponseDTO postagemAtualizada = postagemService.editarPostagem(idPostagem, postagemRequestDTO, organizadorEmail);
         return ResponseEntity.ok(postagemAtualizada);
     }
 
     @Operation(summary = "Deletar uma postagem",
-               description = "Exclui uma postagem existente.")
+            description = "Exclui uma postagem existente.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Postagem deletada com sucesso"),
             @ApiResponse(responseCode = "404", description = "Postagem não encontrada")
@@ -114,5 +135,5 @@ public class PostagemController {
         postagemService.deletarPostagem(idPostagem, organizadorEmail);
         return ResponseEntity.noContent().build();
     }
-}
 
+}

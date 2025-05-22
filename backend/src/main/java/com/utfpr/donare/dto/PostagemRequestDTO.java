@@ -2,9 +2,15 @@ package com.utfpr.donare.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.AllArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class PostagemRequestDTO {
 
     @NotBlank(message = "O título não pode estar em branco.")
@@ -14,30 +20,5 @@ public class PostagemRequestDTO {
     @NotBlank(message = "O conteúdo não pode estar em branco.")
     private String conteudo;
 
-    private List<String> midiasUrls;
-
-    public String getTitulo() {
-        return titulo;
-    }
-
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
-    }
-
-    public String getConteudo() {
-        return conteudo;
-    }
-
-    public void setConteudo(String conteudo) {
-        this.conteudo = conteudo;
-    }
-
-    public List<String> getMidiasUrls() {
-        return midiasUrls;
-    }
-
-    public void setMidiasUrls(List<String> midiasUrls) {
-        this.midiasUrls = midiasUrls;
-    }
+    private MultipartFile midia;
 }
-
