@@ -4,39 +4,28 @@
     height: 100vh;
 }
 
-.lado-cadastro{
+.lado-form{
     background-color: #7DBFA8;
     display: flex;
-    flex-direction: column;   
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
     padding: 3vw;
-    width: 70%;
+    width: 40%;
 }
 
 form{
-    padding: 3vh;
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.nome-cpf {
-    display: flex;
-    gap: 4vw;
-}
-
-.nome-cpf div {
-    flex: 1;
+    padding: 2vh;
+    margin-top: 5vw;
+    width: 90%;
     display: flex;
     flex-direction: column;
 }
 
 label{
-  margin-top: 2vh;
-  font-size: 1rem;
-  margin-bottom: 1vh;
-  padding-left: 1vw;
+    margin-top: 4vh;
+    font-size: 1rem;
+    margin-bottom: 1vh;
+    padding-left: 1vw;
 }
 
 input{
@@ -47,11 +36,34 @@ input{
     background-color: #f2f2f2;
 }
 
+form a,
+p a,
+p{
+    color: #f2f2f2;
+}
+
+form a,
+p{
+    text-decoration: none;
+    display: flex;
+    font-size: 2ex;
+    margin: 1vh;
+}
+
+form a{
+    align-self: flex-end;
+}
+
+p{
+    align-self: flex-start;
+    padding-left: 5vh;
+}
+
 button{
-    margin-top: 5vw;
+    margin-top: 2vw;
     padding: 2vh;
     border: none;
-    width: 60%;
+    width: 100%;
     align-self: center;
     border-radius: 10px;
     background-color: #A3D9B1;
@@ -62,10 +74,7 @@ button{
 
 .lado-logo{
     display: flex;
-    align-items: center;
     justify-content: center;
-}
-
-img{
-    width: 30vw;
+    width: 60%;
+    align-items: center;
 }
