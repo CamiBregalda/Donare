@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RequiredArgsConstructor
-@RequestMapping(path = "user")
+@RequestMapping(path = "usuarios")
 @RestController
 public class UserController {
 
     private final UserService userService;
 
-    @PostMapping(path = "/create")
+    @PostMapping(path = "")
     public ResponseEntity<UserResponseDTO> save(@RequestBody UserRequestDTO userRequestDTO) {
         return new ResponseEntity<>(userService.save(userRequestDTO), HttpStatus.CREATED);
     }
@@ -28,7 +28,7 @@ public class UserController {
         return userService.autenticar(userRequestDTO.getEmail(), userRequestDTO.getPassword());
     }
 
-    @GetMapping("/all")
+    @GetMapping("")
     public ResponseEntity<List<User>> findAll() {
         return ResponseEntity.ok(userService.findAll());
     }

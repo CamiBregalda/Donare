@@ -40,6 +40,7 @@ public class SecurityConfig {
         HttpSecurity httpSecurity = http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
+                        //todo trocar para .anyRequest().authenticated())
                         .requestMatchers("/user/all").authenticated())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
