@@ -7,21 +7,18 @@ import com.utfpr.donare.model.Campanha;
 import com.utfpr.donare.model.Necessidade;
 import com.utfpr.donare.repository.CampanhaRepository;
 import com.utfpr.donare.repository.NecessidadeRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class NecessidadeServiceImp implements NecessidadeService{
 
-    @Autowired
-    private NecessidadeRepository necessidadeRepository;
+    private final NecessidadeRepository necessidadeRepository;
 
-    @Autowired
-    private CampanhaRepository campanhaRepository;
+    private final CampanhaRepository campanhaRepository;
 
     @Override
     public NecessidadeResponseDTO criarNecessidade(Long idCampanha, NecessidadeRequestDTO necessidadeRequestDTO) {
@@ -88,8 +85,8 @@ public class NecessidadeServiceImp implements NecessidadeService{
                 necessidade.getNome(),
                 necessidade.getQuantidadeNecessaria(),
                 necessidade.getQuantidadeRecebida(),
-                necessidade.getUnidadeMedida(),
                 necessidade.getDataCriacao(),
+                necessidade.getUnidadeMedida(),
                 campanha != null ? campanha.getId() : null,
                 campanha != null ? campanha.getTitulo() : "Campanha não associada",
                 campanha != null ? campanha.getCategoriaCampanha() : "N/A",
