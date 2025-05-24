@@ -259,65 +259,81 @@ body {
   min-height: 140px;
 }
 
-/* backdrop e centralização */
 .modal {
   display: none;
-  position: fixed; inset: 0;
+  position: fixed; 
+  inset: 0;
   background: rgba(0,0,0,0.5);
-  align-items: center; justify-content: center;
+  align-items: center; 
+  justify-content: center;
 }
-.modal.show { display: flex; }
 
-/* container principal */
+.modal.show { 
+  display: flex;
+}
+
 .modal-content {
   position: relative;
   background-color: #91cbb1;
   border-radius: 15px;
-  width: 90%; max-width: 700px;
+  width: 90%; 
+  max-width: 700px;
   padding: 25px 20px 20px;
   box-sizing: border-box;
   color: #fff;
   font-family: Arial, sans-serif;
 }
 
-/* fechar */
 .modal-close {
-  position: absolute; top: 15px; right: 15px;
-  font-size: 24px; cursor: pointer;
+  position: absolute; 
+  top: 15px; 
+  right: 15px;
+  font-size: 24px; 
+  cursor: pointer;
 }
 
-/* corpo */
 .modal-body {
-  display: flex; flex-wrap: wrap; gap: 30px;
+  display: flex; 
+  flex-wrap: wrap;
+  gap: 30px;
 }
+
 .modal-left {
   flex: 1 1 250px;
-  display: flex; flex-direction: column;
-  align-items: flex-start; /* alinhe à esquerda */
+  display: flex; 
+  flex-direction: column;
+  align-items: flex-start; 
   gap: 20px;
 }
+
 .modal-right {
   flex: 2 1 300px;
-  display: flex; flex-direction: column;
+  display: flex; 
+  flex-direction: column;
   gap: 15px;
 }
 
 .avatar-container {
-  display: flex; flex-direction: column; align-items: center;
+  display: flex; 
+  flex-direction: column; 
+  align-items: center;
   gap: 10px;
   width: 100%;
   margin-top: 2%;
 }
-/* Avatar */
+
 .avatar-icon {
-  width: 80px; height: 80px;
-  background: #fff; color: #4A6D7C;
+  width: 80px; 
+  height: 80px;
+  background: #fff; 
+  color: #4A6D7C;
   border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
   font-size: 36px;
 }
 
-/* Botão alterar foto */
 .btn-alterar-foto {
   background-color: #fff;
   color: #4A6D7C;
@@ -328,14 +344,19 @@ body {
   font-size: 14px;
 }
 
-/* Toggle notificações */
 .toggle-notifications {
-  display: flex; align-items: center; gap: 10px; align-self: center;
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  align-self: center;
   margin-top: 6%;
 }
+
 .toggle-label {
-  font-size: 16px; font-weight: bold;
+  font-size: 16px; 
+  font-weight: bold;
 }
+
 .toggle-switch {
   position: relative;
   width: 40px;
@@ -344,13 +365,13 @@ body {
 
 .input-notifications {
   position: absolute;
-  inset: 0;          /* top:0; right:0; bottom:0; left:0; */
+  inset: 0;         
   width: 100%;
   height: 100%;
   margin: 0;
   opacity: 0;
   cursor: pointer;
-  z-index: 2;        /* acima do slider */
+  z-index: 2;        
 }
 
 .slider-notifications {
@@ -360,6 +381,7 @@ body {
   border-radius: 20px;
   transition: background-color .4s;
 }
+
 .slider-notifications::before {
   content: "";
   position: absolute;
@@ -371,23 +393,28 @@ body {
   border-radius: 50%;
   transition: transform .4s;
 }
-.input-notifications:checked + .slider-notifications {
+
+.input-notifications:checked + 
+.slider-notifications {
   background-color: #7DBFA8;
 }
-/* e empurra a bolinha */
-.input-notifications:checked + .slider-notifications::before {
+
+.input-notifications:checked + 
+.slider-notifications::before {
   transform: translateX(18px);
 }
 
-/* CPF */
 .form-group-cpf { 
   width: 100%; 
   margin-top: 0,5%;
 }
+
 .label-cpf {
-  margin-bottom: 5px; display: block;
+  margin-bottom: 5px; 
+  display: block;
   font-size: 14px;
 }
+
 .input-cpf {
   width: 100%;
   padding: 8px;
@@ -401,15 +428,18 @@ body {
 }
 
 .label-senha {
-  margin-bottom: 5px; display: block;
+  margin-bottom: 5px; 
+  display: block;
   font-size: 14px;
 }
+
 .senha-box {
   display: flex; 
   gap: 8px; 
   align-items: center;
   margin-top: -2%;
 }
+
 .input-senha {
   flex: 1;
   padding: 8px;
@@ -418,6 +448,7 @@ body {
   background-color: rgba(255,255,255,0.3);
   font-size: 14px;
 }
+
 .btn-alterar-senha {
   background-color: #fff;
   color: #4A6D7C;
@@ -428,52 +459,117 @@ body {
   font-size: 14px;
 }
 
-/* Email */
-.form-group-email { display: flex; flex-direction: column; gap: 5px; }
-.label-email { font-size: 14px; }
-.input-email {
-  padding: 8px; border-radius: 8px; border: none; font-size: 14px;
+.form-group-email { 
+  display: flex; 
+  flex-direction: 
+  column; gap: 5px; 
 }
 
-/* Nome */
-.form-group-nome { display: flex; flex-direction: column; gap: 5px; }
-.label-nome { font-size: 14px; }
-.input-nome { padding: 8px; border-radius: 8px; border: none; font-size: 14px; }
+.label-email { 
+  font-size: 14px; 
+}
 
-/* Sobrenome */
-.form-group-sobrenome { display: flex; flex-direction: column; gap: 5px; }
-.label-sobrenome { font-size: 14px; }
-.input-sobrenome { padding: 8px; border-radius: 8px; border: none; font-size: 14px; }
+.input-email {
+  padding: 8px; 
+  border-radius: 8px; 
+  border: none; 
+  font-size: 14px;
+}
 
-/* Cidade */
-.form-group-cidade { display: flex; flex-direction: column; gap: 5px; }
-.label-cidade { font-size: 14px; }
-.input-cidade { padding: 8px; border-radius: 8px; border: none; font-size: 14px; }
+.form-group-nome {
+  display: flex; 
+  flex-direction: column; 
+  gap: 5px; 
+}
 
-/* Estado */
-.form-group-estado { display: flex; flex-direction: column; gap: 5px; }
-.label-estado { font-size: 14px; }
-.input-estado { padding: 8px; border-radius: 8px; border: none; font-size: 14px; }
+.label-nome { 
+font-size: 14px; 
+}
 
-/* Footer */
+.input-nome { 
+  padding: 8px; 
+  border-radius: 8px; 
+  border: none; 
+  font-size: 14px; 
+}
+
+.form-group-sobrenome { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 5px; 
+}
+
+.label-sobrenome {
+  font-size: 14px; 
+}
+
+.input-sobrenome { 
+  padding: 8px; 
+  border-radius: 8px; 
+  border: none; 
+  font-size: 14px; 
+}
+
+.form-group-cidade { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 5px; 
+}
+
+.label-cidade { 
+  font-size: 14px; 
+}
+
+.input-cidade { 
+  padding: 8px; 
+  border-radius: 8px; 
+  border: none; 
+  font-size: 14px; 
+}
+
+.form-group-estado { 
+  display: flex; 
+  flex-direction: column; 
+  gap: 5px; 
+}
+
+.label-estado { 
+  font-size: 14px; 
+}
+
+.input-estado { 
+  padding: 8px; 
+  border-radius: 8px; 
+  border: none; 
+  font-size: 14px; 
+}
+
 .modal-footer {
   margin-top: 25px;
   display: flex;
   gap: 15px;
   justify-self: center;
 }
+
 .btn-cancelar,
 .btn-confirmar {
-  padding: 10px 24px; /* ajuste o padding para o tamanho desejado */
+  padding: 10px 24px; 
   border: none;
   border-radius: 10px;
   font-size: 16px;
   cursor: pointer;
-  width: 15vw; /* ou defina um valor fixo, ex: 120px */
+  width: 15vw; 
   
 }
-.btn-cancelar { background-color: #f2a6a6; color: #fff; }
-.btn-confirmar { background-color: #A3D9B1; color: #fff; }
+.btn-cancelar {
+  background-color: #f2a6a6; 
+  color: #fff; 
+}
+
+.btn-confirmar { 
+  background-color: #A3D9B1; 
+  color: #fff; 
+}
 
 @media (max-width: 1024px) {
   .grid-content {
