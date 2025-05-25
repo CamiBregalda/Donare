@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
-@Tag(name = "Postagens", description = "Endpoints para gerenciamento de postagens de campanhas")
+@RequestMapping("/postagens")
+@Tag(name = "Postagens", description = "Endpoints para gerenciamento de postagens")
 public class PostagemController {
 
     @Autowired
@@ -77,15 +78,15 @@ public class PostagemController {
         return ResponseEntity.ok(postagens);
     }
 
-    @Operation(summary = "Visualizar uma postagem específica de uma campanha",
-            description = "Retorna os detalhes completos de uma postagem específica.")
+    @Operation(summary = "Visualizar uma postagem específica",
+            description = "Retorna os detalhes de uma postagem específica pelo seu ID.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Postagem retornada com sucesso",
+            @ApiResponse(responseCode = "200", description = "Postagem retornada",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = PostagemResponseDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Campanha ou Postagem não encontrada")
+            @ApiResponse(responseCode = "404", description = "Postagem não encontrada")
     })
-    @GetMapping("/campanhas/{idCampanha}/post/{idPostagem}")
+    @GetMapping("/{idCampanha}/post/{idPostagem}")
     public ResponseEntity<PostagemResponseDTO> buscarPostagemPorId(
             @Parameter(description = "ID da campanha", required = true) @PathVariable Long idCampanha,
             @Parameter(description = "ID da postagem a ser visualizada", required = true) @PathVariable Long idPostagem) {
@@ -93,24 +94,12 @@ public class PostagemController {
         return ResponseEntity.ok(postagem);
     }
 
-    @Operation(summary = "Editar uma postagem existente",
-            description = "Atualiza o título, conteúdo e/ou mídia de uma postagem existente.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Postagem atualizada com sucesso",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = PostagemResponseDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Requisição inválida"),
-            @ApiResponse(responseCode = "404", description = "Postagem não encontrada")
-    })
-    @PutMapping(value = "/postagens/{idPostagem}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PutMapping(value = "/{idPostagem}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostagemResponseDTO> editarPostagem(
-            @Parameter(description = "ID da postagem a ser editada", required = true) @PathVariable Long idPostagem,
-            @Parameter(description = "Título da postagem", required = true)
-            @RequestPart("titulo") String titulo,
-            @Parameter(description = "Conteúdo da postagem", required = true)
-            @RequestPart("conteudo") String conteudo,
-            @Parameter(description = "Arquivo de mídia (opcional - se não fornecido, mantém a mídia atual)")
-            @RequestPart(value = "midia", required = false) MultipartFile midia) {
+            @Parameter(description = "ID da postagem", required = true) @PathVariable Long idPostagem,
+            @Parameter(description = "Título da postagem", required = true) @RequestPart("titulo") String titulo,
+            @Parameter(description = "Conteúdo da postagem", required = true) @RequestPart("conteudo") String conteudo,
+            @Parameter(description = "Arquivo de mídia (opcional)") @RequestPart(value = "midia", required = false) MultipartFile midia) {
 
         PostagemRequestDTO postagemRequestDTO = new PostagemRequestDTO();
         postagemRequestDTO.setTitulo(titulo);
@@ -128,12 +117,52 @@ public class PostagemController {
             @ApiResponse(responseCode = "204", description = "Postagem deletada com sucesso"),
             @ApiResponse(responseCode = "404", description = "Postagem não encontrada")
     })
-    @DeleteMapping("/postagens/{idPostagem}")
+    @DeleteMapping("/{idPostagem}")
     public ResponseEntity<Void> deletarPostagem(
-            @Parameter(description = "ID da postagem a ser deletada", required = true) @PathVariable Long idPostagem) {
+            @Parameter(description = "ID da postagem", required = true) @PathVariable Long idPostagem) {
         String organizadorEmail = obterMockOrganizadorEmail();
         postagemService.deletarPostagem(idPostagem, organizadorEmail);
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Obter mídia de uma postagem",
+            description = "Retorna o arquivo de mídia (imagem/vídeo) associado a uma postagem específica.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Mídia retornada com sucesso",
+                    content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM_VALUE)),
+            @ApiResponse(responseCode = "404", description = "Postagem não encontrada ou sem mídia associada")
+    })
+    @GetMapping("/{idPostagem}/midia")
+    public ResponseEntity<byte[]> obterMidiaPostagem(
+            @Parameter(description = "ID da postagem", required = true) @PathVariable Long idPostagem) {
+        byte[] midiaBytes = postagemService.obterMidiaPostagem(idPostagem);
+        if (midiaBytes == null || midiaBytes.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        return new ResponseEntity<>(midiaBytes, headers, HttpStatus.OK);
+    }
+
+    @Operation(summary = "Adicionar ou substituir mídia de uma postagem",
+            description = "Faz upload de um arquivo de mídia (imagem/vídeo) para uma postagem. Se já existir mídia, ela será substituída.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Mídia adicionada/substituída com sucesso"),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida (ex: nenhum arquivo enviado)"),
+            @ApiResponse(responseCode = "404", description = "Postagem não encontrada")
+    })
+    @PostMapping(value = "/{idPostagem}/midia", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Void> adicionarMidiaPostagem(
+            @Parameter(description = "ID da postagem", required = true) @PathVariable Long idPostagem,
+            @Parameter(description = "Arquivo de mídia (imagem/vídeo)", required = true) @RequestPart("midia") MultipartFile midia) {
+
+        if (midia == null || midia.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        String organizadorEmail = obterMockOrganizadorEmail();
+        postagemService.adicionarMidiaPostagem(idPostagem, midia, organizadorEmail);
+        return ResponseEntity.ok().build();
+    }
 }
+

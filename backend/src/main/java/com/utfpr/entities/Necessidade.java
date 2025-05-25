@@ -1,4 +1,5 @@
 package com.utfpr.entities;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class Necessidade {
     private Integer quantidadeRecebida;
     private String unidadeMedida;
 
-    public Necessidade(){
+    public Necessidade() {
 
     }
 
@@ -93,7 +94,7 @@ public class Necessidade {
         return Objects.hash(id);
     }
 
-    public void atualizarQuantidadeRecebida (int quantidade){
+    public void atualizarQuantidadeRecebida(int quantidade) {
 
     }
 }
