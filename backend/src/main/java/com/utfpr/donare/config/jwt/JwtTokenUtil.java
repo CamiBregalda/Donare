@@ -1,6 +1,6 @@
 package com.utfpr.donare.config.jwt;
 
-import com.utfpr.donare.domain.User;
+import com.utfpr.donare.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

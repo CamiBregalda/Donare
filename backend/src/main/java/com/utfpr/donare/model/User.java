@@ -1,4 +1,4 @@
-package com.utfpr.donare.domain;
+package com.utfpr.donare.model;
 
 import jakarta.persistence.*;
 import lombok.*;
