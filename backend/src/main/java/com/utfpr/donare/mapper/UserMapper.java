@@ -1,6 +1,6 @@
 package com.utfpr.donare.mapper;
 
-import com.utfpr.donare.domain.User;
+import com.utfpr.donare.model.User;
 import com.utfpr.donare.dto.UserRequestDTO;
 import com.utfpr.donare.dto.UserResponseDTO;
 import org.mapstruct.Mapper;

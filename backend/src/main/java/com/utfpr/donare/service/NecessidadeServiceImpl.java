@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class NecessidadeServiceImp implements NecessidadeService{
+public class NecessidadeServiceImpl implements NecessidadeService{
 
     private final NecessidadeRepository necessidadeRepository;
 
