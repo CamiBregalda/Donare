@@ -1,4 +1,4 @@
-package com.utfpr.donare.model;
+package com.utfpr.donare.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "postagem")
+@Table(name = "comentario")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,9 +41,9 @@ public class Comentario {
 
     @Column(nullable = true)
     private Long idComentarioPai;
-
-    @OneToMany(mappedBy = "comentario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    public List<Comentario> respostas = new ArrayList<>();
+//
+//    @OneToMany(mappedBy = "comentario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+//    public List<Comentario> respostas = new ArrayList<>();
 
 
 }

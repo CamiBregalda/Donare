@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("postagem")
+@RequiredArgsConstructor
 @Tag(name = "Postagens", description = "Endpoints para gerenciamento de postagens de campanhas")
 public class PostagemController {
 
-    @Autowired
-    private PostagemService postagemService;
+    private final PostagemService postagemService;
 
     private String obterMockOrganizadorEmail() {
         return "mock.organizador@example.com";

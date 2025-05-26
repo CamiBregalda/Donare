@@ -1,6 +1,6 @@
 package com.utfpr.donare.repository;
 
-import com.utfpr.donare.model.User;
+import com.utfpr.donare.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

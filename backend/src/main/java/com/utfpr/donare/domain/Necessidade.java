@@ -1,4 +1,4 @@
-package com.utfpr.donare.model;
+package com.utfpr.donare.domain;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import jakarta.persistence.*;

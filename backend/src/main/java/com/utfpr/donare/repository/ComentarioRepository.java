@@ -1,7 +1,6 @@
 package com.utfpr.donare.repository;
 
-import com.utfpr.donare.model.Comentario;
-import com.utfpr.donare.model.Postagem;
+import com.utfpr.donare.domain.Comentario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
