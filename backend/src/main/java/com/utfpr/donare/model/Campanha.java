@@ -2,6 +2,8 @@ package com.utfpr.donare.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,11 +29,17 @@ public class Campanha {
 
     private String endereco;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "imagemCapa")
+    @JdbcTypeCode(SqlTypes.LONGVARBINARY)
+    private byte[] imagemCapa;
+
     private String status;
 
     private String tipoCertificado;
 
-    private LocalDateTime dt_inicio;
+    private LocalDateTime dt_inicio = LocalDateTime.now();
 
     private LocalDateTime dt_fim;
 

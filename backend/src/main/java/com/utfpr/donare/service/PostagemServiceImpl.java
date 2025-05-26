@@ -117,4 +117,38 @@ public class PostagemServiceImpl implements PostagemService {
                 organizadorCampanha
         );
     }
+
+    @Override
+    public byte[] obterMidiaPostagem(Long idPostagem) {
+        Postagem postagem = postagemRepository.findById(idPostagem)
+                .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
+
+        if (postagem.getMidia() == null || postagem.getMidia().length == 0) {
+            return postagem.getMidia();
+        }
+        return postagem.getMidia();
+    }
+
+    @Override
+    public void adicionarMidiaPostagem(Long idPostagem, MultipartFile midia, String organizadorEmail) {
+        Postagem postagem = postagemRepository.findById(idPostagem)
+                .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
+
+        if (midia != null && !midia.isEmpty()) {
+            try {
+                byte[] midiaBytes = midia.getBytes();
+                postagem.setMidia(midiaBytes);
+                postagemRepository.save(postagem);
+            } catch (IOException e) {
+                throw new RuntimeException("Erro ao processar e salvar mídia da postagem", e);
+            }
+        } else {
+
+            postagem.setMidia(null);
+            postagemRepository.save(postagem);
+        }
+    }
+
+
 }
+
