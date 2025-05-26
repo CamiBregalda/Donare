@@ -1,0 +1,388 @@
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+
+            background-color: #C8ECD1;
+            /* Cor de fundo principal ajustada (um pouco mais verde/azul) */
+            color: #333;
+
+            /* Adicionado padding para ver melhor o conteúdo isolado */
+        }
+
+        /* Header */
+        header {
+            background-color: #7DBFA8;
+            /* Verde claro do header */
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+        }
+
+        .logo {
+            width: 250px;
+            /* ajuste conforme o tamanho da sua logo */
+            height: 60px;
+            margin: 0 20px 0 0;
+            /* espaço à direita para separar da barra */
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .search-container {
+            flex: 0 0 320px;
+            /* largura fixa menor */
+            margin: 0 250px 0 0;
+        }
+
+        .search-container input[type="text"] {
+            width: 100%;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+            font-size: 1em;
+        }
+
+        .user-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #b7e6ce;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            font-size: 1.3em;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .user-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+        }
+
+        /* Main Content */
+        .container {
+            padding: 20px 100px 20px 100px;
+        }
+
+        .campaign-title-section {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .back-button {
+            font-size: 1.2em;
+            text-decoration: none;
+            color: #4A6D7C;
+            margin-right: 15px;
+            background-color: #C8ECD1;
+            border-radius: 50%;
+            border: #4A6D7C 2px solid;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .campaign-name-header {
+            font-size: 2em;
+            font-weight: bold;
+            color: #444;
+            flex-grow: 1;
+        }
+
+        .campaign-actions button {
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin-left: 10px;
+        }
+
+        .btn-volunteer {
+            background-color: #F2F2F2;
+            color: #7DBFA8;
+            width: auto;
+            border: 2px solid #7DBFA8;
+        }
+
+
+
+        .btn-follow {
+            background-color: #F2F2F2;
+            color: #7DBFA8;
+            width: 100px;
+            border: 2px solid #7DBFA8;
+        }
+
+        /* Campaign Details Layout */
+        /* ...existing code... */
+        .campaign-content-grid {
+            display: flex;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .campaign-image-placeholder {
+            flex: 0 0 30%;
+            min-width: 180px;
+            min-height: 280px;
+            background-color: #cccccc;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4A6D7C;
+            font-size: 1.1em;
+        }
+
+        .campaign-info-area {
+            flex: 1 1 70%;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        .info-top-row {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+
+        .info-top-row .campaign-info-block:first-child {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .info-top-row .campaign-info-block:nth-child(2) {
+            display: flex;
+            flex-direction: row;
+            gap: 10px;
+        }
+
+
+
+        .campaign-info-block {
+            display: flex;
+
+            gap: 20px;
+        }
+
+        .horario-block,
+        .categoria-block {
+            flex: 1;
+            margin-bottom: 0
+        }
+
+        .campaign-description-block {
+            margin-top: 0;
+            padding: 0;
+        }
+
+
+        .campaign-info-block h3,
+        .campaign-description-block h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #4A6D7C;
+            /* Tom de cinza escuro para títulos */
+            font-size: 1.1em;
+            font-weight: bold;
+        }
+
+        .campaign-info-block ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 0;
+            margin-bottom: 5px;
+            /* Menor margem inferior para a lista */
+        }
+
+        .campaign-info-block ul li {
+            margin-bottom: 4px;
+            color: #4A6D7C;
+            /* Tom de cinza para o texto dos itens */
+            font-size: 0.95em;
+        }
+
+        .campaign-info-block p {
+            margin-top: 0;
+            margin-bottom: 8px;
+            /* Espaçamento entre os parágrafos de info */
+            color: #4A6D7C;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .campaign-info-block .label {
+            font-weight: bold;
+            color: #4A6D7C;
+            /* Cor mais escura para os rótulos */
+        }
+
+        .campaign-description-block {
+            /* background-color: #f7f9f9; /* Fundo sutilmente diferente se desejado, ou transparente */
+            padding: 0px;
+            /* Sem padding extra se o fundo for igual ao body */
+            border-radius: 6px;
+            margin-bottom: 30px;
+        }
+
+        .campaign-description-block p {
+            line-height: 1.6;
+            color: #4a5568;
+            /* Cor do texto da descrição */
+            font-size: 0.95em;
+        }
+
+        .comment-separator {
+            border: 2;
+            height: 1px;
+            background-color: #c5d5d0;
+            /* Cor da linha separadora */
+            margin-top: 20px;
+            margin-bottom: 25px;
+        }
+
+        /* Comments Section */
+        .comments-section {
+            margin-top: 30px;
+        }
+
+
+        .comment-user-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #ccc;
+            /* Placeholder do avatar */
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .add-comment input[type="text"] {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            font-size: 0.9em;
+        }
+
+        /* Esconder o botão de submit, pois o envio será por Enter ou um botão separado se desejar */
+        .add-comment button[type="submit"] {
+            display: none;
+            /* Ou estilizar como um botão de enviar */
+        }
+
+
+        /* ...existing code... */
+
+        /* Comentários */
+        .comments-list .comment-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            background: #f2f2f2;
+            border-radius: 12px;
+            padding: 18px 24px;
+            box-shadow: none;
+            border: none;
+        }
+
+        .comment-user-avatar {
+            width: 70px;
+            height: 70px;
+            background-color: #b7e6ce;
+            border-radius: 50%;
+            margin-right: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2em;
+            color: #fff;
+            position: relative;
+        }
+
+        .comment-user-avatar::before {
+            content: "\1F464";
+            font-size: 1.2em;
+            color: #fff;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .comment-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .comment-content .user-name {
+            font-weight: bold;
+            color: #7DBFA8;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+        }
+
+        .comment-content .comment-text {
+            font-size: 1em;
+            color: #7DBFA8;
+            background: #f2f2f2;
+            border-radius: 8px;
+            padding: 0;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Formulário de novo comentário */
+        .add-comment {
+            display: flex;
+            align-items: center;
+            margin-bottom: 30px;
+            border-radius: 12px;
+            padding: 16px 24px;
+        }
+
+        .add-comment .comment-user-avatar {
+            width: 60px;
+            height: 60px;
+            background-color: #7DBFA8;
+            font-size: 2em;
+            margin-right: 18px;
+        }
+
+        .add-comment input[type="text"] {
+            border: none;
+            background: transparent;
+            border-bottom: 2px solid #7DBFA8;
+            outline: none;
+            font-size: 1.1em;
+            color: #7DBFA8;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .add-comment input[type="text"]::placeholder {
+            color: #7DBFA8;
+            opacity: 0.7;
+            font-weight: 500;
+        }
+
+        /* ...existing code... */
