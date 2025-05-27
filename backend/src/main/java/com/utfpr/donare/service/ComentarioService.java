@@ -7,13 +7,13 @@ import java.util.List;
 
 public interface ComentarioService {
 
-    ComentarioResponseDTO criarComentario(Long idCampanha, ComentarioRequestDTO comentarioRequestDTO, String userEmail);
+    ComentarioResponseDTO criarComentario(Long idCampanha, ComentarioRequestDTO comentarioRequestDTO);
 
     List<ComentarioResponseDTO> listarComentariosPorCampanha(Long idCampanha);
 
     ComentarioResponseDTO buscarComentarioPorId(Long idCampanha, Long idComentario);
 
-    ComentarioResponseDTO editarComentario(Long idComentario, ComentarioRequestDTO comentarioRequestDTO, String userEmail);
+    ComentarioResponseDTO editarComentario(Long idComentario, ComentarioRequestDTO comentarioRequestDTO);
 
-    void deletarComentario(Long idComentario, String userEmail);
+    void deletarComentario(Long idComentario, ComentarioRequestDTO comentarioRequestDTO);
 }

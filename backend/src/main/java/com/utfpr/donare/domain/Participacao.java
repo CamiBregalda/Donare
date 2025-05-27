@@ -1,48 +1,35 @@
 package com.utfpr.donare.domain;
 
+import com.utfpr.donare.domain.Campanha;
+import com.utfpr.donare.domain.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
-@Table(name = "comentarios")
+@Table(name = "participacao")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comentario {
+public class Participacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String conteudo;
-
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime dataCriacao;
+    private LocalDateTime dataHoraParticipacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campanha_id", nullable = false)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Campanha campanha;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_comentario_pai")
-    private Comentario comentarioPai;
-
-
-    @OneToMany(mappedBy = "comentarioPai", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comentario> respostas = new ArrayList<>();
-
 }
