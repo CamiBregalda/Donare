@@ -48,7 +48,7 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public User update(Long id, UserRequestDTO dto) {
+    public void update(Long id, UserRequestDTO dto) {
 
         User user = userRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
         user.setNome(dto.getNome());
@@ -60,7 +60,7 @@ public class UserService implements UserDetailsService {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     public String autenticar(String email, String senha) {
