@@ -1,73 +1,94 @@
-// Simulação de dados vindos do backend
-const campaignData = {
-    name: "Campanha de Arrecadação de Alimentos",
-    description: "Esta campanha visa arrecadar alimentos não perecíveis para famílias em situação de vulnerabilidade em nossa comunidade. Contamos com sua ajuda para fazermos a diferença na vida de quem mais precisa. Doe, compartilhe, participe!",
-    location: 'Coordenadas: Latitude: -25.4422°, Longitude: -49.2091°<br>"Restaurante X"',
-    startDate: "20/05/2025",
-    endDate: "20/06/2025",
-    category: "Alimentação",
-    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-    items: [
-        { nome: "Arroz 5kg", meta: 50, arrecadado: 50 },
-        { nome: "Feijão 1kg", meta: 50, arrecadado: 25 },
-        { nome: "Óleo de Soja", meta: 30, arrecadado: 10 },
-        { nome: "Macarrão", meta: 40, arrecadado: 20 }
-    ]
-};
+const idCampanha = 1; // Troque pelo id real da campanha
 
-// Função para preencher os dados da campanha
-function loadCampaignData() {
-    // Nome da campanha
-    const nameEl = document.querySelector('.campaign-name-header');
-    if (nameEl) nameEl.textContent = campaignData.name;
+// Carrega as necessidades e dados da campanha
+async function loadCampaignData() {
+    try {
+        const response = await fetch(`http://localhost:8080/necessidade/campanha/${idCampanha}/post`);
+        if (!response.ok) throw new Error('Erro ao buscar necessidades');
+        const necessidades = await response.json();
 
-    // Imagem da campanha
-    const imgEl = document.querySelector('.campaign-image');
-    if (imgEl) imgEl.src = campaignData.image;
+        // Preencher dados da campanha (usando o primeiro item)
+        if (necessidades.length > 0) {
+            const camp = necessidades[0];
+            document.querySelector('.campaign-name-header').textContent = camp.campanhaTitulo || '';
+            document.getElementById('campaignStartDate').textContent = camp.campanhaDtInicio ? camp.campanhaDtInicio.split('T')[0] : '';
+            document.getElementById('campaignEndDate').textContent = camp.campanhaDtFim ? camp.campanhaDtFim.split('T')[0] : '';
+            document.getElementById('campaignLocation').innerHTML = camp.campanhaEndereco || '';
+            document.getElementById('campaignCategory').textContent = camp.campanhaCategoria || '';
+            document.getElementById('campaignCertificate').textContent = camp.campanhaTipoCertificado || '';
+        }
 
-    // Descrição
-    const descEl = document.querySelector('.campaign-description p');
-    if (descEl) descEl.textContent = campaignData.description;
+        // Renderizar barras de necessidades
+        const itemList = document.querySelector('.item-list');
+        if (itemList) {
+            itemList.innerHTML = '';
+            necessidades.forEach(item => {
+                const porcentagem = item.quantidadeNecessaria > 0
+                    ? Math.min(100, (item.quantidadeRecebida / item.quantidadeNecessaria) * 100)
+                    : 0;
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'item';
+                itemDiv.innerHTML = `
+                    <div class="item-info">
+                        <span class="item-name">${item.nome}</span>
+                        <span class="item-meta">Meta: ${item.quantidadeNecessaria} ${item.unidadeMedida || ''}</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar" style="width: ${porcentagem}%;"></div>
+                    </div>
+                    <div class="item-bottom">
+                        <span class="item-arrecadado">arrecadado: ${item.quantidadeRecebida} ${item.unidadeMedida || ''}</span>
+                        <div class="adm-controls">
+                            <button class="btn-add" data-id="${item.id}" data-action="add">+</button>
+                            <button class="btn-remove" data-id="${item.id}" data-action="remove">-</button>
+                        </div>
+                    </div>
+                `;
+                itemList.appendChild(itemDiv);
+            });
 
-    // Localização
-    const locEl = document.querySelector('.campaign-description p:nth-of-type(2)');
-    if (locEl) locEl.innerHTML = campaignData.location;
+            // Eventos dos botões
+            itemList.querySelectorAll('.btn-add, .btn-remove').forEach(btn => {
+                btn.addEventListener('click', async function () {
+                    const idNecessidade = this.getAttribute('data-id');
+                    const action = this.getAttribute('data-action');
+                    const necessidade = necessidades.find(n => n.id == idNecessidade);
+                    if (!necessidade) return;
 
-    // Datas e categoria
-    const startEl = document.querySelector('.campaign-description p:nth-of-type(3)');
-    if (startEl) startEl.textContent = campaignData.startDate;
+                    let novaQtd = necessidade.quantidadeRecebida;
+                    if (action === 'add') {
+                        novaQtd++;
+                    } else if (action === 'remove' && novaQtd > 0) {
+                        novaQtd--;
+                    } else {
+                        return;
+                    }
 
-    const endEl = document.querySelector('.campaign-description p:nth-of-type(4)');
-    if (endEl) endEl.textContent = campaignData.endDate;
-
-    const catEl = document.querySelector('.campaign-description p:nth-of-type(5)');
-    if (catEl) catEl.textContent = campaignData.category;
-
-    // Itens necessários
-    const itemList = document.querySelector('.item-list');
-    if (itemList) {
-        itemList.innerHTML = '';
-        campaignData.items.forEach(item => {
-            const porcentagem = Math.min(100, (item.arrecadado / item.meta) * 100);
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'item';
-            itemDiv.innerHTML = `
-                <div class="item-info">
-                    <span class="item-name">${item.nome}</span>
-                    <span class="item-meta">Meta: ${item.meta}</span>
-                </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar" style="width: ${porcentagem}%"></div>
-                </div>
-                <div class="item-bottom">
-                    <span class="item-arrecadado">arrecadado: ${item.arrecadado}</span>
-                    <button class="btn-add">Adicionar</button>
-                </div>
-            `;
-            itemList.appendChild(itemDiv);
-        });
+                    // Atualiza no backend
+                    await updateNecessidade(idNecessidade, novaQtd);
+                });
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Erro ao carregar dados da campanha!');
     }
 }
 
-// Chama a função ao carregar a página
+// Atualiza quantidadeRecebida no backend
+async function updateNecessidade(idNecessidade, novaQtd) {
+    try {
+        const response = await fetch(`http://localhost:8080/necessidade/necessidades/${idNecessidade}`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ quantidadeRecebida: novaQtd })
+        });
+        if (!response.ok) throw new Error('Erro ao atualizar necessidade');
+        await loadCampaignData();
+    } catch (err) {
+        alert('Erro ao atualizar necessidade!');
+    }
+}
+
+// Chama ao carregar a página
 document.addEventListener('DOMContentLoaded', loadCampaignData);

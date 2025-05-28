@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nome Campanha</title>
+    <title>Detalhes da Campanha</title>
     <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/ComentariosDetalhes.css">
 </head>
@@ -12,13 +12,13 @@
 <body>
     <header>
         <div class="logo">
-            <img src="../img/LogoEscritaDonare.png" alt="">
+            <img src="../img/LogoEscritaDonare.png" alt="Logo Donare">
         </div>
         <div class="search-container">
             <input type="text" placeholder="&#x1F50D; Pesquisar...">
         </div>
         <div class="user-icon">
-             <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Usuário">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Usuário">
         </div>
     </header>
 
@@ -34,36 +34,28 @@
 
         <div class="campaign-content-wrapper">
             <div class="campaign-content-grid">
-                <div class="campaign-image-placeholder">(Placeholder Imagem)</div>
+                <div class="campaign-image-placeholder">(Imagem da Campanha)</div>
                 <div class="campaign-info-area">
                     <div class="info-top-row">
                         <div class="campaign-info-block">
                             <h3>Itens necessários:</h3>
-                            <ul id="campaignItems">
-                                <li>-Listar</li>
-                                <li>-Listar</li>
-                                <li>-Listar</li>
-                                <li>-Listar</li>
-                                <li>-Listar</li>
-                            </ul>
+                            <ul id="campaignItems"></ul>
                         </div>
                         <div class="campaign-info-block">
                             <div class="horario-block">
-                                <p><span class="label">Data de Início:</span> <span id="campaignStartDate">XX/XX/XXXX</span></p>
-                                <p><span class="label">Data de Fim:</span> <span id="campaignEndDate">XX/XX/XXXX</span></p>
-                                <p><span class="label">Localização:</span> <span id="campaignLocation">Coordenadas: Latitude: -25.4422°,<br>Longitude: -49.2091°<br>"Restaurante X"</span></p>
+                                <p><span class="label">Data de Início:</span> <span id="campaignStartDate"></span></p>
+                                <p><span class="label">Data de Fim:</span> <span id="campaignEndDate"></span></p>
+                                <p><span class="label">Localização:</span> <span id="campaignLocation"></span></p>
                             </div>
                             <div class="categoria-block">
-                                <p><span class="label">Categoria:</span> <span id="campaignCategory">Categoria</span></p>
-                                <p><span class="label">Certificado:</span> <span id="campaignCertificate">Certificado</span></p>
+                                <p><span class="label">Categoria:</span> <span id="campaignCategory"></span></p>
+                                <p><span class="label">Certificado:</span> <span id="campaignCertificate"></span></p>
                             </div>
                         </div>
                     </div>
                     <div class="campaign-description-block">
-                        <h3 id="campaignDescriptionTitle">Descrição da Campanha:</h3>
-                        <p id="campaignDescriptionText">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                        </p>
+                        <h3>Descrição da Campanha:</h3>
+                        <p id="campaignDescriptionText"></p>
                     </div>
                 </div>
             </div>
@@ -71,9 +63,7 @@
 
         <section class="comments-section">
             <form id="addCommentForm" class="add-comment">
-                <div class="comment-user-avatar">
-                    
-                </div>
+                <div class="comment-user-avatar"></div>
                 <input type="text" id="newCommentInput" placeholder="Adicione um comentário...">
                 <button type="submit">Comentar</button>
             </form>

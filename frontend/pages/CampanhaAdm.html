@@ -22,68 +22,29 @@
     <div class="container">
         <section class="campaign-title-section">
             <a href="#" class="back-button">&larr;</a>
-            <h1 class="campaign-name-header">Nome Campanha</h1>
+            <h1 class="campaign-name-header" id="campaignNameHeader">Nome Campanha</h1>
         </section>
         <div class="campaign-content-grid">
             <div class="campaign-left">
                 <img class="campaign-image" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Campanha">
                 <div class="campaign-description">
                     <h3>Descrição da Campanha:</h3>
-                    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                    <p id="campaignDescriptionText"></p>
                     <h4>Localização:</h4>
-                    <p>Coordenadas: Latitude: -25.4422°, Longitude: -49.2091°<br>"Restaurante X"</p>
+                    <p id="campaignLocation"></p>
                     <h4>Início:</h4>
-                    <p>XX/XX/XXXX</p>
+                    <p id="campaignStartDate"></p>
                     <h4>Fim:</h4>
-                    <p>XX/XX/XXXX</p>
+                    <p id="campaignEndDate"></p>
                     <h4>Categoria:</h4>
-                    <p>Categoria</p>
+                    <p id="campaignCategory"></p>
+                    <h4>Certificado:</h4>
+                    <p id="campaignCertificate"></p>
                 </div>
             </div>
             <div class="campaign-right">
                 <h3>Itens necessários:</h3>
-                <div class="item-list">
-                    <div class="item">
-                        <div class="item-info">
-                            <span class="item-name">Item1</span>
-                            <span class="item-meta">Meta: 50</span>
-                        </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar" style="width: 100%"></div>
-                        </div>
-                        <div class="item-bottom">
-                            <span class="item-arrecadado">arrecadado: 50</span>
-                            <button class="btn-add">Adicionar</button>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-info">
-                            <span class="item-name">Item2</span>
-                            <span class="item-meta">Meta: 50</span>
-                        </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar" style="width: 50%"></div>
-                        </div>
-                        <div class="item-bottom">
-                            <span class="item-arrecadado">arrecadado: 25</span>
-                            <button class="btn-add">Adicionar</button>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <div class="item-info">
-                            <span class="item-name">Item3</span>
-                            <span class="item-meta">Meta: 50</span>
-                        </div>
-                        <div class="progress-bar-bg">
-                            <div class="progress-bar" style="width: 50%"></div>
-                        </div>
-                        <div class="item-bottom">
-                            <span class="item-arrecadado">arrecadado: 25</span>
-                            <button class="btn-add">Adicionar</button>
-                        </div>
-                    </div>
-                    <!-- Adicione mais itens conforme necessário -->
-                </div>
+                <div class="item-list"></div>
             </div>
         </div>
     </div>

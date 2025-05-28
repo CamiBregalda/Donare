@@ -1,55 +1,108 @@
-// Simulação de dados da campanha
-const campaignData = {
-    name: "Campanha de Arrecadação de Alimentos",
-    items: ["Arroz 5kg", "Feijão 1kg", "Óleo de Soja", "Macarrão", "Leite em pó"],
-    startDate: "20/05/2025",
-    endDate: "20/06/2025",
-    location: "Coordenadas: Lat -25.1234, Lon -49.5678. Local: Centro Comunitário ABC",
-    category: "Alimentação",
-    certificate: "Selo Organização Confiável",
-    description: "Esta campanha visa arrecadar alimentos não perecíveis para famílias em situação de vulnerabilidade em nossa comunidade. Contamos com sua ajuda para fazermos a diferença na vida de quem mais precisa. Doe, compartilhe, participe!"
-};
+const idCampanha = 1; // Troque pelo id real da campanha
+let comments = [];
 
-// Simulação de comentários com respostas
-let comments = [
-    {
-        id: 1,
-        userName: "Usuário Exemplo 1",
-        text: "Ótima iniciativa! Como posso me voluntariar para ajudar na coleta dos alimentos?",
-        replies: [
-            {
-                id: 11,
-                userName: "Organizador",
-                text: "Você pode se inscrever pelo botão 'Voluntariar-se' acima!",
-                replies: []
-            }
-        ]
-    },
-    {
-        id: 2,
-        userName: "Maria Silva",
-        text: "Já fiz minha doação. Parabéns pelo projeto!",
-        replies: []
+// Carrega dados da campanha e necessidades
+async function loadCampaignData() {
+    try {
+        const response = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/post`);
+        if (!response.ok) throw new Error('Erro ao buscar dados da campanha');
+        const data = await response.json();
+
+        document.getElementById('campaignNameHeader').textContent = data.tituloCampanha || '';
+        document.getElementById('campaignStartDate').textContent = data.campanhaDtInicio || '';
+        document.getElementById('campaignEndDate').textContent = data.campanhaDtFim || '';
+        document.getElementById('campaignLocation').innerHTML = data.campanhaEndereço || '';
+        document.getElementById('campaignCategory').textContent = data.campanhaCategoria || '';
+        document.getElementById('campaignCertificate').textContent = data.campanhaTipoCertificado || '';
+        document.getElementById('campaignDescriptionText').textContent = data.campanhaDescricao || '';
+
+        const itemsUl = document.getElementById('campaignItems');
+        itemsUl.innerHTML = '';
+        if (Array.isArray(data.necessidades)) {
+            data.necessidades.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = `${item.nome} (Necessário: ${item.quantidadeNecessaria})`;
+                itemsUl.appendChild(li);
+            });
+        }
+    } catch (err) {
+        console.error(err);
+        alert('Erro ao carregar dados da campanha!');
     }
-];
+}
 
-// Preenche dados da campanha
-function loadCampaignData() {
-    document.getElementById('campaignNameHeader').textContent = campaignData.name;
-    document.getElementById('campaignStartDate').textContent = campaignData.startDate;
-    document.getElementById('campaignEndDate').textContent = campaignData.endDate;
-    document.getElementById('campaignLocation').innerHTML = campaignData.location;
-    document.getElementById('campaignCategory').textContent = campaignData.category;
-    document.getElementById('campaignCertificate').textContent = campaignData.certificate;
-    document.getElementById('campaignDescriptionText').textContent = campaignData.description;
+// Busca comentários do backend e monta árvore
+async function fetchComments() {
+    try {
+        const response = await fetch(`http://localhost:8080/comentario/campanhas/${idCampanha}/comentarios`);
+        if (!response.ok) throw new Error('Erro ao buscar comentários');
+        const data = await response.json();
+        comments = buildCommentsTree(data);
+        loadComments();
+    } catch (err) {
+        console.error(err);
+        alert('Erro ao carregar comentários!');
+    }
+}
 
-    const itemsUl = document.getElementById('campaignItems');
-    itemsUl.innerHTML = '';
-    campaignData.items.forEach(item => {
-        const li = document.createElement('li');
-        li.textContent = item;
-        itemsUl.appendChild(li);
+// Monta árvore de comentários a partir de lista plana
+function buildCommentsTree(commentsList) {
+    const map = {};
+    const roots = [];
+    commentsList.forEach(c => {
+        map[c.id] = {...c, replies: []};
     });
+    commentsList.forEach(c => {
+        if (c.idComentarioPai && map[c.idComentarioPai]) {
+            map[c.idComentarioPai].replies.push(map[c.id]);
+        } else {
+            roots.push(map[c.id]);
+        }
+    });
+    return roots;
+}
+
+// Envia novo comentário ou resposta
+async function sendComment(conteudo, idComentarioPai = null) {
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
+        alert('Você precisa estar logado para comentar.');
+        return;
+    }
+    const body = {
+        conteudo,
+        userEmail,
+        idComentarioPai,
+        campanhaId: idCampanha
+    };
+    const response = await fetch(`http://localhost:8080/comentario/campanha/${idCampanha}/comentarios`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body)
+    });
+    if (!response.ok) {
+        alert('Erro ao enviar comentário!');
+        return;
+    }
+    await fetchComments();
+}
+
+// Exclui comentário (apenas autor)
+async function deleteComment(idComentario) {
+    const userEmail = localStorage.getItem('userEmail');
+    if (!userEmail) {
+        alert('Você precisa estar logado para excluir comentários.');
+        return;
+    }
+    const response = await fetch(
+        `http://localhost:8080/comentario/campanhas/${idCampanha}/comentarios/${idComentario}?userEmail=${encodeURIComponent(userEmail)}`,
+        { method: 'DELETE' }
+    );
+    if (!response.ok) {
+        alert('Erro ao excluir comentário!');
+        return;
+    }
+    await fetchComments();
 }
 
 // Renderização recursiva dos comentários e respostas
@@ -72,7 +125,7 @@ function renderComment(comment, parentElement) {
 
     const commentTextDiv = document.createElement('div');
     commentTextDiv.classList.add('comment-text');
-    commentTextDiv.textContent = comment.text;
+    commentTextDiv.textContent = comment.conteudo;
 
     // Botão responder
     const replyBtn = document.createElement('button');
@@ -82,6 +135,21 @@ function renderComment(comment, parentElement) {
         replyForm.style.display = replyForm.style.display === "none" ? "flex" : "none";
     };
 
+    // Botão excluir (apenas para o autor)
+    const userEmail = localStorage.getItem('userEmail');
+    if (userEmail && comment.userEmail === userEmail) {
+        const deleteBtn = document.createElement('button');
+        deleteBtn.classList.add('reply-btn');
+        deleteBtn.style.color = "#d9534f";
+        deleteBtn.textContent = "Excluir";
+        deleteBtn.onclick = async function () {
+            if (confirm("Tem certeza que deseja excluir este comentário?")) {
+                await deleteComment(comment.id);
+            }
+        };
+        commentContent.appendChild(deleteBtn);
+    }
+
     // Formulário de resposta
     const replyForm = document.createElement('form');
     replyForm.classList.add('reply-form');
@@ -90,21 +158,15 @@ function renderComment(comment, parentElement) {
         <input type="text" class="reply-input" placeholder="Responder...">
         <button type="submit">Enviar</button>
     `;
-    replyForm.onsubmit = function (e) {
+    replyForm.onsubmit = async function (e) {
         e.preventDefault();
         const input = replyForm.querySelector('.reply-input');
         const replyText = input.value.trim();
         if (replyText) {
-            // Em um sistema real, envie para o backend aqui!
-            const newReply = {
-                id: Date.now(),
-                userName: "Usuário Logado",
-                text: replyText,
-                replies: []
-            };
-            comment.replies.push(newReply);
-            loadComments(); // Re-renderiza tudo
+            await sendComment(replyText, comment.id);
         }
+        input.value = '';
+        replyForm.style.display = "none";
     };
 
     commentContent.appendChild(userNameDiv);
@@ -138,25 +200,18 @@ function loadComments() {
     comments.forEach(comment => renderComment(comment, commentsList));
 }
 
-// Adiciona novo comentário principal
+// Inicialização
 document.addEventListener('DOMContentLoaded', function () {
     loadCampaignData();
-    loadComments();
+    fetchComments();
 
     const addCommentForm = document.getElementById('addCommentForm');
     const newCommentInput = document.getElementById('newCommentInput');
-    addCommentForm.addEventListener('submit', function (event) {
+    addCommentForm.addEventListener('submit', async function (event) {
         event.preventDefault();
         const commentText = newCommentInput.value.trim();
         if (commentText) {
-            const newComment = {
-                id: Date.now(),
-                userName: "Usuário Logado",
-                text: commentText,
-                replies: []
-            };
-            comments.push(newComment);
-            loadComments();
+            await sendComment(commentText, null);
             newCommentInput.value = '';
         }
     });
