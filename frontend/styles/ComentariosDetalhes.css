@@ -1,0 +1,444 @@
+body {
+    background-color: #C8ECD1;
+    font-family: "Montserrat", sans-serif;
+}
+
+/* Header */
+header {
+    background-color: #7DBFA8;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    width: 250px;
+    height: 60px;
+    margin: 0 20px 0 0;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.search-container {
+    flex: 0 0 320px;
+    margin: 0 250px 0 0;
+}
+
+.search-container input[type="text"] {
+    width: 100%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+}
+
+.user-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #b7e6ce;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font-size: 1.3em;
+    color: #fff;
+    cursor: pointer;
+}
+
+.user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+/* Main Content */
+.container {
+    padding: 20px 100px 20px 100px;
+}
+
+.campaign-title-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.back-button {
+    font-size: 1.2em;
+    text-decoration: none;
+    color: #4A6D7C;
+    margin-right: 15px;
+    background-color: #C8ECD1;
+    border-radius: 50%;
+    border: #4A6D7C 2px solid;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.campaign-name-header {
+    font-size: 2em;
+    font-weight: bold;
+    color: #4A6D7C;
+    flex-grow: 1;
+}
+
+.campaign-actions button {
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-left: 10px;
+}
+
+.btn-volunteer,
+.btn-follow {
+    background-color: #F2F2F2;
+    color: #7DBFA8;
+    border: 2px solid #7DBFA8;
+}
+
+.btn-follow {
+    width: 100px;
+}
+
+/* Campaign Details Layout */
+.campaign-content-grid {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 25px;
+}
+
+.campaign-image-placeholder {
+    flex: 0 0 30%;
+    min-width: 180px;
+    min-height: 280px;
+    background-color: #cccccc;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #4A6D7C;
+    font-size: 1.1em;
+}
+
+.campaign-info-area {
+    flex: 1 1 70%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.info-top-row {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.info-top-row .campaign-info-block:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.info-top-row .campaign-info-block:nth-child(2) {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.campaign-info-block {
+    display: flex;
+    gap: 20px;
+}
+
+.horario-block,
+.categoria-block {
+    flex: 1;
+    margin-bottom: 0;
+}
+
+.campaign-description-block {
+    margin-top: 0;
+    padding: 0;
+}
+
+.campaign-info-block h3,
+.campaign-description-block h3 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #4A6D7C;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.campaign-info-block ul {
+    list-style: none;
+    padding-left: 0;
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.campaign-info-block ul li {
+    margin-bottom: 4px;
+    color: #4A6D7C;
+    font-size: 0.95em;
+}
+
+.campaign-info-block p {
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #4A6D7C;
+    font-size: 0.95em;
+    line-height: 1.5;
+}
+
+.campaign-info-block .label {
+    font-weight: bold;
+    color: #4A6D7C;
+}
+
+.campaign-description-block {
+    border-radius: 6px;
+    margin-bottom: 30px;
+}
+
+.campaign-description-block p {
+    line-height: 1.6;
+    color: #4a5568;
+    font-size: 0.95em;
+}
+
+/* Comments Section */
+.comments-section {
+    margin-top: 40px;
+}
+
+.add-comment {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    background: #b7e6ce;
+    border-radius: 12px;
+    padding: 16px 24px;
+    gap: 16px;
+}
+
+.add-comment .comment-user-avatar {
+    width: 48px;
+    height: 48px;
+    background-color: #7DBFA8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+    color: #fff;
+}
+
+.add-comment input[type="text"] {
+    border: none;
+    background: transparent;
+    border-bottom: 2px solid #7DBFA8;
+    outline: none;
+    font-size: 1.1em;
+    color: #7DBFA8;
+    padding: 10px;
+    width: 100%;
+}
+
+.add-comment button {
+    background: #7DBFA8;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 8px 18px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.2s;
+}
+
+.comments-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.comment-item {
+    display: block;
+    width: 100%;
+    background: #f4f7f6;
+    border-radius: 12px;
+    padding: 18px 24px;
+    box-shadow: none;
+    border: none;
+    position: relative;
+    margin-bottom: 0;
+}
+
+.comment-main-content {
+    display: flex;
+    align-items: flex-start;
+}
+
+.comment-user-avatar {
+    width: 44px;
+    height: 44px;
+    background-color: #b7e6ce;
+    border-radius: 50%;
+    margin-right: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3em;
+    color: #fff;
+}
+
+.comment-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.user-name {
+    font-weight: bold;
+    color: #7DBFA8;
+    font-size: 1.1em;
+    margin-bottom: 8px;
+}
+
+.comment-text {
+    font-size: 1em;
+    color: #6a8a7b;
+    background: #f4f7f6;
+    border-radius: 8px;
+    padding: 0;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.reply-btn {
+    background: none;
+    border: none;
+    color: #7DBFA8;
+    cursor: pointer;
+    margin-top: 8px;
+    font-size: 0.95em;
+    text-align: left;
+    padding: 0;
+}
+
+.reply-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.reply-form input {
+    flex: 1;
+    padding: 6px 10px;
+    border-radius: 12px;
+    border: 1px solid #b7e6ce;
+}
+
+.reply-form button {
+    width: auto;
+    background: #7DBFA8;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 6px 14px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1em;
+}
+
+.replies-container {
+    margin-left: 0;
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+@media (max-width: 900px) {
+    .container {
+        padding: 16px;
+    }
+    .campaign-content-grid {
+        flex-direction: column;
+        gap: 24px;
+    }
+    .campaign-image-placeholder {
+        min-width: 100px;
+        min-height: 120px;
+        width: 100%;
+        font-size: 1em;
+    }
+    .campaign-info-area {
+        padding: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .campaign-title-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .campaign-name-header {
+        font-size: 1.3em;
+    }
+    .campaign-image-placeholder {
+        min-width: 80px;
+        min-height: 80px;
+        width: 100%;
+        font-size: 0.95em;
+    }
+    .info-top-row {
+        flex-direction: column;
+        gap: 12px;
+    }
+    .add-comment {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 12px 8px;
+        gap: 10px;
+    }
+    .add-comment .comment-user-avatar {
+        margin: 0 auto 8px auto;
+    }
+    .comments-list {
+        gap: 10px;
+    }
+    .comment-item {
+        padding: 12px 8px;
+    }
+    .comment-main-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    .comment-user-avatar {
+        margin-right: 0;
+        margin-bottom: 8px;
+    }
+    .reply-form {
+        flex-direction: column;
+        gap: 6px;
+    }
+}
