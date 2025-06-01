@@ -46,18 +46,19 @@ public class Campanha {
     @Column(nullable = false)
     private String organizador;
 
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "campanha_voluntarios",
+            joinColumns = @JoinColumn(name = "campanha_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<User> voluntarios = new ArrayList<>();
+
     @OneToMany(mappedBy = "campanha", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Postagem> postagens = new ArrayList<>();
 
-    public void addPostagem(Postagem postagem) {
-        this.postagens.add(postagem);
-        postagem.setCampanha(this);
-    }
-
-    public void removePostagem(Postagem postagem) {
-        this.postagens.remove(postagem);
-        postagem.setCampanha(null);
-    }
 }
