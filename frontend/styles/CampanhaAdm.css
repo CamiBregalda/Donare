@@ -1,0 +1,286 @@
+body {
+    background-color: #C8ECD1;
+    font-family: "Montserrat", sans-serif;
+}
+
+header {
+    background-color: #7DBFA8;
+    padding: 10px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    width: 180px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.search-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-container input[type="text"] {
+    width: 400px;
+    max-width: 100%;
+    padding: 10px 20px;
+    border-radius: 20px;
+    border: none;
+    font-size: 1.1em;
+    outline: none;
+}
+
+.user-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #b7e6ce;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+
+.container {
+    padding: 30px 60px;
+}
+
+.campaign-title-section {
+    display: flex;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.back-button {
+    font-size: 2em;
+    text-decoration: none;
+    color: #4A6D7C;
+    margin-right: 20px;
+    background-color: #C8ECD1;
+    border-radius: 50%;
+    border: #4A6D7C 2px solid;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.campaign-name-header {
+    font-size: 2em;
+    font-weight: bold;
+    color: #4A6D7C;
+}
+
+.campaign-content-grid {
+    display: flex;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+.campaign-left {
+    flex: 0 0 40%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.campaign-image {
+    width: 100%;
+    max-width: 350px;
+    border-radius: 16px;
+    margin-bottom: 24px;
+    object-fit: cover;
+}
+
+.campaign-description h3,
+.campaign-description h4 {
+    margin: 10px 0 5px 0;
+    color: #4A6D7C;
+    font-weight: bold;
+}
+
+.campaign-description p {
+    margin: 0 0 10px 0;
+    color: #4A6D7C;
+    font-size: 1em;
+}
+
+.campaign-right {
+    flex: 1;
+    background: transparent;
+    padding: 0 10px;
+}
+
+.campaign-right h3 {
+    color: #4A6D7C;
+    font-size: 1.3em;
+    margin-bottom: 18px;
+}
+
+.item-list {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+}
+
+.item {
+    background: transparent;
+    border-radius: 12px;
+    padding: 0;
+    margin-bottom: 0;
+}
+
+.item-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    color: #7DBFA8;
+    margin-bottom: 4px;
+}
+
+.item-name {
+    font-size: 1.1em;
+}
+
+.item-meta {
+    font-size: 0.95em;
+}
+
+.progress-bar-bg {
+    width: 100%;
+    height: 18px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 4px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: #7B7DCB;
+    border-radius: 10px;
+    transition: width 0.4s;
+}
+
+.item-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2px;
+}
+
+.item-arrecadado {
+    color: #7DBFA8;
+    font-size: 0.95em;
+}
+
+.btn-add {
+    background: #b7e6ce;
+    color: #4A6D7C;
+    border: none;
+    border-radius: 16px;
+    padding: 6px 18px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.2s;
+}
+
+.btn-add:hover {
+    background: #7DBFA8;
+    color: #fff;
+}
+
+.adm-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-add, .btn-remove {
+    background: #b7e6ce;
+    color: #4A6D7C;
+    border: none;
+    border-radius: 16px;
+    padding: 6px 18px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.2s;
+}
+
+.btn-add:hover, .btn-remove:hover {
+    background: #7DBFA8;
+    color: #fff;
+}
+
+/* Responsividade para grid e imagem */
+@media (max-width: 900px) {
+    .container {
+        padding: 16px;
+    }
+    .campaign-content-grid {
+        flex-direction: column;
+        gap: 24px;
+    }
+    .campaign-left, .campaign-right {
+        flex: 1 1 100%;
+        max-width: 100%;
+        padding: 0;
+    }
+    .campaign-image {
+        max-width: 100%;
+        width: 100%;
+        height: auto;
+        margin-bottom: 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .campaign-title-section {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .campaign-name-header {
+        font-size: 1.3em;
+    }
+    .campaign-image {
+        max-width: 100%;
+        width: 100%;
+        height: auto;
+    }
+    .item-info {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+    .item-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    .adm-controls {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -96,10 +97,13 @@ public class PostagemController {
 
     @PutMapping(value = "/{idPostagem}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<PostagemResponseDTO> editarPostagem(
-            @Parameter(description = "ID da postagem", required = true) @PathVariable Long idPostagem,
-            @Parameter(description = "Título da postagem", required = true) @RequestPart("titulo") String titulo,
-            @Parameter(description = "Conteúdo da postagem", required = true) @RequestPart("conteudo") String conteudo,
-            @Parameter(description = "Arquivo de mídia (opcional)") @RequestPart(value = "midia", required = false) MultipartFile midia) {
+            @Parameter(description = "ID da postagem a ser editada", required = true) @PathVariable Long idPostagem,
+            @Parameter(description = "Título da postagem", required = true)
+            @RequestPart("titulo") String titulo,
+            @Parameter(description = "Conteúdo da postagem", required = true)
+            @RequestPart("conteudo") String conteudo,
+            @Parameter(description = "Arquivo de mídia (opcional - se não fornecido, mantém a mídia atual)")
+            @RequestPart(value = "midia", required = false) MultipartFile midia) {
 
         PostagemRequestDTO postagemRequestDTO = new PostagemRequestDTO();
         postagemRequestDTO.setTitulo(titulo);

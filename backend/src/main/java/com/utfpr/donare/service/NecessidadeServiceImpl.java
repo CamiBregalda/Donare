@@ -3,8 +3,8 @@ package com.utfpr.donare.service;
 import com.utfpr.donare.dto.NecessidadeRequestDTO;
 import com.utfpr.donare.dto.NecessidadeResponseDTO;
 import com.utfpr.donare.exception.ResourceNotFoundException;
-import com.utfpr.donare.model.Campanha;
-import com.utfpr.donare.model.Necessidade;
+import com.utfpr.donare.domain.Campanha;
+import com.utfpr.donare.domain.Necessidade;
 import com.utfpr.donare.repository.CampanhaRepository;
 import com.utfpr.donare.repository.NecessidadeRepository;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class NecessidadeServiceImp implements NecessidadeService{
+public class NecessidadeServiceImpl implements NecessidadeService{
 
     private final NecessidadeRepository necessidadeRepository;
 

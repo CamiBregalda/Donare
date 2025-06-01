@@ -2,7 +2,6 @@ package com.utfpr.donare.controller;
 
 import com.utfpr.donare.dto.NecessidadeRequestDTO;
 import com.utfpr.donare.dto.NecessidadeResponseDTO;
-import com.utfpr.donare.model.Necessidade;
 import com.utfpr.donare.service.NecessidadeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -12,6 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("necessidade")
+@RequiredArgsConstructor
 @Tag(name = "Necessidades", description = "Endpoints para gerenciamento de necessidades de campanhas")
 public class NecessidadeController {
 
-    @Autowired
-    private NecessidadeService necessidadeService;
+    private final NecessidadeService necessidadeService;
 
     // criar necessidade --------------------------------------------------
     @Operation(summary = "Criar uma nova necessidade para uma campanha",

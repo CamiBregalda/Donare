@@ -1,11 +1,19 @@
 package com.utfpr.donare.domain;
-
-import jakarta.persistence.*;
-
+import java.time.LocalDateTime;
 import java.util.Objects;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
-@Table(name = "tb_necessidade")
+@Table(name = "necessidade")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Necessidade {
 
     private static final long serialVersionUID = 1L;
@@ -13,62 +21,24 @@ public class Necessidade {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false)
     private String nome;
+
     private Integer quantidadeNecessaria;
+
     private Integer quantidadeRecebida;
+
+    @Column(nullable = false)
     private String unidadeMedida;
 
-    public Necessidade(){
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "campanha_id",  nullable = false)
+    private Campanha campanha;
 
-    }
-
-    public Necessidade(Long id, String nome, Integer quantidadeNecessaria, Integer quantidadeRecebida, String unidadeMedida) {
-        this.id = id;
-        this.nome = nome;
-        this.quantidadeNecessaria = quantidadeNecessaria;
-        this.quantidadeRecebida = quantidadeRecebida;
-        this.unidadeMedida = unidadeMedida;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public Integer getQuantidadeNecessaria() {
-        return quantidadeNecessaria;
-    }
-
-    public void setQuantidadeNecessaria(Integer quantidadeNecessaria) {
-        this.quantidadeNecessaria = quantidadeNecessaria;
-    }
-
-    public Integer getQuantidadeRecebida() {
-        return quantidadeRecebida;
-    }
-
-    public void setQuantidadeRecebida(Integer quantidadeRecebida) {
-        this.quantidadeRecebida = quantidadeRecebida;
-    }
-
-    public String getUnidadeMedida() {
-        return unidadeMedida;
-    }
-
-    public void setUnidadeMedida(String unidadeMedida) {
-        this.unidadeMedida = unidadeMedida;
-    }
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime dataCriacao;
 
     @Override
     public boolean equals(Object o) {
