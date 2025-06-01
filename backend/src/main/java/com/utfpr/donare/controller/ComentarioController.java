@@ -31,9 +31,9 @@ public class ComentarioController {
     // criar comentario --------------------------------------------------
 
     @PostMapping(value = "/campanhas/{idCampanha}/comentarios", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<ComentarioResponseDTO> criarComentario(@PathVariable Long idCampanha, @Valid @RequestBody ComentarioRequestDTO comentarioRequestDTO) {
+    public ResponseEntity<ComentarioResponseDTO> saveComentario(@PathVariable Long idCampanha, @Valid @RequestBody ComentarioRequestDTO comentarioRequestDTO) {
 
-        ComentarioResponseDTO novoComentario = comentarioService.criarComentario(idCampanha, comentarioRequestDTO);
+        ComentarioResponseDTO novoComentario = comentarioService.saveComentario(idCampanha, comentarioRequestDTO);
         return new ResponseEntity<>(novoComentario, HttpStatus.CREATED);
     }
 
@@ -59,9 +59,9 @@ public class ComentarioController {
     // editar comentario --------------------------------------------------
 
     @PutMapping("/comentarios/{idComentario}")
-    public ResponseEntity<ComentarioResponseDTO> editarComentario( @PathVariable Long idComentario, @Valid @RequestBody ComentarioRequestDTO comentarioRequestDTO) {
+    public ResponseEntity<ComentarioResponseDTO> updateComentario( @PathVariable Long idComentario, @Valid @RequestBody ComentarioRequestDTO comentarioRequestDTO) {
 
-        ComentarioResponseDTO comentarioAtualizado = comentarioService.editarComentario(idComentario, comentarioRequestDTO);
+        ComentarioResponseDTO comentarioAtualizado = comentarioService.updateComentario(idComentario, comentarioRequestDTO);
         return ResponseEntity.ok(comentarioAtualizado);
     }
 
@@ -69,9 +69,9 @@ public class ComentarioController {
 
 
     @DeleteMapping("/comentarios/{idComentario}")
-    public ResponseEntity<Void> deletarComentario(@PathVariable Long idComentario, @Valid @RequestBody ComentarioRequestDTO comentarioRequestDTO) {
+    public ResponseEntity<Void> deleteComentario(@PathVariable Long idComentario, @Valid @RequestBody ComentarioRequestDTO comentarioRequestDTO) {
 
-        comentarioService.deletarComentario(idComentario, comentarioRequestDTO);
+        comentarioService.deleteComentario(idComentario, comentarioRequestDTO);
         return ResponseEntity.noContent().build();
     }
 }

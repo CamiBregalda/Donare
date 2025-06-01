@@ -7,12 +7,17 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
-@Table(name = "participacao")
+@Table(name = "participacao",
+        uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "campanha_id"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Participacao {
 
     @Id
@@ -25,11 +30,10 @@ public class Participacao {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campanha_id", nullable = false)
-    @ToString.Exclude
-    @EqualsAndHashCode.Exclude
     private Campanha campanha;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
 }

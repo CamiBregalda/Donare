@@ -30,9 +30,9 @@ public class NecessidadeController {
     // criar necessidade --------------------------------------------------
 
     @PostMapping(value = "/campanhas/{idCampanha}/necessidade", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<NecessidadeResponseDTO> criarNecessidade(@PathVariable Long idCampanha, @Valid @RequestBody NecessidadeRequestDTO necessidadeRequestDTO) {
+    public ResponseEntity<NecessidadeResponseDTO> saveNecessidade(@PathVariable Long idCampanha, @Valid @RequestBody NecessidadeRequestDTO necessidadeRequestDTO) {
 
-        NecessidadeResponseDTO novaNecessidade = necessidadeService.criarNecessidade(idCampanha, necessidadeRequestDTO);
+        NecessidadeResponseDTO novaNecessidade = necessidadeService.saveNecessidade(idCampanha, necessidadeRequestDTO);
         return new ResponseEntity<>(novaNecessidade, HttpStatus.CREATED);
     }
 
@@ -59,9 +59,9 @@ public class NecessidadeController {
 
 
     @PutMapping("/necessidades/{idNecessidade}")
-    public ResponseEntity<NecessidadeResponseDTO> editarNecessidade(@PathVariable Long idNecessidade, @Valid @RequestBody NecessidadeRequestDTO necessidadeRequestDTO) {
+    public ResponseEntity<NecessidadeResponseDTO> updateNecessidade(@PathVariable Long idNecessidade, @Valid @RequestBody NecessidadeRequestDTO necessidadeRequestDTO) {
 
-        NecessidadeResponseDTO necessidadeAtualizada = necessidadeService.editarNecessidade(idNecessidade, necessidadeRequestDTO);
+        NecessidadeResponseDTO necessidadeAtualizada = necessidadeService.updateNecessidade(idNecessidade, necessidadeRequestDTO);
         return ResponseEntity.ok(necessidadeAtualizada);
     }
 
@@ -69,9 +69,9 @@ public class NecessidadeController {
 
 
     @DeleteMapping("/necessidades/{idNecessidade}")
-    public ResponseEntity<Void> deletarNecessidade(@PathVariable Long idNecessidade) {
+    public ResponseEntity<Void> deleteNecessidade(@PathVariable Long idNecessidade) {
 
-        necessidadeService.deletarNecessidade(idNecessidade);
+        necessidadeService.deleteNecessidade(idNecessidade);
         return ResponseEntity.noContent().build();
     }
 }

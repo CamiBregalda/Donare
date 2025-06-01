@@ -41,11 +41,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
                         //todo trocar para .anyRequest().authenticated())
-                        .requestMatchers("/user/all").authenticated()
-                        .requestMatchers("/comentario/**").permitAll()
-                        .requestMatchers("/necessidade/**").permitAll()
-
-                )
+                        .anyRequest().permitAll())
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
 
@@ -54,9 +50,6 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_URLS = {
             "/", "/login", "/user/create", "/user/autenticate",
-            "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html",
-            "/comentario/**",
-            "/necessidade/**",
-            "/campanhas/**"
+            "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"
     };
 }
