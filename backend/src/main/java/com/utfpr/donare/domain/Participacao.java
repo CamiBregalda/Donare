@@ -1,32 +1,32 @@
 package com.utfpr.donare.domain;
 
+import com.utfpr.donare.domain.Campanha;
+import com.utfpr.donare.domain.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
 
 @Entity
-@Table(name = "comentarios")
+@Table(name = "participacao",
+        uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "campanha_id"})
+})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comentario {
+@Builder
+public class Participacao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
-    private String conteudo;
-
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
-    private LocalDateTime dataCriacao;
+    private LocalDateTime dataHoraParticipacao;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campanha_id", nullable = false)
@@ -35,14 +35,5 @@ public class Comentario {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_comentario_pai")
-    private Comentario comentarioPai;
-
-
-    @OneToMany(mappedBy = "comentarioPai", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comentario> respostas = new ArrayList<>();
 
 }
