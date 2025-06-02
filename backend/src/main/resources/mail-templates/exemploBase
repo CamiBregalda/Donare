@@ -1,0 +1,2 @@
+<subject>Bem-vindo, {{name}}!</subject>
+<body>Olá {{name}}</body>

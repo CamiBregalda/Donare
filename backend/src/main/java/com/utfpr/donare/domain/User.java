@@ -7,7 +7,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -29,14 +31,17 @@ public class User implements UserDetails {
     @Column(unique = true, nullable = false)
     private String cpfOuCnpj;
 
-    // guarda a imagem em Base64
     private String fotoPerfil;
 
     private String password;
 
     private boolean ativo;
 
-    //todo verificar se vamos trabalhar com roles
+    @ManyToMany(mappedBy = "voluntarios", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Campanha> campanhasVoluntariadas = new HashSet<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_ADMIN"));

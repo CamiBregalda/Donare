@@ -10,11 +10,16 @@ public interface PostagemService {
 
     List<PostagemResponseDTO> listarPostagensPorCampanha(Long idCampanha);
 
-    PostagemResponseDTO buscarPostagemPorId(Long idCampanha, Long idPostagem);
+    PostagemResponseDTO buscarPostagemPorId(Long idPostagem, Long idCampanha);
 
     PostagemResponseDTO editarPostagem(Long idPostagem, PostagemRequestDTO postagemRequestDTO, String organizadorEmail);
 
     void deletarPostagem(Long idPostagem, String organizadorEmail);
 
+    byte[] obterMidiaPostagem(Long idPostagem);
+
+    void adicionarMidiaPostagem(Long idPostagem, org.springframework.web.multipart.MultipartFile midia, String organizadorEmail);
+
 }
+
 

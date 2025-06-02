@@ -1,6 +1,6 @@
 package com.utfpr.donare.repository;
 
-import com.utfpr.donare.model.Necessidade;
+import com.utfpr.donare.domain.Necessidade;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

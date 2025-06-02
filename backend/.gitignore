@@ -7,6 +7,31 @@
 /dataSources/
 /dataSources.local.xml
 **/.idea/
-target/
 
+# Maven build output
+**/target/
 
+# IntelliJ IDEA
+/.idea/
+/*.iml
+/out/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Configurações específicas do Java
+*.class
+
+# Outros
+!.mvn/wrapper/maven-wrapper.jar

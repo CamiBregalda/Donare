@@ -1,7 +1,9 @@
-package com.utfpr.donare.model;
+package com.utfpr.donare.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -27,29 +29,36 @@ public class Campanha {
 
     private String endereco;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "imagemCapa")
+    @JdbcTypeCode(SqlTypes.LONGVARBINARY)
+    private byte[] imagemCapa;
+
     private String status;
 
     private String tipoCertificado;
 
-    private LocalDateTime dt_inicio;
+    private LocalDateTime dt_inicio = LocalDateTime.now();
 
     private LocalDateTime dt_fim;
 
     @Column(nullable = false)
     private String organizador;
 
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JoinTable(
+            name = "campanha_voluntarios",
+            joinColumns = @JoinColumn(name = "campanha_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private List<User> voluntarios = new ArrayList<>();
+
     @OneToMany(mappedBy = "campanha", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private List<Postagem> postagens = new ArrayList<>();
 
-    public void addPostagem(Postagem postagem) {
-        this.postagens.add(postagem);
-        postagem.setCampanha(this);
-    }
-
-    public void removePostagem(Postagem postagem) {
-        this.postagens.remove(postagem);
-        postagem.setCampanha(null);
-    }
 }
