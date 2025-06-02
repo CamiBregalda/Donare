@@ -1,17 +1,19 @@
 function abrirModal() {
-  document.getElementById('modal').style.display = 'block';
+  document.getElementById('modal').classList.add('show');
+  document.body.classList.add('modal-ativa');
 }
 
 function fecharModal() {
-  document.getElementById('modal').style.display = 'none';
+  document.getElementById('modal').classList.remove('show');
+  document.body.classList.remove('modal-ativa');
 }
 
-window.onclick = function(event) {
+window.onclick = function (event) {
   const modal = document.getElementById('modal');
   if (event.target === modal) {
-    modal.style.display = "none";
+    fecharModal();
   }
-}
+};
 
 function baixarCertificado(arquivo) {
   alert(`Simulação de download de ${arquivo}`);
@@ -20,6 +22,3 @@ function baixarCertificado(arquivo) {
 function compartilharCertificado(certificadoId) {
   alert(`Compartilhando certificado ${certificadoId}`);
 }
-
-document.getElementById('modal').classList.add('show');
-

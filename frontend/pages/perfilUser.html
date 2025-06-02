@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Donare - Perfil</title>
+  <link rel="stylesheet" href="../styles/header.css">
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../styles/perfilUser.css">
+</head>
+
+<body>
+  <div id="header-placeholder"></div>
+  <main class="profile-container">
+    <div class="profile-header">
+        <section class="user-info">
+          <img src="../img/cachorro.jpg" alt="Foto de perfil" class="profile-img">
+          <div class="user-details">
+            <h2>Nome Usuário</h2>
+            <p>email@email.com</p>
+            <p>Cidade, Estado</p>
+          </div>
+        </section>
+
+        <div class="floating-buttons">
+          <button class="edit-button" onclick="abrirModal()">Editar Perfil</button>
+          <button class="edit-button">Gerenciar Campanhas</button>
+        </div>
+    </div>
+    <section class="grid-content">
+      <div class="card-section">
+        <h3>Campanhas que você doou</h3>
+        <div class="card-list">
+          <div class="campanha-card">
+            <img src="../img/alimento.jpg" alt="">
+            <div>
+              <div class="status">
+                <strong>Campanha 1</strong>
+                <p>Roupas - Doação</p>
+                <p>Período: 10/05 - 25/05</p>
+                <p>Ativa</p>
+              </div>
+            </div>
+          </div>
+          <div class="campanha-card">
+            <img src="../img/alimento.jpg" alt="">
+            <div>
+              <div class="status">
+                <strong>Campanha 1</strong>
+                <p>Roupas - Doação</p>
+                <p>Período: 10/05 - 25/05</p>
+                <p>Ativa</p>
+              </div>
+            </div>
+          </div>
+          <div class="campanha-card">
+            <img src="../img/alimento.jpg" alt="">
+            <div>
+              <div class="status">
+                <strong>Campanha 1</strong>
+                <p>Roupas - Doação</p>
+                <p>Período: 10/05 - 25/05</p>
+                <p>Ativa</p>
+              </div>
+            </div>
+          </div>
+          <div class="campanha-card">
+            <img src="../img/alimento.jpg" alt="">
+            <div>
+              <div class="status">
+                <strong>Campanha 1</strong>
+                <p>Roupas - Doação</p>
+                <p>Período: 10/05 - 25/05</p>
+                <p>Ativa</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="card-section">
+        <h3>Campanhas Seguidas</h3>
+        <div class="card-list">
+          <div class="campanha-card">
+            <img src="../img/alimento.jpg" alt="">
+            <div>
+              <div class="status">
+                <strong>Campanha 1</strong>
+                <p>Roupas - Doação</p>
+                <p>Período: 10/05 - 25/05</p>
+                <p>Ativa</p>
+              </div>
+            </div>
+          </div>
+          <div class="campanha-card">
+            <img src="../img/alimento.jpg" alt="">
+            <div>
+              <div class="status">
+                <strong>Campanha 1</strong>
+                <p>Roupas - Doação</p>
+                <p>Período: 10/05 - 25/05</p>
+                <p>Ativa</p>
+              </div>
+            </div>
+          </div>
+          <div class="campanha-card">
+            <img src="../img/alimento.jpg" alt="">
+            <div>
+              <div class="status">
+                <strong>Campanha 1</strong>
+                <p>Roupas - Doação</p>
+                <p>Período: 10/05 - 25/05</p>
+                <p>Ativa</p>
+              </div>
+            </div>
+          </div>
+          <div class="campanha-card">
+            <img src="../img/alimento.jpg" alt="">
+            <div>
+              <div class="status">
+                <strong>Campanha 1</strong>
+                <p>Roupas - Doação</p>
+                <p>Período: 10/05 - 25/05</p>
+                <p>Ativa</p>
+              </div>
+            </div>
+          </div>
+          <div class="campanha-card">
+            <img src="../img/alimento.jpg" alt="">
+            <div>
+              <div class="status">
+                <strong>Campanha 1</strong>
+                <p>Roupas - Doação</p>
+                <p>Período: 10/05 - 25/05</p>
+                <p>Ativa</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card-section">
+        <h3>Certificados Recebidos</h3>
+        <div class="card-list certificados-list">
+          <div class="certificado-card">
+            <p><strong>Certificado 1</strong></p>
+            <p>Data: 20/04/25</p>
+            <p>Voluntário</p>
+            <button onclick="baixarCertificado('cert1.pdf')">Baixar</button>
+            <button onclick="compartilharCertificado('cert1')">Compartilhar</button>
+          </div>
+          <div class="certificado-card">
+            <p><strong>Certificado 1</strong></p>
+            <p>Data: 20/04/25</p>
+            <p>Voluntário</p>
+            <button onclick="baixarCertificado('cert1.pdf')">Baixar</button>
+            <button onclick="compartilharCertificado('cert1')">Compartilhar</button>
+          </div>
+          <div class="certificado-card">
+            <p><strong>Certificado 1</strong></p>
+            <p>Data: 20/04/25</p>
+            <p>Voluntário</p>
+            <button onclick="baixarCertificado('cert1.pdf')">Baixar</button>
+            <button onclick="compartilharCertificado('cert1')">Compartilhar</button>
+          </div>
+          <div class="certificado-card">
+            <p><strong>Certificado 1</strong></p>
+            <p>Data: 20/04/25</p>
+            <p>Voluntário</p>
+            <button onclick="baixarCertificado('cert1.pdf')">Baixar</button>
+            <button onclick="compartilharCertificado('cert1')">Compartilhar</button>
+          </div>
+          <div class="certificado-card">
+            <p><strong>Certificado 1</strong></p>
+            <p>Data: 20/04/25</p>
+            <p>Voluntário</p>
+            <button onclick="baixarCertificado('cert1.pdf')">Baixar</button>
+            <button onclick="compartilharCertificado('cert1')">Compartilhar</button>
+          </div>
+          <div class="certificado-card">
+            <p><strong>Certificado 1</strong></p>
+            <p>Data: 20/04/25</p>
+            <p>Voluntário</p>
+            <button onclick="baixarCertificado('cert1.pdf')">Baixar</button>
+            <button onclick="compartilharCertificado('cert1')">Compartilhar</button>
+          </div>
+          <div class="certificado-card">
+            <p><strong>Certificado 1</strong></p>
+            <p>Data: 20/04/25</p>
+            <p>Voluntário</p>
+            <button onclick="baixarCertificado('cert1.pdf')">Baixar</button>
+            <button onclick="compartilharCertificado('cert1')">Compartilhar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="modal-close" onclick="fecharModal()">&times;</span>
+      <div class="modal-body">
+        <div class="modal-left">
+          <div class="avatar-container">
+            <div class="avatar-icon"><i class="fas fa-user"></i></div>
+            <button class="btn-alterar-foto">Alterar Foto</button>
+          </div>
+
+          <div class="toggle-notifications">
+            <label>Receber Notificações</label>
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <label>CPF:</label>
+          <input type="text" value="000.000.000-00">
+          <label>Senha:</label>
+          <input type="password" value="*******" disabled>
+          <div class="senha-btn">
+            <button class="btn-alterar-senha">Alterar Senha</button>
+          </div>
+        </div>
+
+        <div class="modal-right">
+          <label>Email:</label>
+          <input type="email" value="ronaldodasilva@gmail.com">
+          <label>Nome:</label>
+          <input type="text" value="Ronaldo">
+          <label>Sobrenome:</label>
+          <input type="text" value="da Silva Azevedo">
+          <label>Cidade:</label>
+          <input type="text" value="Dois Vizinhos">
+          <label>Estado:</label>
+          <input type="text" value="Paraná">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+        <button class="btn-confirmar">Concluir</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/header.js"></script>
+  <script src="../js/perfilUser.js"></script>
+</body>
+
+</html>
