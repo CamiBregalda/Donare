@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil da Instituição</title>
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/InstitutoUser.css">
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <img src="../img/LogoEscritaDonare.png" alt="Logo Donare">
+        </div>
+        <div class="search-container">
+            <input type="text" placeholder="&#x1F50D; Pesquisar...">
+        </div>
+        <div class="user-icon">
+            <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Usuário">
+        </div>
+    </header>
+
+    <div class="main-container">
+        <div class="institution-profile-container">
+            <section class="institution-details-section">
+                <div class="institution-header">
+                    <h1 id="institutionName">Instituição Muito Legal</h1>
+                    <span id="institutionType" class="institution-type-tag">Abrigo de Animais</span>
+                    <button class="btn-follow-institution">seguir</button>
+                </div>
+                <div class="institution-image-and-info-wrapper">
+                    <img id="institutionImage" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Imagem da Instituição" class="institution-image">
+                    <div class="institution-info">
+                        <h3>Localização:</h3>
+                        <p id="institutionLocation">Rua Selverino Kubicheck, Centro, Dois Vizinhos</p>
+                        
+                        <h3>Horário de Funcionamento</h3>
+                        <p id="institutionHours">XX:XX - XX:XX / XX:XX - XX:XX</p>
+                        
+                        <h3>Tipo de Doações Aceitas</h3>
+                        <p id="institutionAcceptedDonations">Ração, Roupas</p>
+                    </div>
+                </div>
+                
+                <div class="institution-description">
+                    <h3>Descrição da Instituição:</h3>
+                    <p id="institutionDescriptionText">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                        labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+                        laboris nisi ut aliquip ex ea commodo consequat.
+                    </p>
+                </div>
+            </section>
+
+            <aside class="campaigns-section">
+                <h2>Campanhas:</h2>
+                <div id="campaignsList" class="campaigns-grid">
+                     <div class="campaign-card">
+                        <div class="campaign-card-image-container">
+                            <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Mi de comida!">
+                            <span class="campaign-card-title-on-image">Mi de comida!</span>
+                        </div>
+                        <div class="campaign-card-body">
+                            <p class="campaign-card-description">Descrição sobre o evento</p>
+                            <div class="campaign-card-actions">
+                                <button class="icon-button"><i class="fas fa-heart"></i></button>
+                                <button class="icon-button"><i class="fas fa-comment"></i></button>
+                                <button class="btn-follow-campaign">seguir</button>
+                                <button class="icon-button"><i class="fas fa-share-alt"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="campaign-card">
+                        <div class="campaign-card-image-container">
+                            <img src="https://via.placeholder.com/300x200?text=Campanha+2" alt="Mi de comida!">
+                            <span class="campaign-card-title-on-image">Mi de comida!</span>
+                        </div>
+                        <div class="campaign-card-body">
+                            <p class="campaign-card-description">Descrição sobre o evento</p>
+                            <div class="campaign-card-actions">
+                                <button class="icon-button"><i class="fas fa-heart"></i></button>
+                                <button class="icon-button"><i class="fas fa-comment"></i></button>
+                                <button class="btn-follow-campaign">seguir</button>
+                                <button class="icon-button"><i class="fas fa-share-alt"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="../js/InstitutoUser.js"></script>
+</body>
+</html>
