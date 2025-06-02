@@ -27,18 +27,19 @@ public class PostagemServiceImpl implements PostagemService {
 
     @Override
     @Transactional
-    public PostagemResponseDTO criarPostagem(Long idCampanha, PostagemRequestDTO postagemRequestDTO, String organizadorEmail) {
+    public PostagemResponseDTO criarPostagem(Long idCampanha, PostagemRequestDTO postagemRequestDTO, MultipartFile midia, String organizadorEmail) {
         Campanha campanha = campanhaRepository.findById(idCampanha)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o id: " + idCampanha));
         Postagem postagem = postagemMapper.requestDtoToEntity(postagemRequestDTO);
         postagem.setCampanha(campanha);
         postagem.setOrganizadorEmail(organizadorEmail);
-        postagem.setDataCriacao(java.time.LocalDateTime.now());
 
-        if (postagemRequestDTO.getMidia() != null && !postagemRequestDTO.getMidia().isEmpty()) {
+        if (midia != null && !midia.isEmpty()) {
             try {
-                byte[] midiaBytes = postagemRequestDTO.getMidia().getBytes();
+                byte[] midiaBytes = midia.getBytes();
+                String contentType = midia.getContentType();
                 postagem.setMidia(midiaBytes);
+                postagem.setMidiaContentType(contentType);
             } catch (IOException e) {
                 throw new RuntimeException("Erro ao processar arquivo de mídia da postagem", e);
             }
@@ -59,37 +60,35 @@ public class PostagemServiceImpl implements PostagemService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional(readOnly = true)
-    public PostagemResponseDTO buscarPostagemPorId(Long idCampanha, Long idPostagem) {
+    public PostagemResponseDTO buscarPostagemPorId(Long idPostagem) {
         Postagem postagem = postagemRepository.findById(idPostagem)
                 .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
-
-        if (!postagem.getCampanha().getId().equals(idCampanha)) {
-            throw new ResourceNotFoundException("Postagem com id " + idPostagem + " não pertence à campanha com id " + idCampanha);
-        }
-
         return postagemMapper.entityToResponseDto(postagem);
     }
 
-
     @Override
     @Transactional
-    public PostagemResponseDTO editarPostagem(Long idPostagem, PostagemRequestDTO postagemRequestDTO, String organizadorEmail) {
+    public PostagemResponseDTO editarPostagem(Long idPostagem, PostagemRequestDTO postagemRequestDTO, MultipartFile midia, String organizadorEmail) {
         Postagem postagem = postagemRepository.findById(idPostagem)
                 .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
+
+        if (!postagem.getOrganizadorEmail().equals(organizadorEmail)) {
+            throw new RuntimeException("Apenas o organizador pode editar a postagem");
+        }
+
         postagemMapper.updateEntityFromRequestDto(postagemRequestDTO, postagem);
 
-        if (postagemRequestDTO.getMidia() != null && !postagemRequestDTO.getMidia().isEmpty()) {
+        if (midia != null && !midia.isEmpty()) {
             try {
-                byte[] midiaBytes = postagemRequestDTO.getMidia().getBytes();
+                byte[] midiaBytes = midia.getBytes();
+                String contentType = midia.getContentType();
                 postagem.setMidia(midiaBytes);
+                postagem.setMidiaContentType(contentType);
             } catch (IOException e) {
                 throw new RuntimeException("Erro ao processar novo arquivo de mídia da postagem", e);
             }
-        } else {
-            postagem.setMidia(null);
         }
 
         Postagem postagemAtualizada = postagemRepository.save(postagem);
@@ -101,6 +100,9 @@ public class PostagemServiceImpl implements PostagemService {
     public void deletarPostagem(Long idPostagem, String organizadorEmail) {
         Postagem postagem = postagemRepository.findById(idPostagem)
                 .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
+        if (!postagem.getOrganizadorEmail().equals(organizadorEmail)) {
+            throw new RuntimeException("Apenas o organizador pode deletar a postagem");
+        }
         postagemRepository.delete(postagem);
     }
 
@@ -113,20 +115,10 @@ public class PostagemServiceImpl implements PostagemService {
     }
 
     @Override
-    @Transactional
-    public void adicionarMidiaPostagem(Long idPostagem, MultipartFile midia, String organizadorEmail) {
+    @Transactional(readOnly = true)
+    public String obterMidiaContentType(Long idPostagem) {
         Postagem postagem = postagemRepository.findById(idPostagem)
                 .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
-        if (midia != null && !midia.isEmpty()) {
-            try {
-                byte[] midiaBytes = midia.getBytes();
-                postagem.setMidia(midiaBytes);
-                postagemRepository.save(postagem);
-            } catch (IOException e) {
-                throw new RuntimeException("Erro ao processar e salvar mídia da postagem", e);
-            }
-        }
+        return postagem.getMidiaContentType();
     }
-
 }
-

@@ -5,6 +5,7 @@ import com.utfpr.donare.dto.CampanhaResponseDTO;
 import com.utfpr.donare.dto.VoluntarioResponseDTO;
 import com.utfpr.donare.service.CampanhaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -25,9 +26,8 @@ public class CampanhaController {
             @RequestPart("campanha") CampanhaRequestDTO campanhaRequestDTO,
             @RequestPart(value = "imagemCapa", required = false) MultipartFile imagemCapa) {
 
-        campanhaRequestDTO.setImagemCapa(imagemCapa);
         String organizadorEmail = obterMockOrganizadorEmail();
-        CampanhaResponseDTO novaCampanha = campanhaService.criarCampanha(campanhaRequestDTO, organizadorEmail);
+        CampanhaResponseDTO novaCampanha = campanhaService.criarCampanha(campanhaRequestDTO, imagemCapa, organizadorEmail);
         return new ResponseEntity<>(novaCampanha, HttpStatus.CREATED);
     }
 
@@ -49,15 +49,29 @@ public class CampanhaController {
         return ResponseEntity.ok(campanha);
     }
 
+    @GetMapping("/{id}/imagem")
+    public ResponseEntity<byte[]> getImagemCapa(@PathVariable Long id) {
+        byte[] imagemBytes = campanhaService.obterImagemCapa(id);
+        String contentType = campanhaService.obterImagemCapaContentType(id);
+
+        if (imagemBytes == null || imagemBytes.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType(contentType != null ? contentType : MediaType.APPLICATION_OCTET_STREAM_VALUE));
+
+        return new ResponseEntity<>(imagemBytes, headers, HttpStatus.OK);
+    }
+
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CampanhaResponseDTO> update(
             @PathVariable Long id,
             @RequestPart("campanha") CampanhaRequestDTO campanhaRequestDTO,
             @RequestPart(value = "imagemCapa", required = false) MultipartFile imagemCapa) {
 
-        campanhaRequestDTO.setImagemCapa(imagemCapa);
         String organizadorEmail = obterMockOrganizadorEmail();
-        CampanhaResponseDTO campanhaAtualizada = campanhaService.atualizarCampanha(id, campanhaRequestDTO, organizadorEmail);
+        CampanhaResponseDTO campanhaAtualizada = campanhaService.atualizarCampanha(id, campanhaRequestDTO, imagemCapa, organizadorEmail);
         return ResponseEntity.ok(campanhaAtualizada);
     }
 

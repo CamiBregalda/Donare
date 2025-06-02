@@ -9,8 +9,6 @@ import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.BeanMapping;
 
-import java.io.IOException;
-
 @Mapper(componentModel = "spring", uses = {PostagemMapper.class})
 public interface CampanhaMapper {
     @Mapping(target = "id", ignore = true)
