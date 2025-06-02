@@ -24,9 +24,9 @@ document.querySelector('form').addEventListener('submit', function(e){
     
     const novoUsuario = {
         nome: nome,
+        email: email,
         cpfCnpj: cpfCnpj,
         tipoDocumento: tipoDocumento,
-        email: email,
         endereco: endereco,
         password: senha
     };

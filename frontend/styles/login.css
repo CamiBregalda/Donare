@@ -11,6 +11,7 @@
     align-items: center;
     padding: 3vw;
     width: 40%;
+    overflow-x: auto;
 }
 
 form{
@@ -46,7 +47,7 @@ form a,
 p{
     text-decoration: none;
     display: flex;
-    font-size: 2ex;
+    font-size: 2rex;
     margin: 1vh;
 }
 
@@ -77,4 +78,8 @@ button{
     justify-content: center;
     width: 60%;
     align-items: center;
+}
+
+.lado-logo img{
+    height: 100%;
 }
