@@ -9,12 +9,13 @@
 h1,
 h2, 
 label{
-    font-family: 'montserrat';
+    font-family: 'montserrat', sans-serif;
     color: #F2F2F2;
 }
 
 h3,
 p,
+li,
 a{
     font-family: "Montserrat Alternates", sans-serif;
     color: #4A6D7C;
