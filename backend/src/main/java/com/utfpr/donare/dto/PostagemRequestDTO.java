@@ -3,7 +3,6 @@ package com.utfpr.donare.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-// import org.springframework.web.multipart.MultipartFile; // Removido
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
