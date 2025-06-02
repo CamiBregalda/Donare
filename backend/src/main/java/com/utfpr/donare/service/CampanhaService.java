@@ -8,19 +8,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 public interface CampanhaService {
-    CampanhaResponseDTO criarCampanha(CampanhaRequestDTO campanhaRequestDTO, String organizadorEmail);
+    CampanhaResponseDTO criarCampanha(CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail);
 
     List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, int page, int size, String sort);
 
     CampanhaResponseDTO buscarCampanhaPorId(Long id);
 
-    CampanhaResponseDTO atualizarCampanha(Long id, CampanhaRequestDTO campanhaRequestDTO, String organizadorEmail);
+    CampanhaResponseDTO atualizarCampanha(Long id, CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail);
 
     void deletarCampanha(Long id, String organizadorEmail);
 
-    void adicionarMidiaCampanha(Long id, MultipartFile midia, String organizadorEmail);
+    byte[] obterImagemCapa(Long id);
 
-    byte[] obterMidiaCampanha(Long id);
+    String obterImagemCapaContentType(Long id);
 
     List<VoluntarioResponseDTO> listarVoluntariosPorCampanha(Long id);
 }

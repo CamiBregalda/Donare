@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/postagens")
+@RequestMapping("/postagens" )
 @RequiredArgsConstructor
 public class PostagemController {
 
@@ -30,9 +30,8 @@ public class PostagemController {
             @RequestPart("postagem") PostagemRequestDTO postagemRequestDTO,
             @RequestPart(value = "midia", required = false) MultipartFile midia) {
 
-        postagemRequestDTO.setMidia(midia);
         String organizadorEmail = obterMockOrganizadorEmail();
-        PostagemResponseDTO novaPostagem = postagemService.criarPostagem(idCampanha, postagemRequestDTO, organizadorEmail);
+        PostagemResponseDTO novaPostagem = postagemService.criarPostagem(idCampanha, postagemRequestDTO, midia, organizadorEmail);
         return new ResponseEntity<>(novaPostagem, HttpStatus.CREATED);
     }
 
@@ -43,8 +42,8 @@ public class PostagemController {
     }
 
     @GetMapping("/{idPostagem}")
-    public ResponseEntity<PostagemResponseDTO> findById(@PathVariable Long idPostagem, @PathVariable Long idCampanha)  {
-        PostagemResponseDTO postagem = postagemService.buscarPostagemPorId(idPostagem, idCampanha);
+    public ResponseEntity<PostagemResponseDTO> findById(@PathVariable Long idPostagem)  {
+        PostagemResponseDTO postagem = postagemService.buscarPostagemPorId(idPostagem);
         return ResponseEntity.ok(postagem);
     }
 
@@ -54,9 +53,8 @@ public class PostagemController {
             @RequestPart("postagem") PostagemRequestDTO postagemRequestDTO,
             @RequestPart(value = "midia", required = false) MultipartFile midia) {
 
-        postagemRequestDTO.setMidia(midia);
         String organizadorEmail = obterMockOrganizadorEmail();
-        PostagemResponseDTO postagemAtualizada = postagemService.editarPostagem(idPostagem, postagemRequestDTO, organizadorEmail);
+        PostagemResponseDTO postagemAtualizada = postagemService.editarPostagem(idPostagem, postagemRequestDTO, midia, organizadorEmail);
         return ResponseEntity.ok(postagemAtualizada);
     }
 
@@ -70,11 +68,15 @@ public class PostagemController {
     @GetMapping("/{idPostagem}/midia")
     public ResponseEntity<byte[]> getMedia(@PathVariable Long idPostagem) {
         byte[] midiaBytes = postagemService.obterMidiaPostagem(idPostagem);
+        String contentType = postagemService.obterMidiaContentType(idPostagem);
+
         if (midiaBytes == null || midiaBytes.length == 0) {
             return ResponseEntity.notFound().build();
         }
+
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentType(MediaType.parseMediaType(contentType != null ? contentType : MediaType.APPLICATION_OCTET_STREAM_VALUE));
+
         return new ResponseEntity<>(midiaBytes, headers, HttpStatus.OK);
     }
 }

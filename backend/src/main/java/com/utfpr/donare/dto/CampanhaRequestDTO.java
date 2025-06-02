@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
+// import org.springframework.web.multipart.MultipartFile; // Removido
 
 import java.time.LocalDateTime;
 
@@ -22,8 +22,6 @@ public class CampanhaRequestDTO {
     private String categoriaCampanha;
 
     private String endereco;
-
-    private MultipartFile imagemCapa;
 
     private String status;
 

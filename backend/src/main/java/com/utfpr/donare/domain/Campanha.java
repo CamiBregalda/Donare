@@ -35,6 +35,9 @@ public class Campanha {
     @JdbcTypeCode(SqlTypes.LONGVARBINARY)
     private byte[] imagemCapa;
 
+    @Column(name = "imagemCapaContentType")
+    private String imagemCapaContentType;
+
     private String status;
 
     private String tipoCertificado;
