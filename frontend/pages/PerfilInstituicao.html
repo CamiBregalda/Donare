@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil da Instituição</title>
+    <link rel="stylesheet" href="../styles/header.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="../styles/PerfilInstituicao.css">
+</head>
+
+<body>
+
+    <div id="header-placeholder"></div>
+
+    <main class="institution-container">
+        <!-- Cabeçalho da instituição -->
+        <section class="institution-header">
+            <div class="institution-header-row">
+                <div class="institution-title-group">
+                    <h1 class="institution-name">Instituição Muito Legal</h1>
+                    <span class="institution-type">Abrigo de Animais</span>
+                    <button class="btn-edit" onclick="abrirModalInstitution()">Editar</button>
+                </div>
+            </div>
+            <h2 class="campaigns-title">Campanhas</h2>
+        </section>
+
+        <section class="institution-content">
+            <!-- Coluna esquerda: informações da instituição -->
+            <div class="institution-left">
+                <div class="institution-main-info">
+                    <img src="../img/instituicao.jpg" alt="Foto da instituição" class="institution-img">
+                    <div class="institution-info">
+                        <div class="info-block">
+                            <strong>Localização:</strong><br>
+                            Rua Selverino Kubicheck<br>
+                            Bairro Centro<br>
+                            Dois Vizinhos
+                        </div>
+                        <div class="info-block">
+                            <strong>Horário de Funcionamento:</strong><br>
+                            9:00 – 12:00<br>
+                            13:00 – 18:00
+                        </div>
+                        <div class="info-block">
+                            <strong>Tipo de Doações Aceitas:</strong><br>
+                            Ração, Roupas
+                        </div>
+                    </div>
+                </div>
+                <div class="institution-description">
+                    <p><strong>Descrição da Instituição</strong></p>
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+                        labore et dolore magna aliqua.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Coluna direita: campanhas -->
+            <div class="institution-campaigns">
+                <div class="campaign-list">
+                    <!-- Cards de campanha aqui -->
+                    <div class="campaign-card">
+                        <div class="campaign-header">
+                            <span class="campaign-label">Mi de comida!</span>
+                            <button class="btn-campaign-edit"><i class="fas fa-pen"></i> Editar</button>
+                        </div>
+                        <img src="../img/cachorro.jpg" alt="Campanha" class="campaign-img">
+                        <div class="campaign-details">
+                            <p><strong>Local do evento:</strong> Rua X, Bairro Y</p>
+                            <p><strong>Data de início:</strong> XX/XX</p>
+                            <p><strong>Data de fim:</strong> XX/XX</p>
+                        </div>
+                    </div>
+                    <div class="campaign-card">
+                        <div class="campaign-header">
+                            <span class="campaign-label">Mi de comida!</span>
+                            <button class="btn-campaign-edit"><i class="fas fa-pen"></i> Editar</button>
+                        </div>
+                        <img src="../img/cachorro.jpg" alt="Campanha" class="campaign-img">
+                        <div class="campaign-details">
+                            <p><strong>Local do evento:</strong> Rua X, Bairro Y</p>
+                            <p><strong>Data de início:</strong> XX/XX</p>
+                            <p><strong>Data de fim:</strong> XX/XX</p>
+                        </div>
+                    </div>
+                    <!-- Repita .campaign-card quantas vezes quiser -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal de edição da instituição -->
+    <div id="modalInstitution" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="fecharModalInstitution()">&times;</span>
+            <h2 class="modal-title">Edite sua Instituição</h2>
+            <form class="modal-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nome">Nome</label>
+                        <input type="text" id="nome" value="Instituição Muito Legal">
+                    </div>
+                    <div class="form-group">
+                        <label for="rua">Rua</label>
+                        <input type="text" id="rua" value="Selverino Kubicheck">
+                    </div>
+                    <div class="form-group">
+                        <label for="bairro">Bairro</label>
+                        <input type="text" id="bairro" value="Centro">
+                    </div>
+                    <div class="form-group">
+                        <label for="cidade">Cidade</label>
+                        <input type="text" id="cidade" value="Dois Vizinhos">
+                    </div>
+                    <div class="form-group">
+                        <label for="horario">Horário de Funcionamento</label>
+                        <input type="text" id="horario" value="9:00 – 12:00 / 13:00 – 18:00">
+                    </div>
+                    <div class="form-group">
+                        <label for="tipos">Tipos de Doações Aceitas</label>
+                        <select id="tipos" multiple>
+                            <option selected>Roupas</option>
+                            <option selected>Ração</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="tipoInst">Tipo de Instituição</label>
+                        <select id="tipoInst">
+                            <option>Abrigo de Animais</option>
+                            <option>Banco de Alimentos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="imagem">Alterar imagem</label>
+                        <input type="file" id="imagem" accept="image/*">
+                    </div>
+                    <div class="form-group fullwidth">
+                        <label for="descricao">Descrição do Abrigo</label>
+                        <textarea id="descricao">Lorem ipsum dolor sit amet, consectetur adipiscing elit...</textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancelar" onclick="fecharModalInstitution()">Cancelar</button>
+                    <button type="submit" class="btn-confirmar">Concluir</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/header.js"></script>
+    <script scr="../js/PerfilInstituicao.js"></script>
+</body>
+
+</html>
