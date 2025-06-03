@@ -3,7 +3,6 @@ package com.utfpr.donare.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -21,6 +20,4 @@ public class PostagemRequestDTO {
     @NotBlank(message = "O conteúdo não pode estar em branco.")
     private String conteudo;
 
-    private MultipartFile midia;
 }
-

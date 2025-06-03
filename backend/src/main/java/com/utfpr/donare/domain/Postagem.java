@@ -44,6 +44,9 @@ public class Postagem {
     @JdbcTypeCode(SqlTypes.LONGVARBINARY)
     private byte[] midia;
 
+    @Column(name = "midiaContentType")
+    private String midiaContentType;
+
     public Postagem(String titulo, String conteudo, Campanha campanha, String organizadorEmail) {
         this.titulo = titulo;
         this.conteudo = conteudo;

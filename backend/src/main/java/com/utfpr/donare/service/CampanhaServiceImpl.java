@@ -32,15 +32,17 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional
-    public CampanhaResponseDTO criarCampanha(CampanhaRequestDTO campanhaRequestDTO, String organizadorEmail) {
+    public CampanhaResponseDTO criarCampanha(CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail) {
         Campanha campanha = campanhaMapper.requestDtoToEntity(campanhaRequestDTO);
         campanha.setOrganizador(organizadorEmail);
         campanha.setDt_inicio(java.time.LocalDateTime.now());
 
-        if (campanhaRequestDTO.getImagemCapa() != null && !campanhaRequestDTO.getImagemCapa().isEmpty()) {
+        if (imagemCapa != null && !imagemCapa.isEmpty()) {
             try {
-                byte[] imagemBytes = campanhaRequestDTO.getImagemCapa().getBytes();
+                byte[] imagemBytes = imagemCapa.getBytes();
+                String contentType = imagemCapa.getContentType();
                 campanha.setImagemCapa(imagemBytes);
+                campanha.setImagemCapaContentType(contentType);
             } catch (IOException e) {
                 throw new RuntimeException("Erro ao processar imagem de capa", e);
             }
@@ -68,7 +70,7 @@ public class CampanhaServiceImpl implements CampanhaService {
     @Transactional(readOnly = true)
     public List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, int page, int size, String sort) {
         Sort.Direction direction = Sort.Direction.DESC;
-        String property = "dt_inicio"; // Default sort
+        String property = "dt_inicio";
         if (sort != null && !sort.isEmpty()) {
             if (sort.equalsIgnoreCase("dt_fim")) {
                 property = "dt_fim";
@@ -78,9 +80,7 @@ public class CampanhaServiceImpl implements CampanhaService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, property));
-
         Specification<Campanha> spec = criarFiltroCampanha(tipo, localidade);
-
         Page<Campanha> campanhasPage = campanhaRepository.findAll(spec, pageable);
 
         return campanhasPage.getContent().stream()
@@ -98,7 +98,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional
-    public CampanhaResponseDTO atualizarCampanha(Long id, CampanhaRequestDTO campanhaRequestDTO, String organizadorEmail) {
+    public CampanhaResponseDTO atualizarCampanha(Long id, CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail) {
         Campanha campanha = campanhaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
 
@@ -108,10 +108,12 @@ public class CampanhaServiceImpl implements CampanhaService {
 
         campanhaMapper.updateEntityFromRequestDto(campanhaRequestDTO, campanha);
 
-        if (campanhaRequestDTO.getImagemCapa() != null && !campanhaRequestDTO.getImagemCapa().isEmpty()) {
+        if (imagemCapa != null && !imagemCapa.isEmpty()) {
             try {
-                byte[] imagemBytes = campanhaRequestDTO.getImagemCapa().getBytes();
+                byte[] imagemBytes = imagemCapa.getBytes();
+                String contentType = imagemCapa.getContentType();
                 campanha.setImagemCapa(imagemBytes);
+                campanha.setImagemCapaContentType(contentType);
             } catch (IOException e) {
                 throw new RuntimeException("Erro ao processar nova imagem de capa", e);
             }
@@ -133,24 +135,8 @@ public class CampanhaServiceImpl implements CampanhaService {
     }
 
     @Override
-    @Transactional
-    public void adicionarMidiaCampanha(Long id, MultipartFile midia, String organizadorEmail) {
-        Campanha campanha = campanhaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
-
-        if (midia != null && !midia.isEmpty()) {
-            try {
-                campanha.setImagemCapa(midia.getBytes());
-                campanhaRepository.save(campanha);
-            } catch (IOException e) {
-                throw new RuntimeException("Erro ao processar e salvar mídia da campanha", e);
-            }
-        }
-    }
-
-    @Override
     @Transactional(readOnly = true)
-    public byte[] obterMidiaCampanha(Long id) {
+    public byte[] obterImagemCapa(Long id) {
         Campanha campanha = campanhaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
         return campanha.getImagemCapa();
@@ -158,11 +144,17 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
+    public String obterImagemCapaContentType(Long id) {
+        Campanha campanha = campanhaRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
+        return campanha.getImagemCapaContentType();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public List<VoluntarioResponseDTO> listarVoluntariosPorCampanha(Long id) {
         Campanha campanha = campanhaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
-
         return new ArrayList<>();
     }
 }
-
