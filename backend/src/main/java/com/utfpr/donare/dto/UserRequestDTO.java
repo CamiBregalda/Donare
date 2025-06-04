@@ -1,10 +1,8 @@
 package com.utfpr.donare.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
@@ -32,7 +30,18 @@ public class UserRequestDTO {
     @Pattern(regexp = "\\d{11}|\\d{14}", message = "CPF deve ter 11 dígitos ou CNPJ 14 dígitos (somente números).")
     private String cpfOuCnpj;
 
-    //todo definir se vai ser mesmo uma string
+    @Schema(description = "Se o usuário é pessoa física ou jurídica",
+            example = "1 = FISICA, 2 = JURIDICA",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "O tipo de usuário é obrigatório.")
+    private Integer tipoUsuario;
+
+    @Schema(description = "Dados do endereço do usuário.",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotNull(message = "O endereço é obrigatório.")
+    @Valid
+    private EnderecoRequestDto endereco;
+
     private String fotoPerfil;
 
     @Schema(description = "Senha do usuário. Deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais.",

@@ -1,12 +1,14 @@
 package com.utfpr.donare.service;
 
 import com.utfpr.donare.config.jwt.JwtTokenUtil;
+import com.utfpr.donare.domain.Endereco;
 import com.utfpr.donare.domain.User;
 import com.utfpr.donare.dto.UserRequestDTO;
 import com.utfpr.donare.dto.UserResponseDTO;
 import com.utfpr.donare.exception.BadRequestException;
 import com.utfpr.donare.exception.ResourceNotFoundException;
 import com.utfpr.donare.exception.UnauthorizedException;
+import com.utfpr.donare.mapper.EnderecoMapper;
 import com.utfpr.donare.mapper.UserMapper;
 import com.utfpr.donare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,7 @@ public class UserService implements UserDetailsService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
+    private final EnderecoMapper enderecoMapper;
 
     @Transactional
     public UserResponseDTO save(UserRequestDTO dto) {
@@ -42,15 +45,19 @@ public class UserService implements UserDetailsService {
             throw new BadRequestException("O CPF/CNPJ '" + dto.getCpfOuCnpj() + "' já está cadastrado.");
         }
 
-        // todo verficar para usar mapper com o encoder!
+        Endereco endereco = enderecoMapper.toEndereco(dto.getEndereco());
+
         User user = User.builder()
                 .nome(dto.getNome())
                 .email(dto.getEmail())
                 .cpfOuCnpj(dto.getCpfOuCnpj())
                 .fotoPerfil(dto.getFotoPerfil())
                 .password(passwordEncoder.encode(dto.getPassword()))
+                .idEndereco(endereco)
                 .ativo(true)
                 .build();
+
+        endereco.setUser(user);
 
         userRepository.save(user);
 
