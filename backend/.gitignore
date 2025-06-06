@@ -1,8 +1,37 @@
 # Default ignored files
 /shelf/
-/workspace.xml
+/.idea/workspace.xml
 # Editor-based HTTP Client requests
 /httpRequests/
 # Datasource local storage ignored files
 /dataSources/
 /dataSources.local.xml
+**/.idea/
+
+# Maven build output
+**/target/
+
+# IntelliJ IDEA
+/.idea/
+/*.iml
+/out/
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Arquivos temporários
+*.tmp
+*.temp
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Configurações específicas do Java
+*.class
+
+# Outros
+!.mvn/wrapper/maven-wrapper.jar

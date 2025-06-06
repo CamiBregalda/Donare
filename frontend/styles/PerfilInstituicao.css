@@ -1,0 +1,364 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #A3D9B1;
+  color: #4A6D7C;
+}
+
+/* Container principal */
+.institution-container {
+  max-width: 1200px;
+  margin: 0 5rem;
+  padding: 2rem 1rem;
+  min-height: 100vh;
+  height: 100%;
+}
+
+/* Header da instituição */
+.institution-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.institution-title-group {
+  display: flex;
+  align-items: center;
+  gap: 1rem; /* espaço entre nome e tipo */
+}
+
+
+.institution-name {
+  font-size: 2rem;
+  margin: 0;
+}
+
+.institution-type {
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-left: 0;
+  margin-top: 0.8rem;
+}
+
+.btn-edit {
+  background: #7dbfa8;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 4rem;
+  border-radius: 0.8rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.btn-edit:hover {
+  background: #54987e;
+}
+
+
+.institution-content {
+  display: grid;
+  grid-template-columns: 2.2fr 1.2fr;
+  gap: 3rem;
+  align-items: stretch; 
+  min-height: 60vh;
+}
+
+/* Coluna esquerda */
+.institution-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  height: 100%;
+  justify-content: flex-start;
+}
+
+.institution-main-info {
+  display: flex;
+  gap: 2.5rem;
+  align-items: flex-start;
+}
+
+
+.institution-img {
+  width: 38vw;
+  max-width: 600px;
+  min-width: 320px;
+  height: 50vh;
+  border-radius: 1rem;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.institution-description {
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.info-block strong {
+  font-size: 1.08rem;
+  color: #3e5f6f;
+}
+
+.institution-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2.2rem;
+  justify-content: flex-start;
+  font-size: 1.08rem;
+}
+/* Coluna de campanhas */
+.institution-campaigns h2 {
+  margin-bottom: 1rem;
+}
+
+.institution-campaigns {
+  display: flex;
+  flex-direction: column;  align-items: center; /* centraliza o conteúdo */
+  height: 100%;
+  align-self: stretch;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2.5rem 2rem; /* diminui padding lateral para ganhar espaço */
+  box-shadow: 0 2px 4px rgba(0,0,0,0.07);
+  min-width: 520px; /* aumenta largura mínima */
+  width: 100%;
+}
+
+.institution-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.institution-title-group {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.campaign-list {
+  flex: 1 1 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* centraliza os cards */
+  gap: 2rem;
+  padding: 0;
+  min-height: 400px;
+  justify-content: flex-start;
+}
+
+.campaign-card {
+  width: 90%; /* ocupa 90% da largura da lista */
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #fff;
+  border-radius: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.13);
+  padding: 2rem 1rem;
+  gap: 2rem;
+} 
+
+.campaign-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.3rem; /* aumente o tamanho da fonte */
+}
+
+
+.campaign-label {
+  font-weight: bold;
+  font-size: 1.4rem; /* aumente o tamanho da fonte */
+  color: #3e5f6f;
+}
+
+.btn-campaign-edit {
+  background: transparent;
+  border: none;
+  color: #3e5f6f;
+  font-size: 1.2rem; /* aumente o tamanho da fonte */
+  cursor: pointer;
+  padding: 0.5rem 1.2rem; /* aumente o padding */
+}
+
+.campaigns-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #4A6D7C;
+  margin: 0 0 2rem 0;
+  text-align: center;
+  width: 100%;
+}
+.campaign-img {
+  width: 100%;
+  height: 320px; /* aumente a altura da imagem */
+  border-radius: 1.2rem;
+  object-fit: cover;
+}
+
+.campaign-details p {
+  font-size: 1.15rem; /* aumente o tamanho da fonte */
+  line-height: 1.5;
+}
+
+/* Scrollbar customizado */
+.campaign-list::-webkit-scrollbar {
+  width: 0.5rem;
+}
+.campaign-list::-webkit-scrollbar-thumb {
+  background: #7dbfa8;
+  border-radius: 0.25rem;
+}
+
+/* Responsividade */
+@media (max-width: 1100px) {
+  .institution-content {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    height: auto;
+  }
+  .institution-campaigns {
+    min-width: 0;
+    max-width: 100%;
+    margin-top: 2rem;
+    padding: 2.5rem 1rem 1.5rem 1rem;
+  }
+  .institution-img {
+    width: 100%;
+    height: 220px;
+    min-width: 0;
+    max-width: 100%;
+  }
+}
+
+/* Modal */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal.show {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-content {
+  background: #91cbb1;
+  border-radius: 1rem;
+  width: 90%;
+  max-width: 800px;
+  padding: 2rem;
+  position: relative;
+  color: #fff;
+  animation: slideUp 0.4s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(2rem); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.modal-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+/* Form dentro do modal */
+.modal-form .form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group.fullwidth {
+  grid-column: 1 / -1;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  padding: 0.6rem 0.8rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+}
+
+/* Footer do modal */
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.btn-cancelar {
+  background: #f08080;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn-confirmar {
+  background: #4a6d7c;
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.8rem;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.btn-cancelar:hover { opacity: 0.9; }
+.btn-confirmar:hover { opacity: 0.9; }
+
+/* Responsividade extra */
+@media (max-width: 768px) {
+  .institution-content {
+    grid-template-columns: 1fr;
+  }
+}

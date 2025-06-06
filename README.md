@@ -41,3 +41,37 @@ O projeto tem como foco principal o atendimento à comunidade externa da UTFPR -
 ---
 
 ## 📂 Como rodar o projeto localmente
+
+### 📦 Backend
+
+#### ✅ Requisitos
+
+Antes de rodar o projeto, certifique-se de que os seguintes softwares estão instalados em sua máquina:
+
+- **Java 21**  
+  Baixe e instale a JDK:  
+  👉 [Oracle JDK 21 - Download](https://www.oracle.com/java/technologies/javase/jdk21-archive-downloads.html)
+
+- **Apache Maven**  
+  Gerenciador de dependências e build:  
+  👉 [Maven - Download](https://maven.apache.org/download.html)
+
+- **Docker Desktop**  
+  Necessário para subir os containers com Docker Compose:  
+  👉 [Docker Desktop - Download](https://www.docker.com/products/docker-desktop/)
+
+---
+
+#### ▶️ Rodando o Backend
+
+Siga os passos abaixo para iniciar o backend da aplicação:
+
+```bash
+# Acesse a pasta do backend
+cd backend
+
+# Suba os containers necessários (ex: banco de dados, etc.)
+docker compose up -d
+
+# Execute o projeto com Maven
+mvn spring-boot:run

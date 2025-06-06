@@ -1,0 +1,308 @@
+body {
+    background-color: #C8ECD1; /* Lighter green for the page background */
+    font-family: "Montserrat", sans-serif;
+    color: #333;
+    margin: 0;
+}
+
+header {
+    background-color: #7DBFA8;
+    padding: 15px 30px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    width: 180px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+}
+
+.logo img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.search-container {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    padding: 0 20px;
+}
+
+.search-container input[type="text"] {
+    width: 450px;
+    max-width: 100%;
+    padding: 12px 20px;
+    border-radius: 25px;
+    border: none;
+    font-size: 1em;
+    outline: none;
+}
+
+.user-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #b7e6ce;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.user-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.main-container {
+     padding: 30px 20px;
+}
+
+.institution-profile-container {
+    display: flex;
+    /* max-width: 1200px; */ /* Previous fixed max-width */
+    max-width: 90%; /* Make it use 90% of the parent's width */
+    margin: 0 auto;
+}
+
+.institution-details-section {
+    flex: 2; /* Takes more space */
+    padding: 25px;
+    border-radius: 10px;
+}
+
+.institution-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.institution-header h1 {
+    font-size: 2.2em;
+    color: #4A6D7C;
+    margin: 0;
+    font-weight: bold;
+}
+
+.institution-type-tag {
+    color: #4A6D7C;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 1.2em;
+    font-weight: 500;
+}
+
+.btn-follow-institution, .btn-follow-campaign {
+    background-color: #7DBFA8;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 0.95em;
+    transition: background-color 0.3s ease;
+}
+
+.btn-follow-institution:hover, .btn-follow-campaign:hover {
+    background-color: #6cae9a;
+}
+
+.institution-image-and-info-wrapper {
+    display: flex;
+    gap: 40px; /* Adjust gap as needed */
+    margin-bottom: 25px; /* Space before the description */
+}
+
+.institution-image {
+    flex: 1; /* Adjust flex ratio as needed, e.g., flex: 0 0 60%; */
+    max-width: 50%; /* Or a fixed width, ensure it fits with info */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 350px; /* Adjust as per your design */
+    object-fit: cover;
+    border-radius: 8px;
+    /* margin-bottom: 25px; */ /* Removed as margin is now on wrapper */
+}
+
+.institution-info {
+    flex: 1; /* Adjust flex ratio as needed, e.g., flex: 1; */
+    /* Add any specific styling for the info block if needed */
+}
+
+.institution-info h3, .institution-description h3 {
+    color: #4A6D7C;
+    font-size: 1.3em;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+.institution-info p, .institution-description p {
+    color: #555;
+    font-size: 1em;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+.campaigns-section {
+    flex: 1.2; /* Takes less space */
+    padding: 25px;
+    max-height: 80vh; /* Example max height */
+    overflow-y: auto; /* Scroll for campaigns if they exceed max height */
+}
+
+.campaigns-section h2 {
+    font-size: 1.8em;
+    color: #4A6D7C;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.campaigns-grid {
+    background-color: #A3D9B1;
+    padding: 10px;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.campaign-card {
+    background-color: #fff;
+    border: 1px solid #b7e6ce;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+}
+
+.campaign-card-image-container {
+    position: relative;
+    width: 100%;
+    height: 180px; /* Adjust as needed */
+}
+
+.campaign-card-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.campaign-card-title-on-image {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    background-color: rgba(125, 191, 168, 0.8); /* Semi-transparent green */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: bold;
+}
+
+.campaign-card-body {
+    padding: 15px;
+}
+
+.campaign-card-description {
+    font-size: 0.95em;
+    color: #555;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.campaign-card-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.campaign-card-actions .icon-button {
+    background: none;
+    border: none;
+    color: #7DBFA8;
+    font-size: 1.3em;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.campaign-card-actions .icon-button:hover {
+    color: #4A6D7C;
+}
+
+.campaign-card-actions .btn-follow-campaign {
+    padding: 6px 15px;
+    font-size: 0.9em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .institution-profile-container {
+        flex-direction: column;
+    }
+    .campaigns-section {
+        max-height: none; /* Remove max height on smaller screens if stacked */
+        overflow-y: visible;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        padding: 20px;
+    }
+    .institution-header h1 {
+        font-size: 1.8em;
+    }
+    .institution-info h3, .institution-description h3 {
+        font-size: 1.1em;
+    }
+    .campaigns-section h2 {
+        font-size: 1.5em;
+    }
+    .search-container input[type="text"] {
+        width: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 10px 15px;
+        flex-direction: column;
+        gap: 10px;
+    }
+    .search-container {
+        width: 100%;
+        padding: 0;
+    }
+    .search-container input[type="text"] {
+        width: 100%;
+        font-size: 0.9em;
+    }
+    .institution-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .btn-follow-institution {
+        width: 100%;
+        text-align: center;
+    }
+    .campaign-card-actions {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .campaign-card-actions .btn-follow-campaign {
+        flex-basis: 100%; /* Make follow button full width in card on small screens */
+        text-align: center;
+    }
+}
