@@ -25,7 +25,7 @@ document.querySelector('form').addEventListener('submit', function(e){
     const novoUsuario = {
         nome: nome,
         email: email,
-        cpfCnpj: cpfCnpj,
+        cpfOuCnpj: cpfCnpj,
         tipoDocumento: tipoDocumento,
         endereco: endereco,
         password: senha
@@ -34,7 +34,7 @@ document.querySelector('form').addEventListener('submit', function(e){
     fetch('http://localhost:8080/usuarios',{
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringfy(novoUsuario)
+        body: JSON.stringify(novoUsuario)
     })
 
     .then(res=>{

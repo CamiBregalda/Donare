@@ -46,8 +46,8 @@ p{
 form a,
 p{
     text-decoration: none;
-    display: flex;
-    font-size: 2rex;
+    display: flex;  
+    font-size: 0.8em;
     margin: 1vh;
 }
 
