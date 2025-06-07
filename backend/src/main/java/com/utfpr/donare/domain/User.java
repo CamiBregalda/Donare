@@ -23,6 +23,9 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Endereco idEndereco;
+
     private String nome;
 
     @Column(unique = true, nullable = false)
@@ -34,6 +37,9 @@ public class User implements UserDetails {
     private String fotoPerfil;
 
     private String password;
+
+    @Enumerated(EnumType.ORDINAL)
+    private TipoUsuario tipoUsuario;
 
     private boolean ativo;
 
