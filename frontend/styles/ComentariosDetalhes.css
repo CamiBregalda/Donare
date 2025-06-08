@@ -3,63 +3,6 @@ body {
     font-family: "Montserrat", sans-serif;
 }
 
-/* Header */
-header {
-    background-color: #7DBFA8;
-    padding: 15px 30px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.logo {
-    width: 250px;
-    height: 60px;
-    margin: 0 20px 0 0;
-    display: flex;
-    align-items: center;
-}
-
-.logo img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-}
-
-.search-container {
-    flex: 0 0 320px;
-    margin: 0 250px 0 0;
-}
-
-.search-container input[type="text"] {
-    width: 100%;
-    padding: 10px 15px;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-    font-size: 1em;
-}
-
-.user-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background-color: #b7e6ce;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-    font-size: 1.3em;
-    color: #fff;
-    cursor: pointer;
-}
-
-.user-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border-radius: 50%;
-    display: block;
-}
 
 /* Main Content */
 .container {
