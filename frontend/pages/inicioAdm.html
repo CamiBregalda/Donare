@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DONARE - Dashboard</title>
+    <link rel="stylesheet" href="../styles/header.css">
+    <link rel="stylesheet" href="../styles/inicioAdm.css">
+</head>
+<body>
+    <header class="navbar">
+        <div class="logo"><img src="../img/LogoEscritaDonare.png" alt="Logo Donare"></div>
+        <div class="search-container">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" placeholder="Buscar..." class="search-bar">
+        </div>
+        <div class="user-profile">
+        <img src="../img/cachorro.jpg" alt="Perfil" class="user-avatar">
+        </div>
+    </header>
+    <main class="painel-principal">
+        <div class="secao-painel">
+            <h2>Novas Campanhas</h2>
+            <div class="cartao-nova-campanha">
+                <button class="btn-criar-campanha" onclick="criarNovaCampanha()">
+                    <div class="circulo-mais">
+                        <div class="icone-mais">+</div>
+                    </div>
+                    <span>Criar Nova Campanha</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="secao-painel">
+            <h2>Campanhas ativas</h2>
+            <div class="container-campanhas" id="campanhasAtivas">
+                
+            </div>
+        </div>
+
+        <div class="secao-painel">
+            <h2>Histórico de Campanhas</h2>
+            <div class="container-campanhas" id="campanhasExpiradas">
+                
+            </div>
+        </div>
+    </main>
+
+    <div id="modalCampanha" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Cadastre sua Campanha</h2>
+                <button class="btn-fechar-modal" onclick="fecharModal()">×</button>
+            </div>
+            
+            <div class="form-grid">
+                <div class="form-field">
+                    <label>Nome da Campanha:</label>
+                    <input type="text" id="nomeCampanha">
+                </div>
+
+                <div class="form-field">
+                    <label>Endereço do Evento:</label>
+                    <input type="text" id="enderecoEvento">
+                </div>
+
+                <div class="form-field">
+                    <label>Necessidades para o Evento:</label>
+                    <input type="text" id="necessidadesEvento">
+                </div>
+
+                <div class="form-field">
+                    <label>Certificados a serem disponibilizados:</label>
+                    <select id="certificados">
+                        <option value="">Selecione o tipo de certificado</option>
+                        <option value="fulano">Certificado de alguma coisa</option>
+                        <option value="siclano">Certificado de outra coisa</option>
+                    </select>
+                </div>
+
+                <div class="form-field">
+                    <label>Categoria da Campanha:</label>
+                    <select id="categoriaCampanha">
+                        <option value="">Selecione a categoria</option>
+                        <option value="a">sijfosaglag</option>
+                        <option value="b">asfaesfcaf</option>
+                    </select>
+                </div>
+
+                <div class="form-field upload-field">
+                    <label>Adicionar imagem:</label>
+                    <div class="upload-area" onclick="abrirSeletorArquivo()">
+                        <div class="upload-circle">+</div>
+                    </div>
+                    <input type="file" id="arquivoImagem" accept="image/*" style="display: none;">
+                </div>
+
+                <div class="form-field">
+                    <label>Data de Início:</label>
+                    <input type="date" id="dataInicio">
+                </div>
+
+                <div class="form-field">
+                    <label>Data Final:</label>
+                    <input type="date" id="dataFinal">
+                </div>
+
+                <div class="form-field description-field">
+                    <label>Descrição da Campanha:</label>
+                    <textarea id="descricaoCampanha" rows="6"></textarea>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
+                <button class="btn-concluir" onclick="salvarCampanha()">Concluir</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/header.js"></script>
+    <script src="../js/inicioAdm.js"></script>
+</body>
+</html>
