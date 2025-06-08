@@ -385,3 +385,268 @@ body {
         max-width: 250px;
     }
 }
+
+.btn-necessidades {
+    width: 100%;
+    padding: 15px 20px;
+    border: none;
+    border-radius: 25px;
+    background: #ffffffe6;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #4A6B5A;
+    transition: all 0.3s ease;
+}
+
+.btn-necessidades:hover {
+    background: white;
+    transform: translateY(-1px);
+}
+
+.seta-necessidades {
+    font-weight: bold;
+    color: #8BC6A3;
+}
+
+.modal-necessidades {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 700px;
+    max-height: 80vh;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.header-necessidades {
+    background: #8BC6A3;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-necessidades h3 {
+    color: white;
+    font-size: 20px;
+    margin: 0;
+}
+
+.btn-fechar-necessidades {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    font-size: 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.corpo-necessidades {
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.lista-necessidades {
+    margin-bottom: 20px;
+    min-height: 100px;
+    border: 2px dashed #e0e0e0;
+    border-radius: 15px;
+    padding: 15px;
+}
+
+.lista-necessidades:empty::before {
+    content: "Nenhum item adicionado ainda. Use o formulário abaixo para adicionar itens.";
+    color: #999;
+    font-style: italic;
+    text-align: center;
+    display: block;
+    padding: 20px;
+}
+
+.item-lista {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    border-left: 4px solid #8BC6A3;
+}
+
+.item-lista:last-child {
+    margin-bottom: 0;
+}
+
+.info-item {
+    flex: 1;
+    font-weight: 500;
+    color: #4A6B5A;
+}
+
+.btn-remover-item {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.adicionar-item {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 15px;
+}
+
+.linha-inputs {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.input-item {
+    flex: 2;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+}
+
+.input-qtd {
+    flex: 1;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+}
+
+.input-formato {
+    flex: 1;
+    padding: 10px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+}
+
+.input-item:focus, .input-qtd:focus, .input-formato:focus {
+    border-color: #8BC6A3;
+}
+
+.btn-adicionar {
+    background: #8BC6A3;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 20px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.3s ease;
+    align-self: flex-start;
+}
+
+.btn-adicionar:hover {
+    background: #7DBFA8;
+}
+
+.footer-necessidades {
+    padding: 20px;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.btn-cancelar-necessidades, .btn-salvar-necessidades {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-cancelar-necessidades {
+    background: #e9ecef;
+    color: #6c757d;
+}
+
+.btn-cancelar-necessidades:hover {
+    background: #dee2e6;
+}
+
+.btn-salvar-necessidades {
+    background: #8BC6A3;
+    color: white;
+}
+
+.btn-salvar-necessidades:hover {
+    background: #7DBFA8;
+}
+
+.input-item:disabled, .input-formato:disabled {
+    background-color: #f5f5f5;
+    color: #666;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.btn-adicionar:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.btn-adicionar:disabled:hover {
+    background: #ccc;
+}
+
+@media (max-width: 768px) {
+    .modal-necessidades {
+        width: 95%;
+        margin: 20px;
+    }
+    
+    .linha-inputs {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .input-item, .input-qtd, .input-formato {
+        flex: 1;
+        width: 100%;
+    }
+    
+    .btn-adicionar {
+        align-self: stretch;
+    }
+    
+    .footer-necessidades {
+        flex-direction: column;
+    }
+}

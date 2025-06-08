@@ -114,15 +114,22 @@ class GerenciadorCampanhas {
                 id: 1, titulo: 'Doação de Alimentos', local: 'UTFPR',
                 dataInicio: hoje.toISOString().split('T')[0], dataFim: proximaSemana.toISOString().split('T')[0],
                 urlImagem: 'https://img.migalhas.com.br/gf_Base/empresas/miga/imagens/C834420846D5510C90B88E720709A471B8E5_doacao.jpg',
-                status: 'ativa', necessidades: 'Alimentos não perecíveis',
+                status: 'ativa', necessidades: JSON.stringify([
+                    {id: 1, nome: 'Arroz', quantidade: 50, formato: 'kg'},
+                    {id: 2, nome: 'Feijão', quantidade: 30, formato: 'kg'},
+                    {id: 3, nome: 'Óleo', quantidade: 20, formato: 'litros'}
+                ]),
                 certificados: 'fulano', categoria: 'a',
-                descricao: 'blablalba'
+                descricao: 'Campanha de arrecadação de alimentos para famílias carentes'
             },
             {
                 id: 2, titulo: 'Campanha de Agasalhos', local: 'Praça 500',
                 dataInicio: ontem.toISOString().split('T')[0], dataFim: ontem.toISOString().split('T')[0],
                 urlImagem: 'https://ogimg.infoglobo.com.br/in/22799539-a0c-cff/FT1086A/70757225.jpg',
-                status: 'expirada', necessidades: 'Roupas de inverno',
+                status: 'expirada', necessidades: JSON.stringify([
+                    {id: 3, nome: 'Casacos', quantidade: 100, formato: 'unidades'},
+                    {id: 4, nome: 'Cobertores', quantidade: 50, formato: 'unidades'}
+                ]),
                 certificados: 'fulano', categoria: 'b',
                 descricao: 'Arrecadação de agasalhos para o período de inverno.'
             }
@@ -132,14 +139,161 @@ class GerenciadorCampanhas {
 }
 
 let gerenciadorCampanhas;
+let necessidadesAtual = [];
+let modoEdicaoNecessidades = false;
 
-function criarNovaCampanha() { abrirModal(); }
+function abrirModalNecessidades() {
+    const modalCampanha = document.getElementById('modalCampanha');
+    modoEdicaoNecessidades = modalCampanha.dataset.modoEdicao === 'true';
+    
+    document.getElementById('modalNecessidades').style.display = 'block';
+    configurarModalNecessidades();
+    renderizarListaNecessidades();
+}
+
+function configurarModalNecessidades() {
+    const inputItem = document.getElementById('nomeItemModal');
+    const inputFormato = document.getElementById('formatoItemModal');
+    const btnAdicionar = document.getElementById('btnAdicionarItem');
+    
+    if (modoEdicaoNecessidades) {
+        inputItem.disabled = true;
+        inputFormato.disabled = true;
+        btnAdicionar.disabled = true;
+        btnAdicionar.textContent = 'Não disponível';
+        inputItem.value = '';
+        document.getElementById('quantidadeItemModal').value = '';
+        inputFormato.selectedIndex = 0;
+    } else {
+        inputItem.disabled = false;
+        inputFormato.disabled = false;
+        btnAdicionar.disabled = false;
+        btnAdicionar.textContent = 'Adicionar';
+    }
+}
+
+function fecharModalNecessidades() {
+    document.getElementById('modalNecessidades').style.display = 'none';
+}
+
+function adicionarItemModal() {
+    if (modoEdicaoNecessidades) return;
+    
+    const nome = document.getElementById('nomeItemModal').value.trim();
+    const quantidade = document.getElementById('quantidadeItemModal').value;
+    const formato = document.getElementById('formatoItemModal').value;
+    
+    if (!nome || !quantidade) {
+        alert('Por favor, preencha o nome e a quantidade do item.');
+        return;
+    }
+    
+    const item = {
+        id: Date.now(),
+        nome: nome,
+        quantidade: parseInt(quantidade),
+        formato: formato
+    };
+    
+    necessidadesAtual.push(item);
+    renderizarListaNecessidades();
+    
+    document.getElementById('nomeItemModal').value = '';
+    document.getElementById('quantidadeItemModal').value = '';
+    document.getElementById('formatoItemModal').selectedIndex = 0;
+}
+
+function removerItemModal(id) {
+    if (modoEdicaoNecessidades) return;
+    necessidadesAtual = necessidadesAtual.filter(item => item.id !== id);
+    renderizarListaNecessidades();
+}
+
+function editarQuantidadeItem(id, novaQuantidade) {
+    const quantidade = parseInt(novaQuantidade);
+    if (quantidade && quantidade > 0) {
+        const item = necessidadesAtual.find(item => item.id === id);
+        if (item) {
+            item.quantidade = quantidade;
+        }
+    }
+}
+
+function renderizarListaNecessidades() {
+    const container = document.getElementById('listaNecessidades');
+    
+    if (necessidadesAtual.length === 0) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    container.innerHTML = necessidadesAtual.map(item => `
+        <div class="item-lista">
+            <span class="info-item">
+                ${item.nome} - 
+                ${modoEdicaoNecessidades ? 
+                    `<input type="number" value="${item.quantidade}" min="1" 
+                     oninput="editarQuantidadeItem(${item.id}, this.value)" 
+                     onchange="editarQuantidadeItem(${item.id}, this.value)"
+                     style="width: 70px; padding: 4px 8px; border: 2px solid #8BC6A3; border-radius: 6px; margin: 0 5px; font-weight: bold; text-align: center; background: white;">` 
+                    : item.quantidade
+                } 
+                ${item.formato}
+            </span>
+            ${!modoEdicaoNecessidades ? 
+                `<button class="btn-remover-item" onclick="removerItemModal(${item.id})">×</button>` 
+                : ''
+            }
+        </div>
+    `).join('');
+}
+
+function salvarNecessidades() {
+    const texto = document.getElementById('textoNecessidades');
+    if (necessidadesAtual.length === 0) {
+        texto.textContent = 'Adicionar necessidades';
+    } else {
+        texto.textContent = `${necessidadesAtual.length} ${necessidadesAtual.length === 1 ? 'item adicionado' : 'itens adicionados'}`;
+    }
+    fecharModalNecessidades();
+}
+
+function carregarNecessidadesExistentes(necessidadesString) {
+    if (!necessidadesString) {
+        necessidadesAtual = [];
+        return;
+    }
+    
+    try {
+        necessidadesAtual = JSON.parse(necessidadesString);
+    } catch {
+        necessidadesAtual = necessidadesString.split(',').map((item, index) => ({
+            id: Date.now() + index,
+            nome: item.trim(),
+            quantidade: 1,
+            formato: 'unidades'
+        }));
+    }
+    
+    const texto = document.getElementById('textoNecessidades');
+    if (necessidadesAtual.length > 0) {
+        texto.textContent = `${necessidadesAtual.length} ${necessidadesAtual.length === 1 ? 'item adicionado' : 'itens adicionados'}`;
+    }
+}
+
+function obterNecessidadesJSON() {
+    return JSON.stringify(necessidadesAtual);
+}
+
+function criarNovaCampanha() { 
+    abrirModal(); 
+}
 
 function obterDadosFormulario() {
     return {
         nome: document.getElementById('nomeCampanha').value.trim(),
         endereco: document.getElementById('enderecoEvento').value.trim(),
-        necessidades: document.getElementById('necessidadesEvento').value.trim(),
+        necessidades: obterNecessidadesJSON(),
         certificados: document.getElementById('certificados').value,
         categoria: document.getElementById('categoriaCampanha').value,
         dataInicio: document.getElementById('dataInicio').value,
@@ -161,10 +315,11 @@ function validarDados(dados) {
 }
 
 function preencherFormulario(campanha) {
-    const campos = ['nomeCampanha', 'enderecoEvento', 'necessidadesEvento', 'dataInicio', 'dataFinal', 'descricaoCampanha'];
-    const dados = [campanha.titulo, campanha.local, campanha.necessidades, campanha.dataInicio, campanha.dataFim, campanha.descricao];
-    campos.forEach((campo, i) => document.getElementById(campo).value = dados[i] || '');
-    
+    document.getElementById('nomeCampanha').value = campanha.titulo || '';
+    document.getElementById('enderecoEvento').value = campanha.local || '';
+    document.getElementById('dataInicio').value = campanha.dataInicio || '';
+    document.getElementById('dataFinal').value = campanha.dataFim || '';
+    document.getElementById('descricaoCampanha').value = campanha.descricao || '';
     document.getElementById('certificados').value = campanha.certificados || '';
     document.getElementById('categoriaCampanha').value = campanha.categoria || '';
     
@@ -175,6 +330,7 @@ function preencherFormulario(campanha) {
                 <button onclick="removerImagemEdicao()" style="position: absolute; top: 10px; right: 10px; background: #000000; color: white; border: none; border-radius: 50%; width: 30px; height: 30px; cursor: pointer;">×</button>
             </div>`;
     }
+    carregarNecessidadesExistentes(campanha.necessidades);
 }
 
 function configurarModal(modoEdicao, campanha = null) {
@@ -214,9 +370,7 @@ function abrirModal(campanha = null) {
 }
 
 function fecharModal() {
-    const modal = document.getElementById('modalCampanha');
-    const modoEdicao = modal.dataset.modoEdicao === 'true';
-    modal.style.display = 'none';
+    document.getElementById('modalCampanha').style.display = 'none';
     limparFormulario();
     configurarModal(false);
 }
@@ -226,19 +380,23 @@ function salvarCampanha() {
     if (!validarDados(dados)) return;
 
     const novaCampanha = {
-        id: Date.now(), titulo: dados.nome, local: dados.endereco,
-        dataInicio: dados.dataInicio, dataFim: dados.dataFinal, urlImagem: null,
+        id: Date.now(), 
+        titulo: dados.nome, 
+        local: dados.endereco,
+        dataInicio: dados.dataInicio, 
+        dataFim: dados.dataFinal, 
+        urlImagem: null,
         status: new Date(dados.dataFinal) < new Date() ? 'expirada' : 'ativa',
-        necessidades: dados.necessidades, certificados: dados.certificados,
-        categoria: dados.categoria, descricao: dados.descricao
+        necessidades: dados.necessidades, 
+        certificados: dados.certificados,
+        categoria: dados.categoria, 
+        descricao: dados.descricao
     };
 
     gerenciadorCampanhas.campanhas.push(novaCampanha);
     gerenciadorCampanhas.renderizarCampanhas();
     gerenciadorCampanhas.mostrarNotificacao('Campanha criada com sucesso!');
-    document.getElementById('modalCampanha').style.display = 'none';
-    limparFormulario();
-    configurarModal(false);
+    fecharModal();
 }
 
 function salvarEdicaoCampanha(id) {
@@ -248,20 +406,21 @@ function salvarEdicaoCampanha(id) {
     const campanha = gerenciadorCampanhas.campanhas.find(c => c.id === id);
     if (campanha) {
         Object.assign(campanha, {
-            titulo: dados.nome, local: dados.endereco, necessidades: dados.necessidades,
-            certificados: dados.certificados, categoria: dados.categoria,
-            dataInicio: dados.dataInicio, dataFim: dados.dataFinal, descricao: dados.descricao,
+            titulo: dados.nome, 
+            local: dados.endereco, 
+            necessidades: dados.necessidades,
+            certificados: dados.certificados, 
+            categoria: dados.categoria,
+            dataInicio: dados.dataInicio, 
+            dataFim: dados.dataFinal, 
+            descricao: dados.descricao,
             status: new Date(dados.dataFinal) < new Date() ? 'expirada' : 'ativa'
         });
 
-        const novoArquivo = document.getElementById('arquivoImagem').files[0];
-        
         gerenciadorCampanhas.salvarCampanhas();
         gerenciadorCampanhas.renderizarCampanhas();
         gerenciadorCampanhas.mostrarNotificacao('Campanha atualizada com sucesso!');
-        document.getElementById('modalCampanha').style.display = 'none';
-        limparFormulario();
-        configurarModal(false);
+        fecharModal();
     }
 }
 
@@ -271,28 +430,33 @@ function excluirCampanha(id) {
         gerenciadorCampanhas.salvarCampanhas();
         gerenciadorCampanhas.renderizarCampanhas();
         gerenciadorCampanhas.mostrarNotificacao('Campanha excluída com sucesso!');
-        document.getElementById('modalCampanha').style.display = 'none';
-        limparFormulario();
-        configurarModal(false);
+        fecharModal();
     }
 }
 
 function limparFormulario() {
-    ['nomeCampanha', 'enderecoEvento', 'necessidadesEvento', 'dataInicio', 'dataFinal', 'descricaoCampanha', 'arquivoImagem'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('certificados').selectedIndex = 0;
-    document.getElementById('categoriaCampanha').selectedIndex = 0;
-    document.querySelector('.upload-area').innerHTML = '<div class="upload-circle">+</div>';
+    ['nomeCampanha', 'enderecoEvento', 'dataInicio', 'dataFinal', 'descricaoCampanha', 'arquivoImagem'].forEach(id => {
+        const elemento = document.getElementById(id);
+        if (elemento) elemento.value = '';
+    });
+    
+    const selectCertificados = document.getElementById('certificados');
+    const selectCategoria = document.getElementById('categoriaCampanha');
+    if (selectCertificados) selectCertificados.selectedIndex = 0;
+    if (selectCategoria) selectCategoria.selectedIndex = 0;
+    
+    const uploadArea = document.querySelector('.upload-area');
+    if (uploadArea) uploadArea.innerHTML = '<div class="upload-circle">+</div>';
+    
+    necessidadesAtual = [];
+    const textoNecessidades = document.getElementById('textoNecessidades');
+    if (textoNecessidades) textoNecessidades.textContent = 'Adicionar necessidades';
 }
 
-function verificarDadosPreenchidos() {
-    const campos = ['nomeCampanha', 'enderecoEvento', 'necessidadesEvento', 'dataInicio', 'dataFinal', 'descricaoCampanha'];
-    const selects = ['certificados', 'categoriaCampanha'];
-    return campos.some(c => document.getElementById(c).value.trim()) || 
-           selects.some(s => document.getElementById(s).selectedIndex > 0) || 
-           document.getElementById('arquivoImagem').files.length > 0;
+function abrirSeletorArquivo() { 
+    document.getElementById('arquivoImagem').click(); 
 }
 
-function abrirSeletorArquivo() { document.getElementById('arquivoImagem').click(); }
 function removerImagemEdicao() {
     document.querySelector('.upload-area').innerHTML = '<div class="upload-circle">+</div>';
     document.getElementById('arquivoImagem').value = '';
