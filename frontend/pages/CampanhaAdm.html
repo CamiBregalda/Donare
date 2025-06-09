@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nome Campanha</title>
+    <link rel="stylesheet" href="../styles/header.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/CampanhaAdm.css">
+</head>
+<body>
+    <header>
+        <div id="header-placeholder"></div>
+    </header>
+    <div class="container">
+        <section class="campaign-title-section">
+            <a href="#" class="back-button">&larr;</a>
+            <h1 class="campaign-name-header" id="campaignNameHeader">Nome Campanha</h1>
+        </section>
+        <div class="campaign-content-grid">
+            <div class="campaign-left">
+                <img class="campaign-image" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Campanha">
+                <div class="campaign-description">
+                    <h3>Descrição da Campanha:</h3>
+                    <p id="campaignDescriptionText"></p>
+                    <h4>Localização:</h4>
+                    <p id="campaignLocation"></p>
+                    <h4>Início:</h4>
+                    <p id="campaignStartDate"></p>
+                    <h4>Fim:</h4>
+                    <p id="campaignEndDate"></p>
+                    <h4>Categoria:</h4>
+                    <p id="campaignCategory"></p>
+                    <h4>Certificado:</h4>
+                    <p id="campaignCertificate"></p>
+                </div>
+            </div>
+            <div class="campaign-right">
+                <h3>Itens necessários:</h3>
+                <div class="item-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/header.js"></script>
+    <script src="../js/CampanhaAdm.js"></script>
+</body>
+</html>

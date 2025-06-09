@@ -4,18 +4,26 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    overflow: hidden;
 }
 
+h1,
 h2, 
 label{
-    font-family: 'montserrat';
+    font-family: 'montserrat', sans-serif;
     color: #F2F2F2;
+}
+
+h3,
+p,
+li,
+a{
+    font-family: "Montserrat Alternates", sans-serif;
+    color: #4A6D7C;
 }
 
 h2{
     font-size: 4vw;
-    font-weight: lighter;
+    font-weight: 300;
 }
 
 ::placeholder{
