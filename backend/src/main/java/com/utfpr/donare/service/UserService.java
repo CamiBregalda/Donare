@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -89,6 +90,13 @@ public class UserService implements UserDetailsService {
         }
 
         userRepository.save(user);
+    }
+
+    public UserResponseDTO findById(Long id) {
+
+        return userRepository.findById(id)
+                .map(userMapper::toUserResponseDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Id de usuário não encontrado. ID de busca: " + id));
     }
 
     public String autenticar(String email, String senha) {

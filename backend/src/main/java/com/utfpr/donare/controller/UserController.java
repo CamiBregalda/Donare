@@ -123,4 +123,11 @@ public class UserController {
         userService.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<UserResponseDTO> findById(
+            @Parameter(description = "ID do usuário a ser encontra.", required = true, example = "1")
+            @PathVariable Long id) {
+        return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
+    }
 }

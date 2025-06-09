@@ -21,4 +21,8 @@ public class UserResponseDTO {
 
     // todo validar se vai ser string
     private String fotoPerfil;
+
+    @Schema(description = "1 = FISICA, 2 = JURIDICA")
+    private Integer tipoUsuario;
+
 }
