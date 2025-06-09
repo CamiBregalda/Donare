@@ -1,4 +1,4 @@
-document.querySelector('lado-form').addEventListener('submit', async function(e) {
+    document.querySelector('lado-form').addEventListener('submit', async function(e) {
     e.preventDefault();
 
     const email = document.getElementById('email').value;
@@ -17,7 +17,7 @@ document.querySelector('lado-form').addEventListener('submit', async function(e)
         });
 
         if(!response.ok){
-            const errorData = await response.text(); //ou .json();
+            const errorData = await response.text();
             throw new Error(errorData || 'Erro de autenticação.')
         }
 
