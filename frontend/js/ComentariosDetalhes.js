@@ -4,22 +4,28 @@ let comments = [];
 // Carrega dados da campanha e necessidades
 async function loadCampaignData() {
     try {
-        const response = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/post`);
-        if (!response.ok) throw new Error('Erro ao buscar dados da campanha');
-        const data = await response.json();
+        // Busca dados da campanha
+        const campResponse = await fetch(`http://localhost:8080/campanhas/${idCampanha}`);
+        if (!campResponse.ok) throw new Error('Erro ao buscar dados da campanha');
+        const campData = await campResponse.json();
 
-        document.getElementById('campaignNameHeader').textContent = data.tituloCampanha || '';
-        document.getElementById('campaignStartDate').textContent = data.campanhaDtInicio || '';
-        document.getElementById('campaignEndDate').textContent = data.campanhaDtFim || '';
-        document.getElementById('campaignLocation').innerHTML = data.campanhaEndereço || '';
-        document.getElementById('campaignCategory').textContent = data.campanhaCategoria || '';
-        document.getElementById('campaignCertificate').textContent = data.campanhaTipoCertificado || '';
-        document.getElementById('campaignDescriptionText').textContent = data.campanhaDescricao || '';
+        document.getElementById('campaignNameHeader').textContent = campData.titulo || '';
+        document.getElementById('campaignStartDate').textContent = campData.campanhaDtInicio || '';
+        document.getElementById('campaignEndDate').textContent = campData.campanhaDtFim || '';
+        document.getElementById('campaignLocation').innerHTML = campData.campanhaEndereco || '';
+        document.getElementById('campaignCategory').textContent = campData.campanhaCategoria || '';
+        document.getElementById('campaignCertificate').textContent = campData.campanhaTipoCertificado || '';
+        document.getElementById('campaignDescriptionText').textContent = campData.descricao || '';
+
+        // Busca necessidades da campanha
+        const necessidadesResponse = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/necessidades`);
+        if (!necessidadesResponse.ok) throw new Error('Erro ao buscar necessidades');
+        const necessidades = await necessidadesResponse.json();
 
         const itemsUl = document.getElementById('campaignItems');
         itemsUl.innerHTML = '';
-        if (Array.isArray(data.necessidades)) {
-            data.necessidades.forEach(item => {
+        if (Array.isArray(necessidades)) {
+            necessidades.forEach(item => {
                 const li = document.createElement('li');
                 li.textContent = `${item.nome} (Necessário: ${item.quantidadeNecessaria})`;
                 itemsUl.appendChild(li);
@@ -75,7 +81,7 @@ async function sendComment(conteudo, idComentarioPai = null) {
         idComentarioPai,
         campanhaId: idCampanha
     };
-    const response = await fetch(`http://localhost:8080/comentario/campanha/${idCampanha}/comentarios`, {
+    const response = await fetch(`http://localhost:8080/comentario/campanhas/${idCampanha}/comentarios`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body)
@@ -95,7 +101,7 @@ async function deleteComment(idComentario) {
         return;
     }
     const response = await fetch(
-        `http://localhost:8080/comentario/campanhas/${idCampanha}/comentarios/${idComentario}?userEmail=${encodeURIComponent(userEmail)}`,
+        `http://localhost:8080/comentario/comentarios/${idComentario}?userEmail=${encodeURIComponent(userEmail)}`,
         { method: 'DELETE' }
     );
     if (!response.ok) {

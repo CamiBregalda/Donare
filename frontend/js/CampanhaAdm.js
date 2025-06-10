@@ -3,9 +3,11 @@ const idCampanha = 1; // Troque pelo id real da campanha
 // Carrega as necessidades e dados da campanha
 async function loadCampaignData() {
     try {
-        const response = await fetch(`http://localhost:8080/necessidade/campanha/${idCampanha}/post`);
+        // Endpoint correto para listar todas as necessidades da campanha
+        const response = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/necessidades`);
         if (!response.ok) throw new Error('Erro ao buscar necessidades');
         const necessidades = await response.json();
+        console.log(necessidades);
 
         // Preencher dados da campanha (usando o primeiro item)
         if (necessidades.length > 0) {
