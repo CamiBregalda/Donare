@@ -1,6 +1,7 @@
-const idCampanha = 1; // Troque pelo id real da campanha
+const idCampanha = 2; // Troque pelo id real da campanha
 let comments = [];
 
+// Carrega dados da campanha e necessidades
 // Carrega dados da campanha e necessidades
 async function loadCampaignData() {
     try {
@@ -8,14 +9,34 @@ async function loadCampaignData() {
         const campResponse = await fetch(`http://localhost:8080/campanhas/${idCampanha}`);
         if (!campResponse.ok) throw new Error('Erro ao buscar dados da campanha');
         const campData = await campResponse.json();
+        console.log(campData);
 
         document.getElementById('campaignNameHeader').textContent = campData.titulo || '';
-        document.getElementById('campaignStartDate').textContent = campData.campanhaDtInicio || '';
-        document.getElementById('campaignEndDate').textContent = campData.campanhaDtFim || '';
-        document.getElementById('campaignLocation').innerHTML = campData.campanhaEndereco || '';
-        document.getElementById('campaignCategory').textContent = campData.campanhaCategoria || '';
-        document.getElementById('campaignCertificate').textContent = campData.campanhaTipoCertificado || '';
+        document.getElementById('campaignStartDate').textContent = campData.dt_inicio ? campData.dt_inicio.split('T')[0] : '';
+        document.getElementById('campaignEndDate').textContent = campData.dt_fim ? campData.dt_fim.split('T')[0] : '';
+        document.getElementById('campaignLocation').innerHTML = campData.endereco || '';
+        document.getElementById('campaignCategory').textContent = campData.categoriaCampanha || '';
+        document.getElementById('campaignCertificate').textContent = campData.tipoCertificado || '';
         document.getElementById('campaignDescriptionText').textContent = campData.descricao || '';
+
+        // Busca imagem da campanha
+        const imgResp = await fetch(`http://localhost:8080/campanhas/${idCampanha}/imagem`);
+        if (imgResp.ok) {
+            const blob = await imgResp.blob();
+            const imgUrl = URL.createObjectURL(blob);
+            // Substitui o placeholder pela imagem real
+            const imgPlaceholder = document.querySelector('.campaign-image-placeholder');
+            if (imgPlaceholder) {
+                const imgEl = document.createElement('img');
+                imgEl.id = 'campaignImage';
+                imgEl.alt = 'Imagem da campanha';
+                imgEl.style.maxWidth = '100%';
+                imgEl.style.display = 'block';
+                imgEl.src = imgUrl;
+                imgPlaceholder.innerHTML = '';
+                imgPlaceholder.appendChild(imgEl);
+            }
+        }
 
         // Busca necessidades da campanha
         const necessidadesResponse = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/necessidades`);
@@ -56,7 +77,7 @@ function buildCommentsTree(commentsList) {
     const map = {};
     const roots = [];
     commentsList.forEach(c => {
-        map[c.id] = {...c, replies: []};
+        map[c.id] = { ...c, replies: [] };
     });
     commentsList.forEach(c => {
         if (c.idComentarioPai && map[c.idComentarioPai]) {
@@ -83,7 +104,7 @@ async function sendComment(conteudo, idComentarioPai = null) {
     };
     const response = await fetch(`http://localhost:8080/comentario/campanhas/${idCampanha}/comentarios`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
     });
     if (!response.ok) {
