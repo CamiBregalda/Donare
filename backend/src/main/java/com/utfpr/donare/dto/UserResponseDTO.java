@@ -19,10 +19,19 @@ public class UserResponseDTO {
     @Schema(description = "CPF (11 dígitos) ou CNPJ (14 dígitos) do usuário (somente números).", example = "12345678900")
     private String cpfOuCnpj;
 
-    // todo validar se vai ser string
-    private String fotoPerfil;
-
-    @Schema(description = "1 = FISICA, 2 = JURIDICA")
+    @Schema(description = "Tipo de usuário: 1 para Pessoa Física, 2 para Pessoa Jurídica.", example = "1")
     private Integer tipoUsuario;
+
+    @Schema(description = "Indica se o usuário está ativo no sistema.", example = "true")
+    private boolean ativo;
+
+    @Schema(description = "Dados do endereço do usuário.")
+    private EnderecoResponseDto idEndereco;
+
+    @Schema(description = "Dados binários da mídia de perfil (imagem, por exemplo) em Base64.", type = "string", format = "byte")
+    private byte[] midia;
+
+    @Schema(description = "Tipo de conteúdo da mídia de perfil (ex: image/jpeg, image/png).", example = "image/jpeg")
+    private String midiaContentType;
 
 }

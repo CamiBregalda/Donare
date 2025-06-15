@@ -2,6 +2,8 @@ package com.utfpr.donare.domain;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -40,6 +42,15 @@ public class User implements UserDetails {
 
     @Enumerated(EnumType.ORDINAL)
     private TipoUsuario tipoUsuario;
+
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @Column(name = "midia")
+    @JdbcTypeCode(SqlTypes.LONGVARBINARY)
+    private byte[] midia;
+
+    @Column(name = "midiaContentType")
+    private String midiaContentType;
 
     private boolean ativo;
 

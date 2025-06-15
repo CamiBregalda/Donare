@@ -1,5 +1,8 @@
 package com.utfpr.donare.domain;
 
+import lombok.Getter;
+
+@Getter
 public enum TipoUsuario {
 
     PESSOA_FISICA(0), PESSOA_JURIDICA(1);
@@ -10,7 +13,4 @@ public enum TipoUsuario {
         this.codigo = codigo;
     }
 
-    public int getCodigo() {
-        return codigo;
-    }
 }
