@@ -37,7 +37,7 @@ public class CampanhaController {
             @RequestParam(required = false) String localidade,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "dt_inicio") String sort) {
+            @RequestParam(defaultValue = "dtInicio") String sort) {
 
         List<CampanhaResponseDTO> campanhas = campanhaService.listarCampanhas(tipo, localidade, page, size, sort);
         return ResponseEntity.ok(campanhas);

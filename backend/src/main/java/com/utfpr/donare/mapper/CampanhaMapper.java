@@ -12,7 +12,7 @@ import org.mapstruct.BeanMapping;
 @Mapper(componentModel = "spring", uses = {PostagemMapper.class})
 public interface CampanhaMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "dt_inicio", ignore = true)
+    @Mapping(target = "dtInicio", ignore = true)
     @Mapping(target = "organizador", ignore = true)
     @Mapping(target = "postagens", ignore = true)
     @Mapping(target = "voluntarios", ignore = true)
@@ -24,7 +24,7 @@ public interface CampanhaMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "dt_inicio", ignore = true)
+    @Mapping(target = "dtInicio", ignore = true)
     @Mapping(target = "organizador", ignore = true)
     @Mapping(target = "postagens", ignore = true)
     @Mapping(target = "voluntarios", ignore = true)
