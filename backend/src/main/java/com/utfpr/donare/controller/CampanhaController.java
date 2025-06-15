@@ -4,6 +4,7 @@ import com.utfpr.donare.dto.CampanhaRequestDTO;
 import com.utfpr.donare.dto.CampanhaResponseDTO;
 import com.utfpr.donare.dto.VoluntarioResponseDTO;
 import com.utfpr.donare.service.CampanhaService;
+import com.utfpr.donare.service.QRCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import java.util.List;
 public class CampanhaController {
 
     private final CampanhaService campanhaService;
+    private final QRCodeService qrCodeService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CampanhaResponseDTO> save(
@@ -86,6 +88,23 @@ public class CampanhaController {
     public ResponseEntity<List<VoluntarioResponseDTO>> listVolunteersByCampaign(@PathVariable Long id) {
         List<VoluntarioResponseDTO> voluntarios = campanhaService.listarVoluntariosPorCampanha(id);
         return ResponseEntity.ok(voluntarios);
+    }
+
+    @GetMapping("/{id}/qrcode")
+    public ResponseEntity<byte[]> getQRCode(@PathVariable Long id) {
+        CampanhaResponseDTO campanha = campanhaService.buscarCampanhaPorId(id);
+
+        String data = "https://donare.com/campanha/" + id;
+        byte[] qrCodeImage;
+        try {
+            qrCodeImage = qrCodeService.gerarQRCode(data, 300, 300);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_PNG);
+        return new ResponseEntity<>(qrCodeImage, headers, HttpStatus.OK);
     }
 
     private String obterMockOrganizadorEmail() {
