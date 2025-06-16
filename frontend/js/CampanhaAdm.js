@@ -1,7 +1,16 @@
 const idCampanha = 2; // Troque pelo id real da campanha
 
 // Carrega as necessidades e dados da campanha
-// ...existing code...
+function formatDateBr(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '';
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const ano = d.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+}
+
 async function loadCampaignData() {
     try {
         // Buscar dados da campanha
@@ -10,8 +19,8 @@ async function loadCampaignData() {
         const campData = await campResponse.json();
 
         document.querySelector('.campaign-name-header').textContent = campData.titulo || '';
-        document.getElementById('campaignStartDate').textContent = campData.dt_inicio ? campData.dt_inicio.split('T')[0] : '';
-        document.getElementById('campaignEndDate').textContent = campData.dt_fim ? campData.dt_fim.split('T')[0] : '';
+        document.getElementById('campaignStartDate').textContent = formatDateBr(campData.dt_inicio);
+        document.getElementById('campaignEndDate').textContent = formatDateBr(campData.dt_fim);
         document.getElementById('campaignLocation').textContent = campData.endereco || '';
         document.getElementById('campaignCategory').textContent = campData.categoriaCampanha || '';
         document.getElementById('campaignDescriptionText').textContent = campData.descricao || '';

@@ -93,7 +93,7 @@ body {
 }
 
 .campaign-right h3 {
-    color: #4A6D7C;
+    color: #7B7DCB;
     font-size: 1.3em;
     margin-bottom: 18px;
 }
@@ -116,7 +116,7 @@ body {
     justify-content: space-between;
     align-items: center;
     font-weight: bold;
-    color: #7DBFA8;
+    color: #7B7DCB;
     margin-bottom: 4px;
 }
 
@@ -152,7 +152,7 @@ body {
 }
 
 .item-arrecadado {
-    color: #7DBFA8;
+    color: #7B7DCB;
     font-size: 0.95em;
 }
 
