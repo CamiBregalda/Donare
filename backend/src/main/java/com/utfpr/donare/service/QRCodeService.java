@@ -16,7 +16,7 @@ public class QRCodeService {
         BitMatrix matrix = new MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, width, height);
 
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        MatrixToImageWriter.writeToStream(matrix, "PNG", outputStream); // PNG é mais leve
+        MatrixToImageWriter.writeToStream(matrix, "PNG", outputStream);
         return outputStream.toByteArray();
     }
 }

@@ -1,5 +1,6 @@
 package com.utfpr.donare.controller;
 
+import com.utfpr.donare.dto.ErrorResponse;
 import com.utfpr.donare.dto.NecessidadeRequestDTO;
 import com.utfpr.donare.dto.NecessidadeResponseDTO;
 import com.utfpr.donare.service.NecessidadeService;
@@ -29,6 +30,20 @@ public class NecessidadeController {
 
     // criar necessidade --------------------------------------------------
 
+    @Operation(summary = "Cria uma nova necessidade em determinada campanha.", description = "Registra um nova necessidade em determinada campanha.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Necessidade criada com sucesso.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = NecessidadeResponseDTO.class))),
+
+            @ApiResponse(responseCode = "400", description = "Requisição inválida (ex: dados incompletos).",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))),
+
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping(value = "/campanhas/{idCampanha}/necessidade", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<NecessidadeResponseDTO> saveNecessidade(@PathVariable Long idCampanha, @Valid @RequestBody NecessidadeRequestDTO necessidadeRequestDTO) {
 
@@ -38,6 +53,16 @@ public class NecessidadeController {
 
     // listar necessidades --------------------------------------------------
 
+    @Operation(summary = "Retorna todas as necessidades por determinada campanha.",
+            description = "Recupera uma lista de todas as necessidades por determinada campanha.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de necessidades retornada com sucesso.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = NecessidadeResponseDTO.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @GetMapping("/campanhas/{idCampanha}/necessidades")
     public ResponseEntity<List<NecessidadeResponseDTO>> listarNecessidadesPorCampanha(@PathVariable Long idCampanha) {
 
@@ -57,7 +82,22 @@ public class NecessidadeController {
 
     // editar necessidade --------------------------------------------------
 
+    @Operation(summary = "Atualiza uma necessidade existente.", description = "Atualiza as informações de uma necessidade específica pelo seu ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Necessidade atualizada com sucesso (sem conteúdo de resposta)."),
 
+            @ApiResponse(responseCode = "400", description = "Requisição inválida (ex: dados incompletos).",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))),
+
+            @ApiResponse(responseCode = "404", description = "Necessidade não encontrado para o ID informado.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))),
+
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PutMapping("/necessidades/{idNecessidade}")
     public ResponseEntity<NecessidadeResponseDTO> updateNecessidade(@PathVariable Long idNecessidade, @Valid @RequestBody NecessidadeRequestDTO necessidadeRequestDTO) {
 
@@ -67,7 +107,18 @@ public class NecessidadeController {
 
     // deletar necessidade --------------------------------------------------
 
+    @Operation(summary = "Deleta uma necessidade.", description = "Exclui uma necessidade do sistema pelo seu ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Necessidade deletada com sucesso (sem conteúdo de resposta)."),
 
+            @ApiResponse(responseCode = "404", description = "Necessidade não encontrada para o ID informado.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))),
+
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @DeleteMapping("/necessidades/{idNecessidade}")
     public ResponseEntity<Void> deleteNecessidade(@PathVariable Long idNecessidade) {
 
