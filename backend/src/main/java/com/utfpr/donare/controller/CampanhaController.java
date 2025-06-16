@@ -5,6 +5,7 @@ import com.utfpr.donare.dto.CampanhaResponseDTO;
 import com.utfpr.donare.dto.VoluntarioResponseDTO;
 import com.utfpr.donare.service.CampanhaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
+
 
 @RestController
 @RequestMapping("/campanhas")

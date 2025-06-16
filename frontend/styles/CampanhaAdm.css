@@ -57,13 +57,31 @@ body {
 
 .campaign-description h3,
 .campaign-description h4 {
-    margin: 10px 0 5px 0;
+     margin: 10px 0 5px 0;
     color: #4A6D7C;
     font-weight: bold;
 }
 
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    margin: 10px 0;
+}
+.info-row h4 {
+    margin: 0;
+    font-weight: bold;
+    color: #4A6D7C;
+}
+.info-row p {
+    margin: 0;
+    color: #4A6D7C;
+    font-size: 1em;
+    font-weight: 500;
+}
+
 .campaign-description p {
-    margin: 0 0 10px 0;
+   
     color: #4A6D7C;
     font-size: 1em;
 }
@@ -75,7 +93,7 @@ body {
 }
 
 .campaign-right h3 {
-    color: #4A6D7C;
+    color: #7B7DCB;
     font-size: 1.3em;
     margin-bottom: 18px;
 }
@@ -98,7 +116,7 @@ body {
     justify-content: space-between;
     align-items: center;
     font-weight: bold;
-    color: #7DBFA8;
+    color: #7B7DCB;
     margin-bottom: 4px;
 }
 
@@ -134,7 +152,7 @@ body {
 }
 
 .item-arrecadado {
-    color: #7DBFA8;
+    color: #7B7DCB;
     font-size: 0.95em;
 }
 
