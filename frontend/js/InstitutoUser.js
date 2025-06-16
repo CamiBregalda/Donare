@@ -1,34 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const institutionId = 1; // Example institution ID, replace with actual dynamic ID if needed
-
-    fetchInstitutionDetails(institutionId);
-    fetchInstitutionCampaigns(institutionId);
+    const idUsuario = 1; // Troque pelo ID real da instituição/campanha
+    fetchInstitutionDetails(idUsuario);
 });
 
 async function fetchInstitutionDetails(id) {
     try {
-        // Replace with your actual API endpoint
-   //ver aqui      const response = await fetch(`http://localhost:8080/usuario/${id}`);
-         if (!response.ok) throw new Error('Network response was not ok for institution details.');
+        const response = await fetch(`http://localhost:8080/usuarios/${id}`);
+        if (!response.ok) throw new Error('Erro ao buscar dados da instituição.');
         const data = await response.json();
 
-        
-        
+        // Preenche os campos do HTML com os dados do usuário/campanha
+        document.getElementById('institutionName').textContent = data.nome || '';
+        document.getElementById('institutionType').textContent = data.tipo || '';
+        document.getElementById('institutionLocation').textContent = data.localizacao || '';
+        document.getElementById('institutionHours').textContent = data.horarioFuncionamento || '';
+        document.getElementById('institutionAcceptedDonations').textContent = data.doacoesAceitas || '';
+        document.getElementById('institutionDescriptionText').textContent = data.descricao || '';
 
-        document.getElementById('institutionName').textContent = data.nome;
-        document.getElementById('institutionType').textContent = data.tipo;
+        // Imagem (se houver)
         if (data.imagemUrl) {
             document.getElementById('institutionImage').src = data.imagemUrl;
             document.getElementById('institutionImage').alt = `Imagem de ${data.nome}`;
         }
-        document.getElementById('institutionLocation').textContent = data.localizacao;
-        document.getElementById('institutionHours').textContent = data.horarioFuncionamento;
-        document.getElementById('institutionAcceptedDonations').textContent = data.doacoesAceitas;
-        document.getElementById('institutionDescriptionText').textContent = data.descricao;
-
     } catch (error) {
-        console.error('Failed to fetch institution details:', error);
-        // Display an error message to the user
+        console.error('Erro ao carregar dados da instituição:', error);
         document.getElementById('institutionName').textContent = "Erro ao carregar dados da instituição.";
     }
 }
@@ -36,7 +31,7 @@ async function fetchInstitutionDetails(id) {
 async function fetchInstitutionCampaigns(userId) {
     try {
         // Endpoint real para buscar campanhas do usuário/instituição
-        const response = await fetch(`http://localhost:8080/campanhas/usuario/${userId}`);
+        const response = await fetch(`http://localhost:8080/campanhas/usuario/${idUsuario}`);
         if (!response.ok) throw new Error('Network response was not ok for campaigns.');
         const campaigns = await response.json();
 
