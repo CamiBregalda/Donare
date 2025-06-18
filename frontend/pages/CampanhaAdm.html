@@ -59,38 +59,35 @@
                     <button id="btnAddPost" class="btn-add-post">Adicionar nova postagem</button>
                 </div>
             </div>
-
-            <!-- Modal QrCode -->
             <div id="modalQrCode" class="modal" style="display:none;">
                 <div class="modal-content">
                     <span class="close-modal" id="closeModalQrCode">&times;</span>
                     <h2>QrCode</h2>
-                    <!-- Conteúdo do QrCode futuramente -->
+                    <img id="qrCodeImg" style="display:block; margin: 0 auto; max-width: 220px; max-height: 220px;"
+                        alt="QRCode da campanha" />
                 </div>
             </div>
-
-            <!-- Modal Postagem -->
-            <div id="modalPost" class="modal" style="display:none;">
-                <div class="modal-content modal-post-content">
-                    <span class="close-modal" id="closeModalPost">&times;</span>
-                    <form id="formPost">
-                        <h2 id="modalPostTitle">Nova Postagem</h2>
-                        <label for="postTitulo">Título da postagem</label>
-                        <input type="text" id="postTitulo" name="titulo" required>
-                        <label for="postConteudo">Descrição</label>
-                        <textarea id="postConteudo" name="conteudo" required></textarea>
-                        <label>Alterar Imagem</label>
-                        <input type="file" id="postImagem" accept="image/*">
-                        <div id="imgPreview" class="img-preview"></div>
-                        <div class="modal-post-actions">
-                            <button type="button" id="cancelPost" class="btn-cancel">Cancelar</button>
-                            <button type="submit" id="createPost" class="btn-create">Criar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            <!-- ...existing code... -->
         </div>
+        <div id="modalPost" class="modal" style="display:none;">
+            <div class="modal-content modal-post-content">
+                <span class="close-modal" id="closeModalPost">&times;</span>
+                <form id="formPost">
+                    <h2 id="modalPostTitle">Nova Postagem</h2>
+                    <label for="postTitulo">Título da postagem</label>
+                    <input type="text" id="postTitulo" name="titulo" required>
+                    <label for="postConteudo">Descrição</label>
+                    <textarea id="postConteudo" name="conteudo" required></textarea>
+                    <label>Alterar Imagem</label>
+                    <input type="file" id="postImagem" accept="image/*">
+                    <div id="imgPreview" class="img-preview"></div>
+                    <div class="modal-post-actions">
+                        <button type="button" id="cancelPost" class="btn-cancel">Cancelar</button>
+                        <button type="submit" id="createPost" class="btn-create">Criar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     </div>
 
     <script src="../js/header.js"></script>

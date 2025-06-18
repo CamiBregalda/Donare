@@ -110,7 +110,22 @@ async function loadCampaignData() {
 const btnQrCode = document.getElementById('btnQrCode');
 const modalQrCode = document.getElementById('modalQrCode');
 const closeModalQrCode = document.getElementById('closeModalQrCode');
-btnQrCode.onclick = () => modalQrCode.style.display = 'flex';
+const qrCodeImg = document.getElementById('qrCodeImg');
+
+btnQrCode.onclick = async () => {
+    // Busca a imagem do QRCode
+    try {
+        const resp = await fetch(`http://localhost:8080/campanhas/${idCampanha}/qrcode`);
+        if (!resp.ok) throw new Error('Erro ao buscar QRCode');
+        const blob = await resp.blob();
+        qrCodeImg.src = URL.createObjectURL(blob);
+        qrCodeImg.alt = 'QRCode da campanha';
+    } catch {
+        qrCodeImg.src = '';
+        qrCodeImg.alt = 'Erro ao carregar QRCode';
+    }
+    modalQrCode.style.display = 'flex';
+};
 closeModalQrCode.onclick = () => modalQrCode.style.display = 'none';
 window.onclick = (e) => {
     if (e.target === modalQrCode) modalQrCode.style.display = 'none';
