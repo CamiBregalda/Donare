@@ -6,6 +6,7 @@ import com.utfpr.donare.dto.VoluntarioResponseDTO;
 import com.utfpr.donare.service.CampanhaService;
 import com.utfpr.donare.service.QRCodeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +15,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+
+
 
 @RestController
 @RequestMapping("/campanhas")
@@ -39,7 +42,7 @@ public class CampanhaController {
             @RequestParam(required = false) String localidade,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "dt_inicio") String sort) {
+            @RequestParam(defaultValue = "dtInicio") String sort) {
 
         List<CampanhaResponseDTO> campanhas = campanhaService.listarCampanhas(tipo, localidade, page, size, sort);
         return ResponseEntity.ok(campanhas);

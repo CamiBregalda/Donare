@@ -98,7 +98,7 @@ public class NecessidadeService{
                 campanha != null ? campanha.getEndereco() : "N/A",
                 campanha != null ? campanha.getStatus() : "N/A",
                 campanha != null ? campanha.getTipoCertificado() : "N/A",
-                campanha != null ? campanha.getDt_inicio() : null,
+                campanha != null ? campanha.getDtInicio() : null,
                 campanha != null ? campanha.getDt_fim() : null
         );
     }

@@ -20,7 +20,7 @@ public class CampanhaResponseDTO {
     private byte[] imagemCapa;
     private String status;
     private String tipoCertificado;
-    private LocalDateTime dt_inicio;
+    private LocalDateTime dtInicio;
     private LocalDateTime dt_fim;
     private String organizador;
     private List<PostagemResponseDTO> postagens = new ArrayList<>();

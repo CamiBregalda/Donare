@@ -42,7 +42,7 @@ public class Campanha {
 
     private String tipoCertificado;
 
-    private LocalDateTime dt_inicio = LocalDateTime.now();
+    private LocalDateTime dtInicio = LocalDateTime.now();
 
     private LocalDateTime dt_fim;
 

@@ -49,7 +49,7 @@ public class SecurityConfig {
     }
 
     private static final String[] PUBLIC_URLS = {
-            "/", "/login", "/user/create", "/user/autenticate",
+            "/", "/login", "/usuarios/authenticate",
             "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html"
     };
 }

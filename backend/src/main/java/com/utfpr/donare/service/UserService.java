@@ -2,6 +2,7 @@ package com.utfpr.donare.service;
 
 import com.utfpr.donare.config.jwt.JwtTokenUtil;
 import com.utfpr.donare.domain.Endereco;
+import com.utfpr.donare.domain.TipoUsuario;
 import com.utfpr.donare.domain.User;
 import com.utfpr.donare.dto.UserRequestDTO;
 import com.utfpr.donare.dto.UserResponseDTO;
@@ -18,9 +19,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,7 +36,7 @@ public class UserService implements UserDetailsService {
     private final EnderecoMapper enderecoMapper;
 
     @Transactional
-    public UserResponseDTO save(UserRequestDTO dto) {
+    public  UserResponseDTO save(UserRequestDTO dto, MultipartFile midia) {
 
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
 
@@ -52,17 +54,37 @@ public class UserService implements UserDetailsService {
                 .nome(dto.getNome())
                 .email(dto.getEmail())
                 .cpfOuCnpj(dto.getCpfOuCnpj())
-                .fotoPerfil(dto.getFotoPerfil())
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .idEndereco(endereco)
                 .ativo(true)
+                .tipoUsuario(dto.getTipoUsuario() == 0 ? TipoUsuario.PESSOA_FISICA : TipoUsuario.PESSOA_JURIDICA)
                 .build();
 
         endereco.setUser(user);
 
+        setUserMidia(midia, user);
+
         userRepository.save(user);
 
         return userMapper.toUserResponseDTO(user);
+    }
+
+    private static void setUserMidia(MultipartFile midia, User user) {
+
+        if (midia != null && !midia.isEmpty()) {
+
+            try {
+
+                byte[] midiaBytes = midia.getBytes();
+                String contentType = midia.getContentType();
+
+                user.setMidia(midiaBytes);
+                user.setMidiaContentType(contentType);
+            } catch (IOException e) {
+
+                throw new RuntimeException("Erro ao processar arquivo de mídia do usuário", e);
+            }
+        }
     }
 
     @Transactional
@@ -77,19 +99,58 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void update(Long id, UserRequestDTO dto) {
+    public UserResponseDTO update(Long id, UserRequestDTO dto, MultipartFile midia) {
 
-        User user = userRepository.findById(id).orElseThrow(() -> new BadRequestException("Usuário não encontrado"));
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
+
+        verifyEmailInUseAndThowException(id, dto);
+        verifyCpfCnpjInUseAndThrowException(id, dto, user);
+
         user.setNome(dto.getNome());
         user.setEmail(dto.getEmail());
         user.setCpfOuCnpj(dto.getCpfOuCnpj());
-        user.setFotoPerfil(dto.getFotoPerfil());
+        user.setTipoUsuario(dto.getTipoUsuario() == 0 ? TipoUsuario.PESSOA_FISICA : TipoUsuario.PESSOA_JURIDICA);
+
+        Endereco endereco = user.getIdEndereco();
+
+        if (endereco == null) {
+            endereco = enderecoMapper.toEndereco(dto.getEndereco());
+            endereco.setUser(user);
+            user.setIdEndereco(endereco);
+        } else {
+            enderecoMapper.updateEnderecoFromDto(dto.getEndereco(), endereco);
+        }
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
-        userRepository.save(user);
+        setUserMidia(midia, user);
+
+        if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toUserResponseDTO(updatedUser);
+    }
+
+    private void verifyCpfCnpjInUseAndThrowException(Long id, UserRequestDTO dto, User user) {
+        if (userRepository.findByCpfOuCnpj(dto.getCpfOuCnpj()).isPresent() &&
+                !userRepository.findByCpfOuCnpj(dto.getCpfOuCnpj()).get().getId().equals(id)) {
+            throw new BadRequestException("O CPF/CNPJ '" + dto.getCpfOuCnpj() + "' já está cadastrado para outro usuário.");
+        }
+        user.setNome(dto.getNome());
+    }
+
+    private void verifyEmailInUseAndThowException(Long id, UserRequestDTO dto) {
+
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()
+                && !userRepository.findByEmail(dto.getEmail()).get().getId().equals(id)) {
+            throw new BadRequestException("O e-mail '" + dto.getEmail() + "' já está em uso por outro usuário.");
+        }
+
     }
 
     public UserResponseDTO findById(Long id) {
@@ -114,6 +175,13 @@ public class UserService implements UserDetailsService {
     public User findByEmail(String email) {
 
         return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com e-mail: " + email));
+    }
+
+    public UserResponseDTO findUserResponseDtoByEmail(String email) {
+
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com e-mail: " + email));
+
+        return userMapper.toUserResponseDTO(user);
     }
 
     public List<UserResponseDTO> findAllUsersDTO() {

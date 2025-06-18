@@ -6,7 +6,7 @@ import com.utfpr.donare.dto.UserRequestDTO;
 import com.utfpr.donare.dto.UserResponseDTO;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {EnderecoMapper.class})
 public interface UserMapper {
 
     default TipoUsuario map(Integer value) {

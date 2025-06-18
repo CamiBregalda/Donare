@@ -42,8 +42,6 @@ public class UserRequestDTO {
     @Valid
     private EnderecoRequestDto endereco;
 
-    private String fotoPerfil;
-
     @Schema(description = "Senha do usuário. Deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais.",
             example = "Senha@123",
             requiredMode = Schema.RequiredMode.REQUIRED)

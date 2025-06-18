@@ -35,7 +35,7 @@ public class CampanhaServiceImpl implements CampanhaService {
     public CampanhaResponseDTO criarCampanha(CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail) {
         Campanha campanha = campanhaMapper.requestDtoToEntity(campanhaRequestDTO);
         campanha.setOrganizador(organizadorEmail);
-        campanha.setDt_inicio(java.time.LocalDateTime.now());
+        campanha.setDtInicio(java.time.LocalDateTime.now());
 
         if (imagemCapa != null && !imagemCapa.isEmpty()) {
             try {
@@ -70,7 +70,7 @@ public class CampanhaServiceImpl implements CampanhaService {
     @Transactional(readOnly = true)
     public List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, int page, int size, String sort) {
         Sort.Direction direction = Sort.Direction.DESC;
-        String property = "dt_inicio";
+        String property = "dtInicio";
         if (sort != null && !sort.isEmpty()) {
             if (sort.equalsIgnoreCase("dt_fim")) {
                 property = "dt_fim";
