@@ -135,7 +135,8 @@ body {
 .campaign-info-block ul li {
     margin-bottom: 4px;
     color: #4A6D7C;
-    font-size: 0.95em;
+    font-size: 1em;
+    line-height: 1.4;
 }
 
 .campaign-info-block p {
@@ -161,6 +162,64 @@ body {
     color: #4a5568;
     font-size: 0.95em;
 }
+/* Barras de progresso das necessidades */
+.progress-bar-bg {
+    background: #e0e0e0;
+    border-radius: 8px;
+    height: 12px;
+    width: 100%;
+    margin: 6px 0 6px 0;
+    overflow: hidden;
+}
+.progress-bar {
+    background: #7d6dbf;
+    height: 100%;
+    border-radius: 8px;
+    transition: width 0.3s;
+}
+
+/* Postagens da campanha */
+#campaignPostsSection {
+    margin-top: 32px;
+    background: #f4f7f6;
+    border-radius: 12px;
+    padding: 18px 24px;
+}
+.posts-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 24px;
+    margin-top: 12px;
+}
+.post-card {
+    background: #e9f7f0;
+    border-radius: 10px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 260px;
+    min-height: 180px;
+    box-shadow: 0 2px 8px #0001;
+}
+.post-image {
+    width: 100%;
+    max-width: 120px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    object-fit: cover;
+}
+.post-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    color: #4A6D7C;
+    margin: 0 0 6px 0;
+}
+.post-text {
+    font-size: 0.97em;
+    color: #4a5568;
+    margin: 0;
+}
 
 /* Comments Section */
 .comments-section {
@@ -177,17 +236,6 @@ body {
     gap: 16px;
 }
 
-.add-comment .comment-user-avatar {
-    width: 48px;
-    height: 48px;
-    background-color: #7DBFA8;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 2em;
-    color: #fff;
-}
 
 .add-comment input[type="text"] {
     border: none;
@@ -281,6 +329,7 @@ body {
     font-size: 0.95em;
     text-align: left;
     padding: 0;
+    width: 10%;
 }
 
 .reply-form {

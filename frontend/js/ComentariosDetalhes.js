@@ -1,15 +1,13 @@
 const idCampanha = 2; // Troque pelo id real da campanha
 let comments = [];
 
-// Carrega dados da campanha e necessidades
-// Carrega dados da campanha e necessidades
+// Carrega dados da campanha, necessidades e postagens
 async function loadCampaignData() {
     try {
         // Busca dados da campanha
         const campResponse = await fetch(`http://localhost:8080/campanhas/${idCampanha}`);
         if (!campResponse.ok) throw new Error('Erro ao buscar dados da campanha');
         const campData = await campResponse.json();
-        console.log(campData);
 
         document.getElementById('campaignNameHeader').textContent = campData.titulo || '';
         document.getElementById('campaignStartDate').textContent = campData.dt_inicio ? campData.dt_inicio.split('T')[0] : '';
@@ -17,14 +15,12 @@ async function loadCampaignData() {
         document.getElementById('campaignLocation').innerHTML = campData.endereco || '';
         document.getElementById('campaignCategory').textContent = campData.categoriaCampanha || '';
         document.getElementById('campaignCertificate').textContent = campData.tipoCertificado || '';
-        document.getElementById('campaignDescriptionText').textContent = campData.descricao || '';
 
         // Busca imagem da campanha
         const imgResp = await fetch(`http://localhost:8080/campanhas/${idCampanha}/imagem`);
         if (imgResp.ok) {
             const blob = await imgResp.blob();
             const imgUrl = URL.createObjectURL(blob);
-            // Substitui o placeholder pela imagem real
             const imgPlaceholder = document.querySelector('.campaign-image-placeholder');
             if (imgPlaceholder) {
                 const imgEl = document.createElement('img');
@@ -37,26 +33,89 @@ async function loadCampaignData() {
                 imgPlaceholder.appendChild(imgEl);
             }
         }
+        document.getElementById('campaignDescriptionText').textContent = campData.descricao || '';
 
-        // Busca necessidades da campanha
+        
+        // Busca necessidades da campanha e renderiza barras de progresso
         const necessidadesResponse = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/necessidades`);
         if (!necessidadesResponse.ok) throw new Error('Erro ao buscar necessidades');
         const necessidades = await necessidadesResponse.json();
 
         const itemsUl = document.getElementById('campaignItems');
         itemsUl.innerHTML = '';
-        if (Array.isArray(necessidades)) {
+        if (Array.isArray(necessidades) && necessidades.length > 0) {
             necessidades.forEach(item => {
+                const porcentagem = item.quantidadeNecessaria > 0
+                    ? Math.min(100, (item.quantidadeRecebida / item.quantidadeNecessaria) * 100)
+                    : 0;
                 const li = document.createElement('li');
-                li.textContent = `${item.nome} (Necessário: ${item.quantidadeNecessaria})`;
+                li.innerHTML = `
+                    <div class="item-info">
+                        <span class="item-name">${item.nome}</span>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar" style="width: ${porcentagem}%;"></div>
+                    </div>
+                    <span class="item-arrecadado">Meta: ${item.quantidadeNecessaria} ${item.unidadeMedida || ''}</span>
+                `;
                 itemsUl.appendChild(li);
             });
+        } else {
+            itemsUl.innerHTML = '<li>Nenhuma necessidade cadastrada.</li>';
         }
+        // Busca postagens da campanha
+        await loadCampaignPosts();
+
     } catch (err) {
         console.error(err);
         alert('Erro ao carregar dados da campanha!');
     }
 }
+//Busca postgagens da campanha e rederiza na tela
+async function loadCampaignPosts() {
+    try {
+        const postsResponse = await fetch(`http://localhost:8080/postagens/campanhas/${idCampanha}`);
+        if (!postsResponse.ok) throw new Error('Erro ao buscar postagens');
+        const posts = await postsResponse.json();
+
+        const postsSection = document.getElementById('campaignPostsSection');
+        const postsList = postsSection.querySelector('.posts-list');
+        postsList.innerHTML = '';
+
+        if (Array.isArray(posts) && posts.length > 0) {
+            for (const post of posts) {
+                let imgUrl = 'https://via.placeholder.com/120x80?text=Postagem';
+                // Busca a imagem da postagem, se existir
+                try {
+                    const imgResp = await fetch(`http://localhost:8080/postagens/${post.id}/midia`);
+                    if (imgResp.ok) {
+                        const blob = await imgResp.blob();
+                        imgUrl = URL.createObjectURL(blob);
+                    }
+                } catch (e) {
+                    // Se der erro, mantém o placeholder
+                }
+
+                const postDiv = document.createElement('div');
+                postDiv.className = 'post-card';
+                postDiv.innerHTML = `
+                    <img src="${imgUrl}" alt="Imagem da postagem" class="post-image">
+                    <div class="post-content">
+                        <h4 class="post-title">${post.titulo || 'Título da postagem'}</h4>
+                        <p class="post-text">${post.conteudo || ''}</p>
+                    </div>
+                `;
+                postsList.appendChild(postDiv);
+            }
+        } else {
+            postsList.innerHTML = '<p>Nenhuma postagem Realizada.</p>';
+        }
+    } catch (err) {
+        console.error(err);
+        // Não exibe alerta para não atrapalhar a experiência
+    }
+}
+
 
 // Busca comentários do backend e monta árvore
 async function fetchComments() {
