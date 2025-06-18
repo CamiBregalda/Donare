@@ -75,7 +75,7 @@ async function loadCampaignData() {
         });
 
         // Eventos dos botões
-                itemList.querySelectorAll('.btn-add, .btn-remove').forEach(btn => {
+        itemList.querySelectorAll('.btn-add, .btn-remove').forEach(btn => {
             btn.addEventListener('click', async function () {
                 const idNecessidade = this.getAttribute('data-id');
                 const action = this.getAttribute('data-action');
@@ -106,13 +106,24 @@ async function loadCampaignData() {
     }
 }
 
+// --- MODAL QRCODE ---
+const btnQrCode = document.getElementById('btnQrCode');
+const modalQrCode = document.getElementById('modalQrCode');
+const closeModalQrCode = document.getElementById('closeModalQrCode');
+btnQrCode.onclick = () => modalQrCode.style.display = 'flex';
+closeModalQrCode.onclick = () => modalQrCode.style.display = 'none';
+window.onclick = (e) => {
+    if (e.target === modalQrCode) modalQrCode.style.display = 'none';
+    if (e.target === modalPost) modalPost.style.display = 'none';
+};
+
 // Atualiza quantidadeRecebida no backend
 async function updateNecessidade(idNecessidade, novaQtd, necessidade) {
     try {
         const response = await fetch(`http://localhost:8080/necessidade/necessidades/${idNecessidade}`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify({ 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
                 nome: necessidade.nome,
                 quantidadeNecessaria: necessidade.quantidadeNecessaria,
                 quantidadeRecebida: novaQtd,
@@ -126,5 +137,138 @@ async function updateNecessidade(idNecessidade, novaQtd, necessidade) {
     }
 }
 
-// Chama ao carregar a página
-document.addEventListener('DOMContentLoaded', loadCampaignData);
+// --- MODAL POSTAGEM ---
+const btnAddPost = document.getElementById('btnAddPost');
+const modalPost = document.getElementById('modalPost');
+const closeModalPost = document.getElementById('closeModalPost');
+const formPost = document.getElementById('formPost');
+const cancelPost = document.getElementById('cancelPost');
+const imgPreview = document.getElementById('imgPreview');
+let editingPost = null;
+
+btnAddPost.onclick = () => openPostModal();
+closeModalPost.onclick = () => closePostModal();
+cancelPost.onclick = () => closePostModal();
+
+function openPostModal(post = null) {
+    editingPost = post;
+    formPost.reset();
+    imgPreview.innerHTML = '';
+    document.getElementById('modalPostTitle').textContent = post ? 'Editar Postagem' : 'Nova Postagem';
+    document.getElementById('createPost').textContent = post ? 'Salvar' : 'Criar';
+    if (post) {
+        document.getElementById('postTitulo').value = post.titulo;
+        document.getElementById('postConteudo').value = post.conteudo;
+        if (post.midia) {
+            imgPreview.innerHTML = `<img src="${post.midia}" alt="midia">`;
+        }
+    }
+    modalPost.style.display = 'flex';
+}
+
+function closePostModal() {
+    modalPost.style.display = 'none';
+    editingPost = null;
+}
+
+// Preview da imagem
+document.getElementById('postImagem').addEventListener('change', function (e) {
+    const file = e.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = ev => {
+            imgPreview.innerHTML = `<img src="${ev.target.result}" alt="midia">`;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        imgPreview.innerHTML = '';
+    }
+});
+
+// --- CRUD POSTAGENS ---
+async function loadPosts() {
+    const postList = document.querySelector('.post-list');
+    postList.innerHTML = '<p>Carregando...</p>';
+    try {
+        const resp = await fetch(`http://localhost:8080/postagens/campanhas/${idCampanha}`);
+        if (!resp.ok) throw new Error('Erro ao buscar postagens');
+        const posts = await resp.json();
+        if (!Array.isArray(posts) || posts.length === 0) {
+            postList.innerHTML = '<p>Nenhuma postagem ainda.</p>';
+            return;
+        }
+        postList.innerHTML = '';
+        posts.forEach(post => {
+            const card = document.createElement('div');
+            card.className = 'post-card';
+            card.innerHTML = `
+                <div class="post-card-actions">
+                    <button class="btn-edit" title="Editar"><span>&#9998;</span></button>
+                    <button class="btn-delete" title="Excluir"><span>&#128465;</span></button>
+                </div>
+                ${post.midia ? `<img src="${post.midia}" alt="midia">` : ''}
+                <div class="post-card-title">${post.titulo}</div>
+                <div class="post-card-content">${post.conteudo}</div>
+            `;
+            // Editar
+            card.querySelector('.btn-edit').onclick = () => openPostModal(post);
+            // Excluir
+            card.querySelector('.btn-delete').onclick = async () => {
+                if (confirm('Deseja realmente excluir esta postagem?')) {
+                    await fetch(`http://localhost:8080/postagens/${post.id}`, { method: 'DELETE' });
+                    loadPosts();
+                }
+            };
+            postList.appendChild(card);
+        });
+    } catch {
+        postList.innerHTML = '<p>Erro ao carregar postagens.</p>';
+    }
+}
+
+
+// Criar/Editar postagem
+formPost.onsubmit = async function (e) {
+    e.preventDefault();
+    const titulo = document.getElementById('postTitulo').value;
+    const conteudo = document.getElementById('postConteudo').value;
+    const file = document.getElementById('postImagem').files[0];
+
+    let url = '';
+    let method = 'POST';
+    let body = new FormData();
+
+    // O objeto postagem precisa ser enviado como string JSON
+    const postagem = {
+        idCampanha: idCampanha,
+        titulo: titulo,
+        conteudo: conteudo
+    };
+    body.append('postagem', new Blob([JSON.stringify(postagem)], { type: 'application/json' }));
+    if (file) body.append('midia', file);
+
+    if (editingPost) {
+        url = `http://localhost:8080/postagens/${editingPost.id}`;
+        method = 'PUT';
+    } else {
+        url = `http://localhost:8080/postagens/campanhas/${idCampanha}`;
+        method = 'POST';
+    }
+
+    try {
+        await fetch(url, {
+            method,
+            body
+        });
+        closePostModal();
+        loadPosts();
+    } catch {
+        alert('Erro ao salvar postagem!');
+    }
+};
+
+// Carregar posts ao carregar página
+document.addEventListener('DOMContentLoaded', () => {
+    loadCampaignData();
+    loadPosts();
+});

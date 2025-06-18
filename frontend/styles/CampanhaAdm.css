@@ -195,6 +195,178 @@ body {
     color: #fff;
 }
 
+/* ...existing code... */
+.btn-qrcode {
+    background: #7B7DCB;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 10px 24px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1em;
+    margin-bottom: 8px;
+    transition: background 0.2s;
+}
+.btn-qrcode:hover {
+    background: #4A6D7C;
+}
+
+.btn-add-post {
+    margin-top: 18px;
+    background: #7B7DCB;
+    color: #fff;
+    border: none;
+    border-radius: 16px;
+    padding: 10px 24px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background 0.2s;
+}
+.btn-add-post:hover {
+    background: #4A6D7C;
+}
+
+.modal {
+    display: flex;
+    position: fixed;
+    z-index: 1000;
+    left: 0; top: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.3);
+    align-items: center;
+    justify-content: center;
+}
+.modal-content {
+    background: #C8ECD1;
+    padding: 32px 24px 24px 24px;
+    border-radius: 16px;
+    min-width: 320px;
+    min-height: 180px;
+    position: relative;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.15);
+}
+.close-modal {
+    position: absolute;
+    top: 12px; right: 18px;
+    font-size: 2em;
+    color: #4A6D7C;
+    cursor: pointer;
+}
+.modal-post-content {
+    width: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+#formPost label {
+    font-weight: bold;
+    margin-top: 12px;
+}
+#formPost input[type="text"], #formPost textarea {
+    width: 100%;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    border: none;
+    padding: 8px;
+    font-size: 1em;
+    color: #4A6D7C;
+}
+#formPost textarea {
+    min-height: 70px;
+    resize: vertical;
+    
+}
+.img-preview {
+    width: 100px; height: 100px;
+    background: #e0e0e0;
+    border-radius: 8px;
+    margin: 10px 0;
+    display: flex; align-items: center; justify-content: center;
+    overflow: hidden;
+}
+.img-preview img {
+    width: 100%; height: 100%; object-fit: cover;
+}
+.modal-post-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+}
+.btn-cancel, .btn-create {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    font-size: 1em;
+    cursor: pointer;
+}
+.btn-cancel {
+    background: red;
+    color: white;
+}
+.btn-create {
+    background: #7B7DCB;
+    color: #fff;
+}
+.btn-create:hover {
+    background: #4A6D7C;
+}
+.btn-edit, .btn-delete {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-left: 8px;
+    color: #7B7DCB;
+}
+.btn-delete:hover { color: #b93d2f; }
+.btn-edit:hover { color: #4A6D7C; }
+.post-section {
+    margin-top: 40px;
+}
+.post-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    margin-bottom: 10px;
+}
+.post-card {
+    background: #f2f2f2;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    padding: 14px;
+    min-width: 220px;
+    max-width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+}
+.post-card img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+.post-card-title {
+    font-weight: bold;
+    color: #4A6D7C;
+    font-size: 1.1em;
+}
+.post-card-content {
+    color: #4A6D7C;
+    font-size: 0.98em;
+    margin-bottom: 8px;
+}
+.post-card-actions {
+    position: absolute;
+    top: 8px; right: 8px;
+    display: flex;
+    gap: 4px;
+}
+
 /* Responsividade para grid e imagem */
 @media (max-width: 900px) {
     .container {
