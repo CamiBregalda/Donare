@@ -17,11 +17,7 @@ public class ComentarioResponseDTO {
 
     private LocalDateTime dataCriacao;
 
-    private Long userId;
-
-    private String userEmail;
-
-    private String userName;
+    private UserResponseDTO userResponseDTO;
 
     private Long idComentarioPai;
 
