@@ -10,8 +10,7 @@ import java.util.List;
 public interface CampanhaService {
     CampanhaResponseDTO criarCampanha(CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail);
 
-    List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, int page, int size, String sort);
-
+    List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort);
     CampanhaResponseDTO buscarCampanhaPorId(Long id);
 
     CampanhaResponseDTO atualizarCampanha(Long id, CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail);
