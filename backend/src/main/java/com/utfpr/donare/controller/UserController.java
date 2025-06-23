@@ -1,9 +1,6 @@
 package com.utfpr.donare.controller;
 
-import com.utfpr.donare.dto.AuthRequestDTO;
-import com.utfpr.donare.dto.ErrorResponse;
-import com.utfpr.donare.dto.UserRequestDTO;
-import com.utfpr.donare.dto.UserResponseDTO;
+import com.utfpr.donare.dto.*;
 import com.utfpr.donare.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

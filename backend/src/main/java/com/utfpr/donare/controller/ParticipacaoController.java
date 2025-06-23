@@ -106,4 +106,9 @@ public class ParticipacaoController {
         participacaoService.deleteParticipacao(idParticipacao);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("participacoes/byIdUsuario/{idUsuario}")
+    public ResponseEntity<List<CampanhaResponseDTO>> findCampanhasByIdUsuario(@PathVariable  Long idUsuario) {
+        return new ResponseEntity<>(participacaoService.findCampanhasParticipadasByIdUsuario(idUsuario), HttpStatus.OK);
+    }
 }
