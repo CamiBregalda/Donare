@@ -151,7 +151,7 @@ public class UserController {
         return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
     }
 
-    @GetMapping(path = "/{email}")
+    @GetMapping(path = "email/{email}")
     public ResponseEntity<UserResponseDTO> findByEmail(
             @Parameter(description = "E-mail do usuário a ser encontra.", required = true, example = "david@mail.com")
             @PathVariable String email) {
