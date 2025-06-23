@@ -40,14 +40,14 @@ public class CampanhaController {
     public ResponseEntity<List<CampanhaResponseDTO>> findAll(
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String localidade,
+            @RequestParam(required = false) String usuario,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "dtInicio") String sort) {
 
-        List<CampanhaResponseDTO> campanhas = campanhaService.listarCampanhas(tipo, localidade, page, size, sort);
+        List<CampanhaResponseDTO> campanhas = campanhaService.listarCampanhas(tipo, localidade, usuario, page, size, sort);
         return ResponseEntity.ok(campanhas);
     }
-
     @GetMapping("/{id}")
     public ResponseEntity<CampanhaResponseDTO> findById(@PathVariable Long id) {
         CampanhaResponseDTO campanha = campanhaService.buscarCampanhaPorId(id);
@@ -111,6 +111,6 @@ public class CampanhaController {
     }
 
     private String obterMockOrganizadorEmail() {
-        return "organizador@exemplo.com";
+        return ".com";
     }
 }

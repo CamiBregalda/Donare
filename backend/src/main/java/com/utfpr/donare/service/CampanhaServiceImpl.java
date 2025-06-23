@@ -51,7 +51,8 @@ public class CampanhaServiceImpl implements CampanhaService {
         return campanhaMapper.entityToResponseDto(campanhaSalva);
     }
 
-    private Specification<Campanha> criarFiltroCampanha(String tipo, String localidade) {
+    // Atualizar método de filtro para incluir usuário
+    private Specification<Campanha> criarFiltroCampanha(String tipo, String localidade, String usuario) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -61,6 +62,9 @@ public class CampanhaServiceImpl implements CampanhaService {
             if (localidade != null && !localidade.isEmpty()) {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("endereco")), "%" + localidade.toLowerCase() + "%"));
             }
+            if (usuario != null && !usuario.isEmpty()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("organizador")), "%" + usuario.toLowerCase() + "%"));
+            }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
@@ -68,7 +72,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, int page, int size, String sort) {
+    public List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort) {
         Sort.Direction direction = Sort.Direction.DESC;
         String property = "dtInicio";
         if (sort != null && !sort.isEmpty()) {
@@ -80,7 +84,7 @@ public class CampanhaServiceImpl implements CampanhaService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, property));
-        Specification<Campanha> spec = criarFiltroCampanha(tipo, localidade);
+        Specification<Campanha> spec = criarFiltroCampanha(tipo, localidade, usuario);
         Page<Campanha> campanhasPage = campanhaRepository.findAll(spec, pageable);
 
         return campanhasPage.getContent().stream()
