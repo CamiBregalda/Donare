@@ -3,6 +3,7 @@ package com.utfpr.donare.controller;
 import com.utfpr.donare.dto.*;
 import com.utfpr.donare.service.ParticipacaoService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -107,8 +108,23 @@ public class ParticipacaoController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @GetMapping("participacoes/byIdUsuario/{idUsuario}")
-    public ResponseEntity<List<CampanhaResponseDTO>> findCampanhasByIdUsuario(@PathVariable  Long idUsuario) {
+    @Operation(summary = "Lista campanhas por ID de usuário participante.",
+            description = "Retorna uma lista de todas as campanhas nas quais um usuário específico está cadastrado como participante ou voluntário.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Campanhas encontradas com sucesso.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = CampanhaResponseDTO.class, type = "array"))),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @GetMapping("/byIdUsuario/{idUsuario}")
+    public ResponseEntity<List<CampanhaResponseDTO>> findCampanhasByIdUsuario(
+            @Parameter(description = "ID do usuário para listar as campanhas participadas.", required = true, example = "1")
+            @PathVariable  Long idUsuario) {
         return new ResponseEntity<>(participacaoService.findCampanhasParticipadasByIdUsuario(idUsuario), HttpStatus.OK);
     }
 }
