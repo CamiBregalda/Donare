@@ -6,6 +6,7 @@ import com.utfpr.donare.domain.Participacao;
 import com.utfpr.donare.domain.User;
 import com.utfpr.donare.dto.*;
 import com.utfpr.donare.exception.ResourceNotFoundException;
+import com.utfpr.donare.mapper.CampanhaMapper;
 import com.utfpr.donare.mapper.ParticipacaoMapper;
 import com.utfpr.donare.repository.CampanhaRepository;
 import com.utfpr.donare.repository. ParticipacaoRepository;
@@ -26,6 +27,7 @@ public class ParticipacaoService {
     private final ParticipacaoMapper participacaoMapper;
     private final CampanhaRepository campanhaRepository;
     private final UserRepository userRepository;
+    private final CampanhaMapper campanhaMapper;
 
     @Transactional
     public ParticipacaoResponseDTO saveParticipacao(ParticipacaoRequestDTO participacaoRequestDTO) {
@@ -87,6 +89,13 @@ public class ParticipacaoService {
     @Transactional
     public void deleteParticipacao(Long idParticipacao) {
         participacaoRepository.deleteById(idParticipacao);
+    }
+
+    public List<CampanhaResponseDTO> findCampanhasParticipadasByIdUsuario(Long idUsuario) {
+
+        return participacaoRepository.findByCampanhaId(idUsuario).stream()
+                .map(participacao -> campanhaMapper.entityToResponseDto(participacao.getCampanha()))
+                .collect(Collectors.toList());
     }
 
     private ParticipacaoResponseDTO converterParaResponseDTO(Participacao participacao) {
