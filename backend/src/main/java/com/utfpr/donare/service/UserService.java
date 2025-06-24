@@ -4,6 +4,7 @@ import com.utfpr.donare.config.jwt.JwtTokenUtil;
 import com.utfpr.donare.domain.Endereco;
 import com.utfpr.donare.domain.TipoUsuario;
 import com.utfpr.donare.domain.User;
+import com.utfpr.donare.dto.UserPasswordRequestDTO;
 import com.utfpr.donare.dto.UserRequestDTO;
 import com.utfpr.donare.dto.UserResponseDTO;
 import com.utfpr.donare.exception.BadRequestException;
@@ -129,6 +130,29 @@ public class UserService implements UserDetailsService {
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
+        }
+
+        User updatedUser = userRepository.save(user);
+
+        return userMapper.toUserResponseDTO(updatedUser);
+    }
+
+    @Transactional
+    public UserResponseDTO updatePassword(Long id, UserPasswordRequestDTO dto) {
+
+        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
+
+        System.out.println(user.getPassword());
+        System.out.println(dto.getOldPassword());
+
+        if (dto.getOldPassword() != null && !dto.getOldPassword().isBlank() && dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
+
+            if (passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+            }
+            else {
+                throw new ResourceNotFoundException("senha antiga informada não encontrada");
+            }
         }
 
         User updatedUser = userRepository.save(user);

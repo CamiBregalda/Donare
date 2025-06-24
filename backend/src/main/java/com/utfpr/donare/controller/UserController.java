@@ -117,6 +117,33 @@ public class UserController {
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
 
+    @Operation(summary = "Atualiza a senha de um usuário existente.", description = "Atualiza a senha de um usuário específico pelo seu ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Usuário atualizado com sucesso.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = UserResponseDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Requisição inválida (ex: dados incompletos, e-mail/CPF/CNPJ já em uso por outro usuário).",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado para o ID informado.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PutMapping(path = "/alterarSenha/{id}")
+    public ResponseEntity<UserResponseDTO> updatePassword(
+            @Parameter(description = "ID do usuário a ser atualizado.", required = true, example = "1")
+            @PathVariable Long id,
+            @Valid @RequestBody UserPasswordRequestDTO userPasswordRequestDTO){
+
+        UserResponseDTO updatedUser = userService.updatePassword(id, userPasswordRequestDTO);
+
+        return new ResponseEntity<>(updatedUser, HttpStatus.OK);
+    }
+
+
 
     @Operation(summary = "Deleta um usuário.", description = "Exclui um usuário do sistema pelo seu ID.")
     @ApiResponses(value = {
