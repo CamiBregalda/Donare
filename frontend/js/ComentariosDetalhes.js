@@ -1,4 +1,4 @@
-const idCampanha = 2; // Troque pelo id real da campanha
+const idCampanha = 1; // Troque pelo id real da campanha
 let comments = [];
 
 // Carrega dados da campanha, necessidades e postagens
@@ -151,6 +151,7 @@ function buildCommentsTree(commentsList) {
 // Envia novo comentário ou resposta
 async function sendComment(conteudo, idComentarioPai = null) {
     const userEmail = localStorage.getItem('userEmail');
+    const userName = localStorage.getItem('userName'); // Pegue o nome do usuário salvo
     if (!userEmail) {
         alert('Você precisa estar logado para comentar.');
         return;
@@ -158,6 +159,7 @@ async function sendComment(conteudo, idComentarioPai = null) {
     const body = {
         conteudo,
         userEmail,
+        userName,
         idComentarioPai,
         campanhaId: idCampanha
     };
@@ -181,7 +183,7 @@ async function deleteComment(idComentario) {
         return;
     }
     const response = await fetch(
-        `http://localhost:8080/comentario/comentarios/${idComentario}?userEmail=${encodeURIComponent(userEmail)}`,
+        `http://localhost:8080/comentario/comentarios/${idComentario}`,
         { method: 'DELETE' }
     );
     if (!response.ok) {
@@ -195,19 +197,26 @@ async function deleteComment(idComentario) {
 function renderComment(comment, parentElement) {
     const commentItem = document.createElement('div');
     commentItem.classList.add('comment-item');
-
-    // Avatar
+    console.log(comment);
+    // Avatar com foto do usuário (base64 ou URL)
     const avatar = document.createElement('div');
     avatar.classList.add('comment-user-avatar');
-    avatar.innerHTML = '<span>&#128100;</span>';
+    if (comment.userImage) {
+        // Se vier base64:
+        avatar.innerHTML = `<img src="data:image/jpeg;base64,${comment.userImage}" alt="Foto do usuário" class="avatar-img">`;
+        // Se vier URL, use:
+        // avatar.innerHTML = `<img src="${comment.userImage}" alt="Foto do usuário" class="avatar-img">`;
+    } else {
+        avatar.innerHTML = '<span>&#128100;</span>';
+    }
 
     // Conteúdo
-    const commentContent = document.createElement('div');
+   const commentContent = document.createElement('div');
     commentContent.classList.add('comment-content');
 
     const userNameDiv = document.createElement('div');
     userNameDiv.classList.add('user-name');
-    userNameDiv.textContent = comment.userName;
+    userNameDiv.textContent = comment.userName || 'Usuário';
 
     const commentTextDiv = document.createElement('div');
     commentTextDiv.classList.add('comment-text');
@@ -265,7 +274,6 @@ function renderComment(comment, parentElement) {
     mainContent.classList.add('comment-main-content');
     mainContent.appendChild(avatar);
     mainContent.appendChild(commentContent);
-
     commentItem.appendChild(mainContent);
 
     // Container para respostas (abaixo do comentário principal)

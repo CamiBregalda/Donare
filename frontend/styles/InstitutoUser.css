@@ -98,10 +98,12 @@ body {
 }
 
 .campaigns-section {
-    flex: 1.2; /* Takes less space */
+    flex: 1.2;
     padding: 25px;
-    max-height: 80vh; /* Example max height */
-    overflow-y: auto; /* Scroll for campaigns if they exceed max height */
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+    /* overflow-y: auto; removido daqui */
 }
 
 .campaigns-section h2 {
@@ -110,6 +112,7 @@ body {
     margin-top: 0;
     margin-bottom: 20px;
     font-weight: bold;
+    flex-shrink: 0; /* Não encolhe */
 }
 
 .campaigns-grid {
@@ -119,6 +122,10 @@ body {
     display: flex;
     flex-direction: column;
     gap: 25px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0; /* Necessário para scroll funcionar em flex */
+    max-height: 100%;
 }
 
 .campaign-card {

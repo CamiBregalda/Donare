@@ -1,26 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const idUsuario = 1; // Troque pelo ID real da instituição/campanha
+    const idUsuario = 1; // Troque pelo ID real da instituição
     fetchInstitutionDetails(idUsuario);
+    fetchInstitutionCampaigns(idUsuario);
 });
 
-async function fetchInstitutionDetails(id) {
+async function fetchInstitutionDetails(idUsuario) {
     try {
-        const response = await fetch(`http://localhost:8080/usuarios/${id}`);
+        const response = await fetch(`http://localhost:8080/usuarios/${idUsuario}`);
         if (!response.ok) throw new Error('Erro ao buscar dados da instituição.');
         const data = await response.json();
+        console.log('Dados da instituição:', data);
 
-        // Preenche os campos do HTML com os dados do usuário/campanha
         document.getElementById('institutionName').textContent = data.nome || '';
-        document.getElementById('institutionType').textContent = data.tipo || '';
-        document.getElementById('institutionLocation').textContent = data.localizacao || '';
-        document.getElementById('institutionHours').textContent = data.horarioFuncionamento || '';
-        document.getElementById('institutionAcceptedDonations').textContent = data.doacoesAceitas || '';
-        document.getElementById('institutionDescriptionText').textContent = data.descricao || '';
+        document.getElementById('institutionType').textContent = data.tipoUsuario || '';
+
+        // Monta localização: rua, bairro, cidade
+        let localizacao = '';
+        if (data.idEndereco) {
+            const end = data.idEndereco;
+            localizacao = `${end.logradouro || ''}${end.bairro ? ', ' + end.bairro : ''}${end.cidade ? ', ' + end.cidade : ''}`;
+        }
+        document.getElementById('institutionLocation').textContent = localizacao;
 
         // Imagem (se houver)
-        if (data.imagemUrl) {
-            document.getElementById('institutionImage').src = data.imagemUrl;
-            document.getElementById('institutionImage').alt = `Imagem de ${data.nome}`;
+        if (data.midia) {
+            document.getElementById('institutionImage').src = `data:image/jpeg;base64,${data.midia}`;
         }
     } catch (error) {
         console.error('Erro ao carregar dados da instituição:', error);
@@ -28,22 +32,31 @@ async function fetchInstitutionDetails(id) {
     }
 }
 
-async function fetchInstitutionCampaigns(userId) {
+async function fetchInstitutionCampaigns(idUsuario) {
     try {
-        // Endpoint real para buscar campanhas do usuário/instituição
-        const response = await fetch(`http://localhost:8080/campanhas/usuario/${idUsuario}`);
+        // Primeiro, busque o usuário para pegar o email
+        const userResponse = await fetch(`http://localhost:8080/usuarios/${idUsuario}`);
+        if (!userResponse.ok) throw new Error('Erro ao buscar dados da instituição.');
+        const userData = await userResponse.json();
+        const userEmail = userData.email;
+
+        // Agora busque todas as campanhas
+        const response = await fetch(`http://localhost:8080/campanhas`);
         if (!response.ok) throw new Error('Network response was not ok for campaigns.');
         const campaigns = await response.json();
 
         const campaignsListDiv = document.getElementById('campaignsList');
-        campaignsListDiv.innerHTML = ''; // Limpa campanhas anteriores
+        campaignsListDiv.innerHTML = '';
 
-        if (!Array.isArray(campaigns) || campaigns.length === 0) {
-            campaignsListDiv.innerHTML = '<p>Nenhuma campanha ativa no momento.</p>';
+        // Filtra campanhas pelo email do usuário
+        const userCampaigns = campaigns.filter(campaign => campaign.email === userEmail);
+
+        if (!Array.isArray(userCampaigns) || userCampaigns.length === 0) {
+            campaignsListDiv.innerHTML = '<p>Nenhuma campanha registrada.</p>';
             return;
         }
 
-        campaigns.forEach(campaign => {
+        userCampaigns.forEach(campaign => {
             const card = document.createElement('div');
             card.className = 'campaign-card';
             card.innerHTML = `
@@ -69,9 +82,3 @@ async function fetchInstitutionCampaigns(userId) {
         document.getElementById('campaignsList').innerHTML = '<p>Erro ao carregar campanhas.</p>';
     }
 }
-
-// Example function for follow button (needs backend integration)
-// function toggleFollowCampaign(campaignId) {
-//     console.log(`Toggle follow for campaign ID: ${campaignId}`);
-//     // Add logic to update follow status via API and update button text/state
-// }
