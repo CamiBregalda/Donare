@@ -1,5 +1,4 @@
 body {
-    display: flex;
     background: #A3D9B1
 }
 
@@ -9,14 +8,13 @@ h2{
 }
  
 aside {
-    height: 100vh;
+    height: 90vh;
     overflow-y: auto;
     position: sticky;
     top: 0;
     width: 20vw;
     padding: 2vw;
     background-color: #7dbfa857;
-  margin-top: 60px; /* simular cabeçalho */
 }
 
 aside h3{
@@ -36,7 +34,6 @@ ul li {
 
 main {
     flex: 1;
-    margin-top: 60px; /* simular cabeçalho */
     overflow-y: auto;
 }
 
