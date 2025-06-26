@@ -5,7 +5,12 @@ import lombok.Getter;
 @Getter
 public enum EmailType {
 
-    CERTIFICADO(0, "Certificado de participação");
+    CERTIFICADO(0, "Certificado de participação"),
+    CADASTROCONTA(1, "Cadastro de conta"),
+    NOVOCOMENTARIO(2, "Novo comentário em campanha"),
+    NOVARESPOSTA(3, "Nova resposta em comentário"),
+    ATUALIZACAOCAMPANHA(4, "Atualização de campanha");
+
 
     private final int code;
     private final String description;
