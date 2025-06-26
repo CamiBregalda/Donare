@@ -1,0 +1,17 @@
+<email>
+    <subject>Nova resposta adicionada ao comentário {{tituloComentario}}!</subject>
+    <body style="font-family: Arial, sans-serif; color: #333;">
+        <h2>Olá, {{name}}!</h2>
+        <p>Você recebeu uma nova resposta ao comentário <strong>"{{tituloComentario}}"</strong> da campanha <strong>"{{tituloCampanha}}"</strong>.</p>
+        <p><em>"{{comentario}}"</em></p>
+        <p>Acesse sua conta para responder e interagir com os participantes!</p>
+
+        <hr />
+        <p style="font-size: 14px; color: #777;">
+            Este é um e-mail automático. Não responda diretamente.
+            <br />
+            Atenciosamente, <br />
+            Equipe Donare
+        </p>
+    </body>
+</email>
