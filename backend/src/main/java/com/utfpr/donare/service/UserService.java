@@ -64,7 +64,7 @@ public class UserService implements UserDetailsService {
                 .password(passwordEncoder.encode(dto.getPassword()))
                 .idEndereco(endereco)
                 .ativo(true)
-                .tipoUsuario(getTipoUsuarioFromRequest(dto.getTipoUsuario()))
+                .tipoUsuario(TipoUsuario.valueOfCodigo(dto.getTipoUsuario()))
                 .build();
 
         endereco.setUser(user);
@@ -74,16 +74,6 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
 
         return userMapper.toUserResponseDTO(user);
-    }
-
-    private static TipoUsuario getTipoUsuarioFromRequest(Integer tipoUsuario) {
-
-        return switch (tipoUsuario) {
-            case 1 -> TipoUsuario.PESSOA_FISICA;
-            case 2 -> TipoUsuario.PESSOA_JURIDICA;
-            default -> throw new BadRequestException("Tipo inválido, informe um tipo de 1 ou 2");
-        };
-
     }
 
     private static void setUserMidia(MultipartFile midia, User user) {
