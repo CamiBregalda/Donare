@@ -28,7 +28,7 @@ public class EmailService {
         EmailTemplateLoader.EmailTemplate template = templateLoader.loadTemplate(templateName, variables);
 
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setTo(request.getEmail());
         helper.setSubject(template.subject());
         helper.setText(template.body(), true);

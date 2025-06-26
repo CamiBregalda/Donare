@@ -3,13 +3,19 @@ package com.utfpr.donare.email;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Component
 public class EmailTemplateLoader {
@@ -21,23 +27,52 @@ public class EmailTemplateLoader {
         ClassPathResource resource = new ClassPathResource("mail-templates/" + templateName + ".xml");
         String xmlContent = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
 
-        for (Map.Entry<String, String> entry : variables.entrySet()) {
-            xmlContent = xmlContent.replace("{{" + entry.getKey() + "}}", entry.getValue());
-        }
-
         try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
 
-            DocumentBuilder builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
-            Document doc = builder.parse(new ByteArrayInputStream(xmlContent.getBytes(StandardCharsets.UTF_8)));
+            Document doc = builder.parse(new InputSource(new StringReader(xmlContent)));
 
-            String subject = doc.getElementsByTagName("subject").item(0).getTextContent();
-            String body = doc.getElementsByTagName("body").item(0).getTextContent();
+            String subjectTemplate = getElementValue(doc.getDocumentElement(), "subject");
+            String bodyTemplate = getElementValue(doc.getDocumentElement(), "body");
 
-            return new EmailTemplate(subject, body);
+            String finalSubject = replaceVariables(subjectTemplate, variables);
+            String finalBody = replaceVariables(bodyTemplate, variables);
 
-        } catch (Exception e) {
+            return new EmailTemplate(finalSubject, finalBody);
 
-            throw new IOException("Erro ao processar template XML", e);
+        } catch (ParserConfigurationException | SAXException e) {
+            throw new IOException("Erro de configuração do parser XML: " + e.getMessage(), e);
         }
+    }
+
+    private String getElementValue(Element parent, String tagName) {
+
+        if (parent == null || !parent.getElementsByTagName(tagName).item(0).hasChildNodes()) {
+            return "";
+        }
+
+        return parent.getElementsByTagName(tagName).item(0).getTextContent();
+    }
+
+    private String replaceVariables(String text, Map<String, String> variables) {
+
+        if (text == null || variables == null || variables.isEmpty()) {
+            return text;
+        }
+
+        Pattern pattern = Pattern.compile("\\{\\{(\\w+)\\}\\}");
+        Matcher matcher = pattern.matcher(text);
+        StringBuffer sb = new StringBuffer();
+
+        while (matcher.find()) {
+            String varName = matcher.group(1);
+            String replacement = variables.getOrDefault(varName, matcher.group(0));
+            matcher.appendReplacement(sb, Matcher.quoteReplacement(replacement));
+        }
+
+        matcher.appendTail(sb);
+
+        return sb.toString();
     }
 }
