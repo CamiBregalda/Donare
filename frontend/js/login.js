@@ -1,4 +1,5 @@
 import { jwtDecode } from "./lib/jwt-decode.js";
+import { fetchData } from "./lib/auth.js";
 
 const form = document.querySelector('#form');
 const btnSubmit = form.querySelector('button[type="submit"]');
@@ -29,10 +30,31 @@ form.addEventListener('submit', async function (e) {
         }
 
         const token = await response.text();
-
         localStorage.setItem('authToken', token);
 
-        window.location.href = '../pages/inicio.html';
+        const userDataResponse = await fetch(`http://localhost:8080/usuarios/email/${email}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!userDataResponse.ok) {
+            throw new Error('Falha ao obter dados do usuário após o login.');
+        }
+
+        const userData = await userDataResponse.json();
+
+        localStorage.setItem('usuario', JSON.stringify(userData));
+        
+        console.log("Dados do usuário recebidos:", userData);
+        console.log("Valor de userData.tipoUsuario:", userData.tipoUsuario);
+        console.log("Tipo de dado de userData.tipoUsuario:", typeof userData.tipoUsuario);
+
+        if (userData && userData.tipoUsuario == 2) {
+            console.log("Usuário tipo 2. Redirecionando para a tela de administração.");
+            window.location.href = '../pages/inicioAdm.html'; 
+        } else {
+            console.log("Usuário tipo padrão. Redirecionando para a tela inicial.");
+            window.location.href = '../pages/inicio.html';
+        }
 
     } catch (error) {
         console.error('Erro no login:', error);
@@ -41,40 +63,3 @@ form.addEventListener('submit', async function (e) {
         btnSubmit.disabled = false;
     }
 });
-
-async function fetchData() {
-    try {
-        const token = localStorage.getItem("authToken");
-
-        if (!token) {
-            alert("Você precisa estar logado para acessar esta página.");
-            window.location.href = "/login.html";
-            return;
-        }
-
-        const payload = jwtDecode(token);
-        const email = payload.email;
-
-        const fetchOptions = {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json",
-            },
-        };
-
-        const response = await fetch(`http://localhost:8080/usuarios/email/${email}`, fetchOptions);
-
-        if (!response.ok) {
-            throw new Error("Falha ao buscar dados do usuário.");
-        }
-
-        const userData = await response.text();
-
-        console.log("Dados do usuário:", userData);
-
-    } catch (err) {
-        console.error("Erro ao carregar dados:", err);
-        alert("Erro ao carregar dados. Faça login novamente.");
-        window.location.href = "/login.html";
-    }
-}
