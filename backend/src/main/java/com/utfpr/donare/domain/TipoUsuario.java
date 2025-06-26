@@ -5,7 +5,7 @@ import lombok.Getter;
 @Getter
 public enum TipoUsuario {
 
-    PESSOA_FISICA(0), PESSOA_JURIDICA(1);
+    PESSOA_FISICA(1), PESSOA_JURIDICA(2);
 
     final int codigo;
 
