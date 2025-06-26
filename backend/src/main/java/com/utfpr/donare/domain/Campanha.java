@@ -7,7 +7,9 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "campanha")
@@ -49,6 +51,7 @@ public class Campanha {
     @Column(nullable = false)
     private String organizador;
 
+    //TODO VALIDAR SE ISSO SERÁ USADO
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
             name = "campanha_voluntarios",
@@ -64,4 +67,8 @@ public class Campanha {
     @EqualsAndHashCode.Exclude
     private List<Postagem> postagens = new ArrayList<>();
 
+    @ManyToMany(mappedBy = "campanhasSeguidas", fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<User> usuariosQueSeguem = new HashSet<>();
 }

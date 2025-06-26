@@ -182,4 +182,60 @@ public class UserController {
 
         return new ResponseEntity<>(userService.findUserResponseDtoByEmail(email), HttpStatus.OK);
     }
+
+    @Operation(summary = "Segue uma campanha.",
+            description = "Permite que um usuário comece a seguir uma campanha específica para receber atualizações.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Campanha seguida com sucesso."),
+            @ApiResponse(responseCode = "404", description = "Usuário ou Campanha não encontrados."),
+            @ApiResponse(responseCode = "400", description = "Usuário já segue a campanha."),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+    })
+    @PostMapping("/{idUsuario}/seguir-campanha/{idCampanha}")
+    public ResponseEntity<Void> seguirCampanha(
+            @Parameter(description = "ID do usuário que seguirá a campanha.", required = true, example = "1")
+            @PathVariable Long idUsuario,
+            @Parameter(description = "ID da campanha a ser seguida.", required = true, example = "101")
+            @PathVariable Long idCampanha) {
+
+        userService.seguirCampanha(idUsuario, idCampanha);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(summary = "Para de seguir uma campanha.",
+            description = "Permite que um usuário pare de seguir uma campanha específica.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Parou de seguir a campanha com sucesso."),
+            @ApiResponse(responseCode = "404", description = "Usuário ou Campanha não encontrados."),
+            @ApiResponse(responseCode = "400", description = "Usuário não segue esta campanha."),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+    })
+    @DeleteMapping("/{idUsuario}/parar-de-seguir-campanha/{idCampanha}")
+    public ResponseEntity<Void> pararDeSeguirCampanha(
+            @Parameter(description = "ID do usuário que deixará de seguir a campanha.", required = true, example = "1")
+            @PathVariable Long idUsuario,
+            @Parameter(description = "ID da campanha a ser deixada de seguir.", required = true, example = "101")
+            @PathVariable Long idCampanha) {
+
+        userService.pararDeSeguirCampanha(idUsuario, idCampanha);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Operation(summary = "Lista campanhas seguidas por um usuário.",
+            description = "Retorna uma lista de todas as campanhas que um usuário específico está seguindo.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Campanhas seguidas encontradas com sucesso.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = CampanhaResponseDTO.class, type = "array"))),
+            @ApiResponse(responseCode = "404", description = "Usuário não encontrado."),
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.")
+    })
+    @GetMapping("/{idUsuario}/campanhas-seguidas")
+    public ResponseEntity<List<CampanhaResponseDTO>> listarCampanhasSeguidas(
+            @Parameter(description = "ID do usuário para listar as campanhas seguidas.", required = true, example = "1")
+            @PathVariable Long idUsuario) {
+
+        List<CampanhaResponseDTO> campanhas = userService.findCampanhasSeguidasByUsuario(idUsuario);
+        return new ResponseEntity<>(campanhas, HttpStatus.OK);
+    }
 }

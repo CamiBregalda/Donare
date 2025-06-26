@@ -59,6 +59,18 @@ public class User implements UserDetails {
     @EqualsAndHashCode.Exclude
     private Set<Campanha> campanhasVoluntariadas = new HashSet<>();
 
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_campanha_seguida",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "campanha_id")
+    )
+
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private Set<Campanha> campanhasSeguidas = new HashSet<>();
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"), new SimpleGrantedAuthority("ROLE_ADMIN"));

@@ -1,17 +1,21 @@
 package com.utfpr.donare.service;
 
 import com.utfpr.donare.config.jwt.JwtTokenUtil;
+import com.utfpr.donare.domain.Campanha;
 import com.utfpr.donare.domain.Endereco;
 import com.utfpr.donare.domain.TipoUsuario;
 import com.utfpr.donare.domain.User;
+import com.utfpr.donare.dto.CampanhaResponseDTO;
 import com.utfpr.donare.dto.UserPasswordRequestDTO;
 import com.utfpr.donare.dto.UserRequestDTO;
 import com.utfpr.donare.dto.UserResponseDTO;
 import com.utfpr.donare.exception.BadRequestException;
 import com.utfpr.donare.exception.ResourceNotFoundException;
 import com.utfpr.donare.exception.UnauthorizedException;
+import com.utfpr.donare.mapper.CampanhaMapper;
 import com.utfpr.donare.mapper.EnderecoMapper;
 import com.utfpr.donare.mapper.UserMapper;
+import com.utfpr.donare.repository.CampanhaRepository;
 import com.utfpr.donare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -35,6 +39,8 @@ public class UserService implements UserDetailsService {
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenUtil jwtTokenUtil;
     private final EnderecoMapper enderecoMapper;
+    private final CampanhaRepository campanhaRepository;
+    private final CampanhaMapper campanhaMapper;
 
     @Transactional
     public  UserResponseDTO save(UserRequestDTO dto, MultipartFile midia) {
@@ -184,6 +190,12 @@ public class UserService implements UserDetailsService {
                 .orElseThrow(() -> new ResourceNotFoundException("Id de usuário não encontrado. ID de busca: " + id));
     }
 
+    private User findUserById(Long id) {
+
+        return userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
+    }
+
     public String autenticar(String email, String senha) {
 
         User user = findByEmail(email);
@@ -215,14 +227,46 @@ public class UserService implements UserDetailsService {
                 .collect(Collectors.toList());
     }
 
-    public String compartilharCampanha(Long idCampanha) {
+    @Transactional
+    public void seguirCampanha(Long idUsuario, Long idCampanha) {
 
-        return "https://donare.com/campanha/" + idCampanha;
+        User user = findUserById(idUsuario);
+
+        Campanha campanha = campanhaRepository.findById(idCampanha)
+                .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + idCampanha));
+
+        if (user.getCampanhasSeguidas().contains(campanha)) {
+            throw new BadRequestException("Usuário já segue esta campanha.");
+        }
+
+        user.getCampanhasSeguidas().add(campanha);
+        userRepository.save(user);
     }
 
-    public void voluntariarSe(Long idCampanha) {
+    @Transactional
+    public void pararDeSeguirCampanha(Long idUsuario, Long idCampanha) {
 
-        System.out.println("Usuário voluntariado na campanha ID: " + idCampanha);
+        User user = findUserById(idUsuario);
+
+        Campanha campanha = campanhaRepository.findById(idCampanha)
+                .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + idCampanha));
+
+        if (!user.getCampanhasSeguidas().contains(campanha)) {
+            throw new BadRequestException("Usuário não segue esta campanha.");
+        }
+
+        user.getCampanhasSeguidas().remove(campanha);
+        userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public List<CampanhaResponseDTO> findCampanhasSeguidasByUsuario(Long idUsuario) {
+
+        User user = findUserById(idUsuario);
+
+        return user.getCampanhasSeguidas().stream()
+                .map(campanhaMapper::entityToResponseDto)
+                .collect(Collectors.toList());
     }
 
     @Override
