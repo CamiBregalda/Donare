@@ -1,0 +1,16 @@
+<html>
+    <subject>Novidades na campanha {{tituloCampanha}}!</subject>
+    <body style="font-family: Arial, sans-serif; color: #333;">
+        <h2>Olá, {{name}}!</h2>
+        <p>A campanha <strong>"{{tituloCampanha}}"</strong>, que você segue, foi atualizada.</p>
+        <p>Não perca as novidades! Acesse a plataforma para saber mais.</p>
+
+        <hr />
+        <p style="font-size: 14px; color: #777;">
+            Este é um e-mail automático. Não responda diretamente.
+            <br />
+            Atenciosamente, <br />
+            Equipe Donare
+        </p>
+    </body>
+</html>
