@@ -6,6 +6,10 @@ h2{
     font-size: 2vw;
     font-weight: 500;
 }
+
+.main-container{
+    display: flex;
+}
  
 aside {
     height: 90vh;
@@ -41,6 +45,7 @@ main {
     background-color: #f2f2f26c;
     padding: 1vw 2vw;
     margin-bottom: 3vh;
+    margin-top: 3vh;
 }
 
 .categoria h3{

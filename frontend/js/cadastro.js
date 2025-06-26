@@ -23,7 +23,7 @@ document.querySelector('form').addEventListener('submit', function(e){
     }
 
     let tipoDocumento;
-    if(cpfCnpj.length == 11){
+    if(cpfCnpj.length === 11){
         tipoDocumento = 1;
     } else{
         tipoDocumento = 2;
@@ -50,8 +50,8 @@ document.querySelector('form').addEventListener('submit', function(e){
     console.log(novoUsuario);
 
 
-const formData = new FormData();
-  formData.append('user', new Blob(
+    const formData = new FormData();
+    formData.append('user', new Blob(
     [JSON.stringify(novoUsuario)],
     { type: "application/json" }
   ));
