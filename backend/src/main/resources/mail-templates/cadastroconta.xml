@@ -1,0 +1,16 @@
+<email>
+    <subject>Bem-vindo, {{name}}!</subject>
+    <body style="font-family: Arial, sans-serif; color: #333;">
+        <h2>Olá, {{nome}}!</h2>
+        <p>Seja bem-vindo(a) à <strong>Donare</strong>! Sua conta foi criada com sucesso.</p>
+        <p>Agora você pode explorar campanhas, se voluntariar, doar e transformar vidas com a gente.</p>
+
+        <hr />
+        <p style="font-size: 14px; color: #777;">
+            Este é um e-mail automático. Não responda diretamente.
+            <br />
+            Atenciosamente, <br />
+            Equipe Donare
+        </p>
+    </body>
+</email>
