@@ -1,4 +1,4 @@
-import { jwtDecode } from "./lib/jwt-decode.js"; 
+import { jwtDecode } from "./lib/jwt-decode.js";
 import { fetchData } from "./lib/auth.js";
 
 let todasCampanhas = [];
@@ -37,7 +37,7 @@ function criarCardCampanha(campanha) {
                 <button class="icon-btn">
                     <img src="../assets/fi-rr-heart.png" alt="curtir">
                 </button>
-                <button class="icon-btn">
+                <button class="icon-btn" id="comentar" data-id="${campanha.id}">
                     <img src="../assets/fi-rr-comment.png" alt="comentar">
                 </button>
                 
@@ -94,15 +94,22 @@ function seguirCampanha(campanhaId) {
 async function renderizaCampanhas() {
     try {
         const usuario = await fetchData();
-        
+
         if (!usuario) {
             console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
             return;
         }
-        
+
         const cidadeUsuario = usuario?.idEndereco?.cidade;
-        
-        const response = await fetch('http://localhost:8080/campanhas');
+
+        const token = localStorage.getItem('authToken');
+        const response = await fetch('http://localhost:8080/campanhas', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
         if (!response.ok) {
             throw new Error(`Erro HTTP! Status: ${response.status}`);
         }
@@ -121,8 +128,8 @@ async function renderizaCampanhas() {
 
         localStorage.setItem('campanhasProximas', JSON.stringify(campanhasProximasFiltradas));
         atualizarListaCampanhasProximas(campanhasProximasFiltradas);
-        
-        atualizarListaCampanhasSeguidas(); // Atualiza a lista de seguidas
+
+        atualizarListaCampanhasSeguidas(); 
 
         main.innerHTML = '';
         const categoriasCampanhas = todasCampanhas.reduce((acc, campanha) => {
@@ -159,11 +166,20 @@ async function renderizaCampanhas() {
 
 main.addEventListener('click', (event) => {
     const btnSeguir = event.target.closest('.seguir');
-    if (btnSeguir) {
+    if (btnSeguir){
         event.preventDefault();
         const campanhaId = parseInt(btnSeguir.dataset.id, 10);
         seguirCampanha(campanhaId);
     }
+
+    const btnComentar = event.target.closest('#comentar');
+    if(btnComentar){
+        event.preventDefault();
+        const campanhaId = parseInt(btnComentar.dataset.id, 10);
+        window.location.href = `../pages/ComentariosDetalhes.html?id=${campanhaId}`;
+
+    }
+    
 });
 
 document.addEventListener('DOMContentLoaded', () => {
