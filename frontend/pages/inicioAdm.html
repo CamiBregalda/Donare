@@ -1,22 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DONARE - Dashboard</title>
     <link rel="stylesheet" href="../styles/header.css">
     <link rel="stylesheet" href="../styles/inicioAdm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
 </head>
+
 <body>
-    <header class="navbar">
-        <div class="logo"><img src="../img/LogoEscritaDonare.png" alt="Logo Donare"></div>
-        <div class="search-container">
-        <i class="fas fa-search search-icon"></i>
-        <input type="text" placeholder="Buscar..." class="search-bar">
-        </div>
-        <div class="user-profile">
-        <img src="../img/cachorro.jpg" alt="Perfil" class="user-avatar">
-        </div>
+    <header>
+        <div id="header-placeholder"></div>
     </header>
     <main class="painel-principal">
         <div class="secao-painel">
@@ -34,14 +31,14 @@
         <div class="secao-painel">
             <h2>Campanhas ativas</h2>
             <div class="container-campanhas" id="campanhasAtivas">
-                
+
             </div>
         </div>
 
         <div class="secao-painel">
             <h2>Histórico de Campanhas</h2>
             <div class="container-campanhas" id="campanhasExpiradas">
-                
+
             </div>
         </div>
     </main>
@@ -52,7 +49,7 @@
                 <h2>Cadastre sua Campanha</h2>
                 <button class="btn-fechar-modal" onclick="fecharModal()">×</button>
             </div>
-            
+
             <div class="form-grid">
                 <div class="form-field">
                     <label>Nome da Campanha:</label>
@@ -120,32 +117,34 @@
             </div>
         </div>
     </div>
-    
+
     <div id="modalNecessidades" class="modal-overlay">
         <div class="modal-necessidades">
             <div class="header-necessidades">
                 <h3>Gerenciar Necessidades do Evento</h3>
                 <button class="btn-fechar-necessidades" onclick="fecharModalNecessidades()">×</button>
             </div>
-            
+
             <div class="corpo-necessidades">
                 <div class="lista-necessidades" id="listaNecessidades">
                 </div>
-                
+
                 <div class="adicionar-item" id="formAdicionarItem">
                     <div class="linha-inputs">
                         <input type="text" id="nomeItemModal" placeholder="Nome do item (ex: Arroz)" class="input-item">
-                        <input type="number" id="quantidadeItemModal" placeholder="Quantidade" class="input-qtd" min="1">
+                        <input type="number" id="quantidadeItemModal" placeholder="Quantidade" class="input-qtd"
+                            min="1">
                         <select id="formatoItemModal" class="input-formato">
                             <option value="kg">Kg</option>
                             <option value="unidades">Unidades</option>
                             <option value="litros">Litros</option>
                         </select>
                     </div>
-                    <button type="button" class="btn-adicionar" id="btnAdicionarItem" onclick="adicionarItemModal()">Adicionar</button>
+                    <button type="button" class="btn-adicionar" id="btnAdicionarItem"
+                        onclick="adicionarItemModal()">Adicionar</button>
                 </div>
             </div>
-            
+
             <div class="footer-necessidades">
                 <button class="btn-cancelar-necessidades" onclick="fecharModalNecessidades()">Cancelar</button>
                 <button class="btn-salvar-necessidades" onclick="salvarNecessidades()">Salvar Lista</button>
@@ -156,4 +155,5 @@
     <script src="../js/header.js"></script>
     <script src="../js/inicioAdm.js"></script>
 </body>
+
 </html>

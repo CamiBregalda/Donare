@@ -1,193 +1,215 @@
-document.addEventListener('DOMContentLoaded', () => {
-  function abrirModalInstitution() {
-    document.getElementById('modalInstitution').classList.add('show');
-    document.body.classList.add('modal-ativa');
-  }
-  function fecharModalInstitution() {
-    document.getElementById('modalInstitution').classList.remove('show');
-    document.body.classList.remove('modal-ativa');
-  }
-  window.abrirModalInstitution = abrirModalInstitution;
-  window.fecharModalInstitution = fecharModalInstitution;
-  window.addEventListener('click', (e) => {
-    if (e.target === document.getElementById('modalInstitution')) {
-      fecharModalInstitution();
-    }
-  });
-  window.previewImage = (event) => {
-    const [file] = event.target.files;
-    if (!file) return;
-    const preview = document.getElementById('preview');
-    preview.src = URL.createObjectURL(file);
-    preview.alt = "Imagem selecionada";
-  };
-  const customMulti = document.getElementById('custom-multiselect');
-  const selectedTagsContainer = customMulti.querySelector('.selected-tags');
-  const optionsList = customMulti.querySelector('.options-list');
-  const hiddenSelect = document.getElementById('tipos');
-  customMulti.addEventListener('click', (e) => {
-    const tgt = e.target;
-    if (tgt.tagName.toLowerCase() === 'input' && tgt.type === 'checkbox') return;
-    if (tgt.classList.contains('tag-close')) return;
-    optionsList.classList.toggle('show');
-  });
-  document.addEventListener('click', (e) => {
-    if (!customMulti.contains(e.target)) {
-      optionsList.classList.remove('show');
-    }
-  });
-  optionsList.addEventListener('change', (e) => {
-    const tgt = e.target;
-    if (tgt.tagName.toLowerCase() === 'input' && tgt.type === 'checkbox') {
-      atualizarTagsSelecionadas();
-    }
-  });
-  selectedTagsContainer.addEventListener('click', (e) => {
-    const tgt = e.target;
-    if (tgt.classList.contains('tag-close')) {
-      const valor = tgt.parentElement.getAttribute('data-value');
-      const checkboxParaDesmarcar = optionsList.querySelector(`input[type="checkbox"][value="${valor}"]`);
-      if (checkboxParaDesmarcar) checkboxParaDesmarcar.checked = false;
-      atualizarTagsSelecionadas();
-    }
-  });
-  function atualizarTagsSelecionadas() {
-    selectedTagsContainer.innerHTML = '';
-    hiddenSelect.innerHTML = '';
-    const checkboxes = optionsList.querySelectorAll("input[type='checkbox']");
-    checkboxes.forEach((cb) => {
-      if (cb.checked) {
-        const tag = document.createElement('span');
-        tag.classList.add('tag');
-        tag.setAttribute('data-value', cb.value);
-        tag.appendChild(document.createTextNode(cb.value));
-        const closeIcon = document.createElement('i');
-        closeIcon.classList.add('fa-solid', 'fa-xmark', 'tag-close');
-        tag.appendChild(closeIcon);
-        selectedTagsContainer.appendChild(tag);
-        const opt = document.createElement('option');
-        opt.value = cb.value;
-        opt.selected = true;
-        hiddenSelect.appendChild(opt);
-      }
-    });
-  }
-  atualizarTagsSelecionadas();
-  const btnOpenTimepicker = document.getElementById('btn-open-timepicker');
-  const timepickerPopup = document.getElementById('timepicker-popup');
-  const inputHorario = document.getElementById('horario');
-  const timeStart = document.getElementById('time-start');
-  const timeEnd = document.getElementById('time-end');
-  const btnApplyTime = document.getElementById('btn-apply-time');
-  if (btnOpenTimepicker && timepickerPopup) {
-    btnOpenTimepicker.addEventListener('click', (e) => {
-      e.stopPropagation();
-      timepickerPopup.classList.toggle('show');
-    });
-    btnApplyTime.addEventListener('click', () => {
-      const startVal = timeStart.value;
-      const endVal = timeEnd.value;
-      if (startVal && endVal) {
-        inputHorario.value = `${startVal} – ${endVal}`;
-      }
-      timepickerPopup.classList.remove('show');
-    });
-    document.addEventListener('click', (e) => {
-      const clicouNoPopup = timepickerPopup.contains(e.target);
-      const clicouNoBotao = e.target === btnOpenTimepicker;
-      if (!clicouNoPopup && !clicouNoBotao) {
-        timepickerPopup.classList.remove('show');
-      }
-    });
-    const inicial = inputHorario.value.split(' – ');
-    if (inicial.length === 2) {
-      timeStart.value = inicial[0].trim();
-      timeEnd.value = inicial[1].trim();
-    }
-  }
-});
+function getUserIdFromUrl() {
+  return new URLSearchParams(window.location.search).get('id');
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-  const institutionId = 1;
-  fetchInstitutionDetails(institutionId);
-  fetchInstitutionCampaigns(institutionId);
-});
+const API_BASE = 'http://localhost:8080';
+const token = localStorage.getItem('token');
+function authHeadersForm() {
+  return { 'Authorization': `Bearer ${token}` };
+}
+
+function getUserId() {
+  return localStorage.getItem('userId');
+}
 
 async function fetchInstitutionDetails(id) {
   try {
-    const data = {
-      nome: "Instituição Muito Legal",
+    const res = await fetch(`${API_BASE}/usuarios/${id}`, { headers: authHeadersForm() });
+    if (!res.ok) throw new Error(`status ${res.status}`);
+    const data = await res.json();
 
-      horarioFuncionamento: "Seg-Sex: 09:00 - 18:00 / Sab: 09:00 - 12:00",
-      doacoesAceitas: "Ração para cães e gatos, cobertores, medicamentos veterinários, brinquedos.",
-      descricao: "Somos um abrigo dedicado ao resgate, cuidado e adoção de animais em situação de vulnerabilidade. Nossa missão é oferecer uma segunda chance para cães e gatos, promovendo o bem-estar animal e a conscientização sobre a posse responsável."
-    };
-    document.getElementById('institutionName').textContent = data.nome;
-    document.getElementById('institutionType').textContent = data.tipo;
-    if (data.imagemUrl) {
-      document.getElementById('institutionImage').src = data.imagemUrl;
-      document.getElementById('institutionImage').alt = `Imagem de ${data.nome}`;
-    }
-    document.getElementById('institutionLocation').textContent = data.localizacao;
-    document.getElementById('institutionHours').textContent = data.horarioFuncionamento;
-    document.getElementById('institutionAcceptedDonations').textContent = data.doacoesAceitas;
-    document.getElementById('institutionDescriptionText').textContent = data.descricao;
-  } catch (error) {
-    console.error(error);
-    document.getElementById('institutionName').textContent = "Erro ao carregar dados da instituição.";
+    document.getElementById('institutionName').textContent = data.nome || '';
+    document.getElementById('institutionType').textContent =
+      ({ 1: 'Pessoa Física', 2: 'Abrigo de Animais', 3: 'Orfanato', 4: 'Asilo' }[data.tipoUsuario] || '');
+
+    document.getElementById('institutionImage').src = data.midia
+      ? `data:${data.midiaContentType};base64,${data.midia}`
+      : 'https://via.placeholder.com/200x200?text=Instituição';
+
+    const end = data.idEndereco || {};
+    document.getElementById('institutionLocation').textContent =
+      [end.logradouro, end.bairro, end.cidade].filter(Boolean).join(', ');
+
+    document.getElementById('institutionHours').textContent = data.horarioFuncionamento || '';
+    document.getElementById('institutionAcceptedDonations').textContent = data.doacoesAceitas || '';
+    document.getElementById('institutionDescriptionText').textContent = data.descricao || '';
+
+    document.getElementById('nome').value = data.nome || '';
+    document.getElementById('rua').value = end.logradouro || '';
+    document.getElementById('numero').value = end.numero || '';
+    document.getElementById('complemento').value = end.complemento || '';
+    document.getElementById('bairro').value = end.bairro || '';
+    document.getElementById('cidade').value = end.cidade || '';
+    document.getElementById('uf').value = end.uf || '';
+    document.getElementById('cep').value = end.cep || '';
+    document.getElementById('horario').value = data.horarioFuncionamento || '';
+    document.getElementById('descricao').value = data.descricao || '';
+    document.getElementById('preview').src = data.midia
+      ? `data:${data.midiaContentType};base64,${data.midia}` : '';
+
+    const tipos = (data.doacoesAceitas || '').split(',').map(x => x.trim());
+    document.querySelectorAll('#custom-multiselect input[type="checkbox"]')
+      .forEach(cb => cb.checked = tipos.includes(cb.value));
+    atualizarTagsSelecionadas();
+
+    const rev = { 'Abrigo de Animais': 2, 'Orfanato': 3, 'Asilo': 4 };
+    document.getElementById('tipoInst').value = Object.keys(rev)
+      .find(k => rev[k] === data.tipoUsuario) || 'Abrigo de Animais';
+
+  } catch (e) {
+    console.error(e);
+    alert('Erro ao carregar dados da instituição.');
   }
 }
 
-async function fetchInstitutionCampaigns(institutionId) {
+async function fetchInstitutionCampaigns(id) {
   try {
-    const campaigns = [
-      {
-        id: 1,
-        titulo: "Mi de comida!",
-        descricaoBreve: "Ajude-nos a alimentar nossos peludos este mês.",
-        imagemUrl: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80",
-        seguindo: false
-      },
-      {
-        id: 2,
-        titulo: "Cobertores Quentinhos",
-        descricaoBreve: "O inverno está chegando! Doe cobertores.",
-        imagemUrl: "https://images.unsplash.com/photo-1517331156700-3c241d2b4d83?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
-        seguindo: true
-      },
-      {
-        id: 3,
-        titulo: "Vacinação Solidária",
-        descricaoBreve: "Contribua para a campanha de vacinação anual.",
-        imagemUrl: "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=300&q=80",
-        seguindo: false
-      }
-    ];
-    const campaignsListDiv = document.getElementById('campaignsList');
-    campaignsListDiv.innerHTML = '';
-    if (campaigns.length === 0) {
-      campaignsListDiv.innerHTML = '<p>Nenhuma campanha ativa no momento.</p>';
-      return;
-    }
-    campaigns.forEach(campaign => {
-      const card = document.createElement('div');
-      card.className = 'campaign-card';
-      card.innerHTML = `
-                <div class="campaign-card-image-container">
-                    <img src="${campaign.imagemUrl || 'https://via.placeholder.com/300x200?text=Campanha'}" alt="${campaign.titulo}">
-                    <span class="campaign-card-title-on-image">${campaign.titulo}</span>
-                </div>
-                <div class="campaign-card-body">
-                    <p class="campaign-card-description">${campaign.descricaoBreve}</p>
-                    <div class="campaign-card-actions">
-                        <button class="btn-follow-campaign" data-campaign-id="${campaign.id}">editar</button>
-                    </div>
-                </div>
-            `;
-      campaignsListDiv.appendChild(card);
+    const res = await fetch(`${API_BASE}/campanhas?usuario=${id}`, { headers: authHeadersForm() });
+    if (!res.ok) throw new Error();
+    const camps = await res.json();
+
+    const html = camps.map(c => `
+      <div class="campaign-card">
+        <div class="campaign-card-image-container">
+          <img src="${c.imagemCapa
+        ? `data:image/jpeg;base64,${c.imagemCapa}`
+        : 'https://via.placeholder.com/300x200'}" />
+          <span class="campaign-card-title-on-image">${c.titulo}</span>
+        </div>
+        <div class="campaign-card-body">
+          <p class="campaign-card-description">${c.descricao || ''}</p>
+          <div class="campaign-card-actions">
+            <button class="btn-follow-campaign" data-campanha-id="${c.id}">Editar</button>
+          </div>
+        </div>
+      </div>
+    `).join('');
+
+    document.getElementById('campaignsList').innerHTML = html;
+
+    document.querySelectorAll('.btn-follow-campaign').forEach(btn => {
+      btn.onclick = function () {
+        const campanhaId = this.getAttribute('data-campanha-id');
+
+        window.location.href = `CampanhaAdm.html?id=${campanhaId}`;
+      };
     });
-  } catch (error) {
-    console.error(error);
+  } catch {
     document.getElementById('campaignsList').innerHTML = '<p>Erro ao carregar campanhas.</p>';
   }
 }
+
+function abrirModalInstitution() {
+  document.getElementById('modalInstitution').classList.add('show');
+  document.body.classList.add('modal-ativa');
+}
+function fecharModalInstitution() {
+  document.getElementById('modalInstitution').classList.remove('show');
+  document.body.classList.remove('modal-ativa');
+}
+
+window.previewImage = e => {
+  const f = e.target.files[0];
+  if (f) document.getElementById('preview').src = URL.createObjectURL(f);
+};
+
+function setupCustomMultiselect() {
+  const m = document.getElementById('custom-multiselect');
+  m.querySelector('i.fa-chevron-down')
+    .addEventListener('click', () => m.querySelector('.options-list').classList.toggle('show'));
+  m.querySelectorAll('input[type="checkbox"]')
+    .forEach(cb => cb.addEventListener('change', atualizarTagsSelecionadas));
+  atualizarTagsSelecionadas();
+}
+function atualizarTagsSelecionadas() {
+  const m = document.getElementById('custom-multiselect');
+  const sel = m.querySelector('.selected-tags');
+  sel.innerHTML = '';
+  m.querySelectorAll('input:checked').forEach(cb => {
+    const span = document.createElement('span');
+    span.className = 'tag';
+    span.dataset.value = cb.value;
+    span.innerHTML = `${cb.value} <span class="tag-close">&times;</span>`;
+    sel.appendChild(span);
+  });
+  sel.querySelectorAll('.tag-close').forEach(x => x.addEventListener('click', e => {
+    const v = e.target.parentNode.dataset.value;
+    m.querySelector(`input[value="${v}"]`).checked = false;
+    atualizarTagsSelecionadas();
+  }));
+}
+
+function setupTimePicker() {
+  const btn = document.getElementById('btn-open-timepicker');
+  const pop = document.getElementById('timepicker-popup');
+  const s = document.getElementById('time-start');
+  const e = document.getElementById('time-end');
+  const i = document.getElementById('horario');
+  const ok = document.getElementById('btn-apply-time');
+  btn.addEventListener('click', () => pop.classList.toggle('show'));
+  ok.addEventListener('click', () => {
+    i.value = `${s.value} - ${e.value}`;
+    pop.classList.remove('show');
+  });
+}
+
+async function updateInstitution(evt) {
+  evt.preventDefault();
+  const id = getUserId();
+  const form = new FormData();
+
+  const dto = {
+    nome: document.getElementById('nome').value,
+    email: document.getElementById('email').value,
+    cpfOuCnpj: document.getElementById('cpfOuCnpj').value,
+    tipoUsuario: ({ 'Abrigo de Animais': 2, 'Orfanato': 3, 'Asilo': 4 }[document.getElementById('tipoInst').value] || 2),
+    password: '',
+    horarioFuncionamento: document.getElementById('horario').value,
+    descricao: document.getElementById('descricao').value,
+    doacoesAceitas: Array.from(
+      document.querySelectorAll('#custom-multiselect input:checked')
+    ).map(cb => cb.value).join(','),
+    endereco: {
+      logradouro: document.getElementById('rua').value,
+      numero: document.getElementById('numero').value,
+      complemento: document.getElementById('complemento').value,
+      bairro: document.getElementById('bairro').value,
+      cidade: document.getElementById('cidade').value,
+      uf: document.getElementById('uf').value,
+      cep: document.getElementById('cep').value
+    }
+  };
+
+  form.append('user', new Blob([JSON.stringify(dto)], { type: 'application/json' }));
+  const file = document.getElementById('imagem').files[0];
+  if (file) form.append('midia', file);
+
+  const res = await fetch(`${API_BASE}/usuarios/${id}`, {
+    method: 'PUT',
+    headers: authHeadersForm(),
+    body: form
+  });
+  if (!res.ok) {
+    console.error('Erro ao atualizar:', res.status);
+    return alert('Falha ao atualizar dados.');
+  }
+
+  alert('Dados atualizados com sucesso!');
+  fecharModalInstitution();
+  fetchInstitutionDetails(id);
+  fetchInstitutionCampaigns(id);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  const id = getUserId();
+  if (!id) return alert('ID do usuário não encontrado!');
+  fetchInstitutionDetails(id);
+  fetchInstitutionCampaigns(id);
+  document.getElementById('institutionEditForm')
+    .addEventListener('submit', updateInstitution);
+  setupCustomMultiselect();
+  setupTimePicker();
+
+  const btnEdit = document.getElementById('btnEditInstitution');
+  if (btnEdit) btnEdit.onclick = abrirModalInstitution;
+});

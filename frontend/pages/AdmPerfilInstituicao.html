@@ -7,10 +7,7 @@
   <link rel="stylesheet" href="../styles/main.css" />
   <link rel="stylesheet" href="../styles/header.css" />
   <link rel="stylesheet" href="../styles/AdmInstitutoUser.css" />
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
-  />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
 <body>
   <div id="header-placeholder"></div>
@@ -18,190 +15,134 @@
     <div class="institution-profile-container">
       <section class="institution-details-section">
         <div class="institution-header">
-          <h1 id="institutionName">Instituição Muito Legal</h1>
-          <span id="institutionType" class="institution-type-tag">Abrigo de Animais</span>
+          <h1 id="institutionName">Nome da Instituição</h1>
+          <span id="institutionType" class="institution-type-tag">Tipo de Instituição</span>
           <button class="btn-follow-institution" onclick="abrirModalInstitution()">editar</button>
         </div>
         <div class="institution-image-and-info-wrapper">
           <img
             id="institutionImage"
-            src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
+            src="https://via.placeholder.com/200x200?text=Instituição"
             alt="Imagem da Instituição"
             class="institution-image"
           />
           <div class="institution-info">
             <h3>Localização:</h3>
-            <p id="institutionLocation">Rua Selverino Kubicheck, Centro, Dois Vizinhos</p>
-
+            <p id="institutionLocation">Rua Exemplo, Bairro Exemplo, Cidade</p>
             <h3>Horário de Funcionamento</h3>
-            <p id="institutionHours">XX:XX - XX:XX / XX:XX - XX:XX</p>
-
+            <p id="institutionHours">08:00 - 18:00</p>
             <h3>Tipo de Doações Aceitas</h3>
-            <p id="institutionAcceptedDonations">Ração, Roupas</p>
+            <p id="institutionAcceptedDonations">Roupas, Alimentos</p>
           </div>
         </div>
-
         <div class="institution-description">
           <h3>Descrição da Instituição:</h3>
-          <p id="institutionDescriptionText">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud
-            exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-          </p>
+          <p id="institutionDescriptionText">Descrição da instituição aparecerá aqui.</p>
         </div>
       </section>
-
       <aside class="campaigns-section">
         <h2>Campanhas:</h2>
-        <div id="campaignsList" class="campaigns-grid">
-          <div class="campaign-card">
-            <div class="campaign-card-image-container">
-              <img
-                src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
-                alt="Mi de comida!"
-              />
-              <span class="campaign-card-title-on-image">Mi de comida!</span>
-            </div>
-            <div class="campaign-card-body">
-              <p class="campaign-card-description">Descrição sobre o evento</p>
-              <div class="campaign-card-actions">
-                <button class="btn-follow-campaign">editar</button>
-              </div>
-            </div>
-          </div>
-          <div class="campaign-card">
-            <div class="campaign-card-image-container">
-              <img src="https://via.placeholder.com/300x200?text=Campanha+2" alt="Mi de comida!" />
-              <span class="campaign-card-title-on-image">Mi de comida!</span>
-            </div>
-            <div class="campaign-card-body">
-              <p class="campaign-card-description">Descrição sobre o evento</p>
-              <div class="campaign-card-actions">
-                <button class="btn-follow-campaign">editar</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div id="campaignsList" class="campaigns-grid"></div>
       </aside>
     </div>
   </div>
 
-  <!-- === Início do Modal "Editar Instituição" === -->
-  <!-- === Início do Modal "Editar Instituição" === -->
-<div id="modalInstitution" class="modal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="fecharModalInstitution()">×</button>
-    <h2 class="modal-title">Edite sua Instituição</h2>
-    <form class="modal-form">
-      <div class="form-grid">
-        <!-- 1ª Linha: Nome | Rua | Bairro -->
-        <div class="field">
-          <label for="nome">Nome:</label>
-          <input type="text" id="nome" value="Instituição Muito Legal" />
-        </div>
-        <div class="field">
-          <label for="rua">Rua:</label>
-          <input type="text" id="rua" value="Selverino Kubicheck" />
-        </div>
-        <div class="field">
-          <label for="bairro">Bairro:</label>
-          <input type="text" id="bairro" value="Centro" />
-        </div>
-
-        <!-- 2ª Linha: Cidade | Horário de Funcionamento | Imagem (ocupando 2 linhas) -->
-        <div class="field">
-          <label for="cidade">Cidade:</label>
-          <input type="text" id="cidade" value="Dois Vizinhos" />
-        </div>
-        <div class="field time-field">
-          <label for="horario">Horário de Funcionamento:</label>
-          <input type="text" id="horario" readonly value="09:00 – 18:00" />
-          <button type="button" id="btn-open-timepicker" class="time-btn">Alterar</button>
-          <div id="timepicker-popup" class="time-popup">
-            <div class="time-rows">
-              <div>
-                <label for="time-start">Início:</label>
-                <input type="time" id="time-start" value="09:00" />
+  <div id="modalInstitution" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="fecharModalInstitution()">×</button>
+      <h2 class="modal-title">Edite sua Instituição</h2>
+      <form class="modal-form" id="institutionEditForm">
+        <div class="form-grid">
+          <div class="field">
+            <label for="nome">Nome:</label>
+            <input type="text" id="nome" />
+          </div>
+          <div class="field">
+            <label for="rua">Rua:</label>
+            <input type="text" id="rua" />
+          </div>
+          <div class="field">
+            <label for="numero">Número:</label>
+            <input type="text" id="numero" />
+          </div>
+          <div class="field">
+            <label for="complemento">Complemento:</label>
+            <input type="text" id="complemento" />
+          </div>
+          <div class="field">
+            <label for="bairro">Bairro:</label>
+            <input type="text" id="bairro" />
+          </div>
+          <div class="field">
+            <label for="cidade">Cidade:</label>
+            <input type="text" id="cidade" />
+          </div>
+          <div class="field">
+            <label for="uf">Estado (UF):</label>
+            <input type="text" id="uf" maxlength="2" />
+          </div>
+          <div class="field">
+            <label for="cep">CEP:</label>
+            <input type="text" id="cep" />
+          </div>
+          <div class="field time-field">
+            <label for="horario">Horário de Funcionamento:</label>
+            <input type="text" id="horario" readonly />
+            <button type="button" id="btn-open-timepicker" class="time-btn">Alterar</button>
+            <div id="timepicker-popup" class="time-popup">
+              <div class="time-rows">
+                <div><label for="time-start">Início:</label><input type="time" id="time-start" /></div>
+                <div><label for="time-end">Fim:</label><input type="time" id="time-end" /></div>
               </div>
-              <div>
-                <label for="time-end">Fim:</label>
-                <input type="time" id="time-end" value="18:00" />
-              </div>
+              <button type="button" id="btn-apply-time" class="time-apply">OK</button>
             </div>
-            <button type="button" id="btn-apply-time" class="time-apply">OK</button>
+          </div>
+          <div class="field image-field">
+            <label for="imagem">Alterar imagem:</label>
+            <div class="image-preview-container" onclick="document.getElementById('imagem').click()">
+              <img id="preview" alt="Preview da Instituição" />
+            </div>
+            <input type="file" id="imagem" accept="image/*" hidden onchange="previewImage(event)" />
+          </div>
+          <div class="field donation-field">
+            <label>Tipos de Doações Aceitas:</label>
+            <div id="custom-multiselect" class="custom-multiselect">
+              <div class="selected-tags"></div>
+              <i class="fa-solid fa-chevron-down"></i>
+              <ul class="options-list">
+                <li><label><input type="checkbox" value="Roupas" /> Roupas</label></li>
+                <li><label><input type="checkbox" value="Ração" /> Ração</label></li>
+                <li><label><input type="checkbox" value="Alimentos" /> Alimentos</label></li>
+                <li><label><input type="checkbox" value="Produtos de Higiene" /> Produtos de Higiene</label></li>
+              </ul>
+              <select id="tipos" name="tipos[]" multiple hidden>
+                <option>Roupas</option><option>Ração</option><option>Alimentos</option><option>Produtos de Higiene</option>
+              </select>
+            </div>
+          </div>
+          <div class="field institution-type-field">
+            <label for="tipoInst">Tipo de Instituição:</label>
+            <div class="single-select">
+              <select id="tipoInst">
+                <option>Abrigo de Animais</option>
+                <option>Orfanato</option>
+                <option>Asilo</option>
+              </select>
+              <i class="fa-solid fa-chevron-down"></i>
+            </div>
+          </div>
+          <div class="field full-span">
+            <label for="descricao">Descrição do Abrigo:</label>
+            <textarea id="descricao"></textarea>
           </div>
         </div>
-        <div class="field image-field">
-          <label for="imagem">Alterar imagem:</label>
-          <div class="image-preview-container" onclick="document.getElementById('imagem').click()">
-            <img id="preview" alt="Preview da Instituição" />
-          </div>
-          <input
-            type="file"
-            id="imagem"
-            accept="image/*"
-            hidden
-            onchange="previewImage(event)"
-          />
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" onclick="fecharModalInstitution()">Cancelar</button>
+          <button type="submit" class="btn-submit">Concluir</button>
         </div>
-
-        <!-- 3ª Linha: Tipos de Doações (coluna 1) | Tipo de Instituição sob Horário (coluna 2) -->
-        <div class="field donation-field">
-          <label for="tipos">Tipos de Doações Aceitas:</label>
-          <div id="custom-multiselect" class="custom-multiselect">
-            <div class="selected-tags"></div>
-            <i class="fa-solid fa-chevron-down"></i>
-            <ul class="options-list">
-              <li>
-                <label><input type="checkbox" value="Roupas" checked /> Roupas</label>
-              </li>
-              <li>
-                <label><input type="checkbox" value="Ração" checked /> Ração</label>
-              </li>
-              <li>
-                <label><input type="checkbox" value="Alimentos" /> Alimentos</label>
-              </li>
-              <li>
-                <label><input type="checkbox" value="Produtos de Higiene" /> Produtos de Higiene</label>
-              </li>
-            </ul>
-            <select id="tipos" name="tipos[]" multiple hidden>
-              <option selected>Roupas</option>
-              <option selected>Ração</option>
-              <option>Alimentos</option>
-              <option>Produtos de Higiene</option>
-            </select>
-          </div>
-        </div>
-        <div class="field institution-type-field">
-          <label for="tipoInst">Tipo de Instituição:</label>
-          <div class="single-select">
-            <select id="tipoInst">
-              <option selected>Abrigo de Animais</option>
-              <option>Orfanato</option>
-              <option>Asilo</option>
-            </select>
-            <i class="fa-solid fa-chevron-down"></i>
-          </div>
-        </div>
-
-        <!-- 4ª Linha: Descrição (toda a largura) -->
-        <div class="field full-span">
-          <label for="descricao">Descrição do Abrigo:</label>
-          <textarea id="descricao">Lorem ipsum dolor sit amet.</textarea>
-        </div>
-      </div>
-
-      <!-- Botões Cancelar / Concluir -->
-      <div class="modal-footer">
-        <button type="button" class="btn-cancel" onclick="fecharModalInstitution()">
-          Cancelar
-        </button>
-        <button type="submit" class="btn-submit">Concluir</button>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
-</div>
 
   <script src="../js/AdmPerfilInstituicao.js"></script>
   <script src="../js/header.js"></script>
