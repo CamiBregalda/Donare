@@ -1,6 +1,5 @@
-const idCampanha = 2; // Troque pelo id real da campanha
+const idCampanha = 2; 
 
-// Carrega as necessidades e dados da campanha
 function formatDateBr(dateStr) {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -13,7 +12,7 @@ function formatDateBr(dateStr) {
 
 async function loadCampaignData() {
     try {
-        // Buscar dados da campanha
+  
         const campResponse = await fetch(`http://localhost:8080/campanhas/${idCampanha}`);
         if (!campResponse.ok) throw new Error('Erro ao buscar dados da campanha');
         const campData = await campResponse.json();
@@ -25,7 +24,6 @@ async function loadCampaignData() {
         document.getElementById('campaignCategory').textContent = campData.categoriaCampanha || '';
         document.getElementById('campaignDescriptionText').textContent = campData.descricao || '';
 
-        // Busca imagem da campanha e coloca no local correto
         const imgResp = await fetch(`http://localhost:8080/campanhas/${idCampanha}/imagem`);
         if (imgResp.ok) {
             const blob = await imgResp.blob();
@@ -37,12 +35,10 @@ async function loadCampaignData() {
             }
         }
 
-        // Buscar necessidades normalmente
         const response = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/necessidades`);
         if (!response.ok) throw new Error('Erro ao buscar necessidades');
         const necessidades = await response.json();
 
-        // Renderizar barras de necessidades
         const itemList = document.querySelector('.item-list');
         itemList.innerHTML = '';
         if (!Array.isArray(necessidades) || necessidades.length === 0) {
@@ -74,7 +70,6 @@ async function loadCampaignData() {
             itemList.appendChild(itemDiv);
         });
 
-        // Eventos dos botões
         itemList.querySelectorAll('.btn-add, .btn-remove').forEach(btn => {
             btn.addEventListener('click', async function () {
                 const idNecessidade = this.getAttribute('data-id');
@@ -87,7 +82,7 @@ async function loadCampaignData() {
                     if (novaQtd < necessidade.quantidadeNecessaria) {
                         novaQtd++;
                     } else {
-                        // Limite atingido, não permite adicionar mais
+                  
                         return;
                     }
                 } else if (action === 'remove' && novaQtd > 0) {
@@ -96,7 +91,6 @@ async function loadCampaignData() {
                     return;
                 }
 
-                // Atualiza no backend
                 await updateNecessidade(idNecessidade, novaQtd, necessidade);
             });
         });
@@ -112,7 +106,6 @@ window.onclick = (e) => {
     if (e.target === modalPost) modalPost.style.display = 'none';
 };
 
-// Atualiza quantidadeRecebida no backend
 async function updateNecessidade(idNecessidade, novaQtd, necessidade) {
     try {
         const response = await fetch(`http://localhost:8080/necessidade/necessidades/${idNecessidade}`, {
@@ -132,7 +125,6 @@ async function updateNecessidade(idNecessidade, novaQtd, necessidade) {
     }
 }
 
-// --- MODAL POSTAGEM ---
 const btnAddPost = document.getElementById('btnAddPost');
 const modalPost = document.getElementById('modalPost');
 const closeModalPost = document.getElementById('closeModalPost');
@@ -166,7 +158,6 @@ function closePostModal() {
     editingPost = null;
 }
 
-// Preview da imagem
 document.getElementById('postImagem').addEventListener('change', function (e) {
     const file = e.target.files[0];
     if (file) {
@@ -180,7 +171,6 @@ document.getElementById('postImagem').addEventListener('change', function (e) {
     }
 });
 
-// --- CRUD POSTAGENS ---
 async function loadPosts() {
     const postList = document.querySelector('.post-list');
     postList.innerHTML = '<p>Carregando...</p>';
@@ -205,9 +195,9 @@ async function loadPosts() {
                 <div class="post-card-title">${post.titulo}</div>
                 <div class="post-card-content">${post.conteudo}</div>
             `;
-            // Editar
+
             card.querySelector('.btn-edit').onclick = () => openPostModal(post);
-            // Excluir
+
             card.querySelector('.btn-delete').onclick = async () => {
                 if (confirm('Deseja realmente excluir esta postagem?')) {
                     await fetch(`http://localhost:8080/postagens/${post.id}`, { method: 'DELETE' });
@@ -221,8 +211,6 @@ async function loadPosts() {
     }
 }
 
-
-// Criar/Editar postagem
 formPost.onsubmit = async function (e) {
     e.preventDefault();
     const titulo = document.getElementById('postTitulo').value;
@@ -233,7 +221,6 @@ formPost.onsubmit = async function (e) {
     let method = 'POST';
     let body = new FormData();
 
-    // O objeto postagem precisa ser enviado como string JSON
     const postagem = {
         idCampanha: idCampanha,
         titulo: titulo,
@@ -262,7 +249,6 @@ formPost.onsubmit = async function (e) {
     }
 };
 
-// Carregar posts ao carregar página
 document.addEventListener('DOMContentLoaded', () => {
     loadCampaignData();
     loadPosts();
