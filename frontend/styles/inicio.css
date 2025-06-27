@@ -12,7 +12,6 @@ h2{
 }
  
 aside {
-    height: 90vh;
     overflow-y: auto;
     position: sticky;
     top: 0;
@@ -38,7 +37,6 @@ ul li {
 
 main {
     flex: 1;
-    overflow-y: auto;
 }
 
 .categoria{
