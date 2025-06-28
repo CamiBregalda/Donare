@@ -1,4 +1,8 @@
-const idCampanha = 1; // Troque pelo id real da campanha
+function getIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+}
+const idCampanha = getIdFromUrl();
 let comments = [];
 
 // Carrega dados da campanha, necessidades e postagens
@@ -35,7 +39,7 @@ async function loadCampaignData() {
         }
         document.getElementById('campaignDescriptionText').textContent = campData.descricao || '';
 
-        
+
         // Busca necessidades da campanha e renderiza barras de progresso
         const necessidadesResponse = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/necessidades`);
         if (!necessidadesResponse.ok) throw new Error('Erro ao buscar necessidades');
@@ -211,7 +215,7 @@ function renderComment(comment, parentElement) {
     }
 
     // Conteúdo
-   const commentContent = document.createElement('div');
+    const commentContent = document.createElement('div');
     commentContent.classList.add('comment-content');
 
     const userNameDiv = document.createElement('div');
@@ -309,4 +313,83 @@ document.addEventListener('DOMContentLoaded', function () {
             newCommentInput.value = '';
         }
     });
+
+    // Botão de seguir campanha //AJUSTAR A URL
+    const followBtn = document.querySelector('.btn-follow');
+    if (followBtn) {
+        // Função para atualizar o estado do botão
+        async function updateFollowButton(isFollowing) {
+            if (isFollowing) {
+                followBtn.textContent = 'Parar de seguir';
+                followBtn.disabled = false;
+                followBtn.onclick = async function () {
+                    try {
+                        const response = await fetch(`/usuarios/${idUsuario}/parar-de-seguir-campanha/${idCampanha}`, {
+                            method: 'DELETE',
+                            headers: { 'Content-Type': 'application/json' }
+                        });
+                        if (response.ok) {
+                            updateFollowButton(false);
+                        } else {
+                            alert('Erro ao parar de seguir.');
+                        }
+                    } catch {
+                        alert('Erro ao parar de seguir.');
+                    }
+                };
+            } else {
+                followBtn.textContent = 'Seguir';
+                followBtn.disabled = false;
+                followBtn.onclick = async function () {
+                    try {
+                        const response = await fetch(`/usuarios/${idUsuario}/seguir-campanha/${idCampanha}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                campanhaId: Number(idCampanha),
+                                userId: Number(userId)
+                            })
+                        });
+                        if (response.ok) {
+                            updateFollowButton(true);
+                        } else {
+                            alert('Erro ao seguir campanha.');
+                        }
+                    } catch {
+                        alert('Erro ao seguir campanha.');
+                    }
+                };
+            }
+        }
+    }
+
+    // Botão de voluntariado //AJUSTAR A URL
+    const volunteerBtn = document.querySelector('.btn-volunteer');
+    if (volunteerBtn) {
+        volunteerBtn.addEventListener('click', async function () {
+            try {
+                const response = await fetch(`/participacao/participacoes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        campanhaId: Number(idCampanha),
+                        userId: Number(userId)
+                    })
+                });
+                if (response.ok) {
+                    volunteerBtn.textContent = 'Voluntário!';
+                    volunteerBtn.disabled = true;
+                } else {
+                    alert('Erro ao se voluntariar.');
+                }
+            } catch {
+                alert('Erro ao se voluntariar.');
+            }
+        });
+    }
+
+    document.querySelector('.back-button').addEventListener('click', function (e) {
+    e.preventDefault();
+    window.history.back();
+});
 });

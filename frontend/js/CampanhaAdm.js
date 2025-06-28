@@ -1,5 +1,11 @@
-const idCampanha = 2; 
+function getIdFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('id');
+}
+const idCampanha = getIdFromUrl();
 
+
+//formatação da data apenas
 function formatDateBr(dateStr) {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -252,4 +258,9 @@ formPost.onsubmit = async function (e) {
 document.addEventListener('DOMContentLoaded', () => {
     loadCampaignData();
     loadPosts();
+
+    document.querySelector('.back-button').addEventListener('click', function (e) {
+    e.preventDefault();
+    window.history.back();
+});
 });
