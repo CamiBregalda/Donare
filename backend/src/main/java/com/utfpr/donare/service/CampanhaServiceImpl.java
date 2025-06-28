@@ -1,23 +1,24 @@
 package com.utfpr.donare.service;
 
+import com.utfpr.donare.domain.Campanha;
 import com.utfpr.donare.dto.CampanhaRequestDTO;
 import com.utfpr.donare.dto.CampanhaResponseDTO;
 import com.utfpr.donare.dto.VoluntarioResponseDTO;
 import com.utfpr.donare.exception.ResourceNotFoundException;
 import com.utfpr.donare.mapper.CampanhaMapper;
-import com.utfpr.donare.domain.Campanha;
+import com.utfpr.donare.mapper.EnderecoMapper;
 import com.utfpr.donare.repository.CampanhaRepository;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.data.jpa.domain.Specification;
 
-import jakarta.persistence.criteria.Predicate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +30,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     private final CampanhaRepository campanhaRepository;
     private final CampanhaMapper campanhaMapper;
+    private final EnderecoMapper enderecoMapper;
 
     @Override
     @Transactional
@@ -48,6 +50,8 @@ public class CampanhaServiceImpl implements CampanhaService {
             }
         }
         Campanha campanhaSalva = campanhaRepository.save(campanha);
+
+        //Endereco endereco = enderecoMapper.toEndereco(campanhaSalva.getEndereco());
         return campanhaMapper.entityToResponseDto(campanhaSalva);
     }
 
