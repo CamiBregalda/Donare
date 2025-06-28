@@ -1,6 +1,7 @@
 package com.utfpr.donare.service;
 
 import com.utfpr.donare.domain.Campanha;
+import com.utfpr.donare.domain.Endereco;
 import com.utfpr.donare.dto.CampanhaRequestDTO;
 import com.utfpr.donare.dto.CampanhaResponseDTO;
 import com.utfpr.donare.dto.VoluntarioResponseDTO;
@@ -49,9 +50,11 @@ public class CampanhaServiceImpl implements CampanhaService {
                 throw new RuntimeException("Erro ao processar imagem de capa", e);
             }
         }
+        Endereco endereco = campanha.getEndereco();
+        endereco.setCampanha(campanha);
+
         Campanha campanhaSalva = campanhaRepository.save(campanha);
 
-        //Endereco endereco = enderecoMapper.toEndereco(campanhaSalva.getEndereco());
         return campanhaMapper.entityToResponseDto(campanhaSalva);
     }
 

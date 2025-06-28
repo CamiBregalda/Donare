@@ -57,9 +57,9 @@ public class EnderecoRequestDto {
     private String estado;
 
     @Schema(description = "Sigla do CEP (ex: 00000000000).",
-            example = "00011122233355",
+            example = "85660000",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "O CEP é obrigatória.")
-    @Size(min = 11, max = 11, message = "O CEP deve ter 11 caracteres.")
+    @Size(min = 8, max = 20, message = "O CEP deve ter no mínimo 8 caracteres.")
     private String cep;
 }
