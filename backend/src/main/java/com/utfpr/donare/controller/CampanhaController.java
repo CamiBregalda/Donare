@@ -38,6 +38,19 @@ public class CampanhaController {
         return new ResponseEntity<>(novaCampanha, HttpStatus.CREATED);
     }
 
+    @GetMapping("/historico")
+    public ResponseEntity<List<CampanhaResponseDTO>> findAllHistory(
+            @RequestParam(required = false) String tipo,
+            @RequestParam(required = false) String localidade,
+            @RequestParam(required = false) String usuario,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "dtInicio") String sort) {
+
+        List<CampanhaResponseDTO> campanhas = campanhaService.listarHistoricoCampanhas(tipo, localidade, usuario, page, size, sort);
+        return ResponseEntity.ok(campanhas);
+    }
+
     @GetMapping
     public ResponseEntity<List<CampanhaResponseDTO>> findAll(
             @RequestParam(required = false) String tipo,

@@ -53,6 +53,8 @@ public class CampanhaServiceImpl implements CampanhaService {
         Endereco endereco = campanha.getEndereco();
         endereco.setCampanha(campanha);
 
+        campanha.setAtivo(true);
+
         Campanha campanhaSalva = campanhaRepository.save(campanha);
 
         return campanhaMapper.entityToResponseDto(campanhaSalva);
@@ -79,7 +81,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort) {
+    public List<CampanhaResponseDTO> listarHistoricoCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort) {
         Sort.Direction direction = Sort.Direction.DESC;
         String property = "dtInicio";
         if (sort != null && !sort.isEmpty()) {
@@ -101,8 +103,37 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort) {
+        Sort.Direction direction = Sort.Direction.DESC;
+        String property = "dtInicio";
+        if (sort != null && !sort.isEmpty()) {
+            if (sort.equalsIgnoreCase("dt_fim")) {
+                property = "dt_fim";
+            } else if (sort.equalsIgnoreCase("titulo")) {
+                property = "titulo";
+            }
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, property));
+
+        Specification<Campanha> spec = criarFiltroCampanha(tipo, localidade, usuario);
+        Specification<Campanha> ativoSpec = (root, query, criteriaBuilder) ->
+                criteriaBuilder.isTrue(root.get("ativo"));
+
+        Specification<Campanha> combinedSpec = Specification.where(spec).and(ativoSpec);
+
+        Page<Campanha> campanhasPage = campanhaRepository.findAll(combinedSpec, pageable);
+
+        return campanhasPage.getContent().stream()
+                .map(campanhaMapper::entityToResponseDto)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    @Transactional(readOnly = true)
     public CampanhaResponseDTO buscarCampanhaPorId(Long id) {
-        Campanha campanha = campanhaRepository.findById(id)
+        Campanha campanha = campanhaRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
         return campanhaMapper.entityToResponseDto(campanha);
     }
@@ -142,7 +173,7 @@ public class CampanhaServiceImpl implements CampanhaService {
         if (!campanha.getOrganizador().equals(organizadorEmail)) {
             throw new RuntimeException("Apenas o organizador pode deletar a campanha");
         }
-        campanhaRepository.delete(campanha);
+        campanhaRepository.deletePorId(campanha.getId());
     }
 
     @Override

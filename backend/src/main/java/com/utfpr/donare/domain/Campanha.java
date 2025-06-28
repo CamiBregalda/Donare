@@ -74,4 +74,6 @@ public class Campanha {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<User> usuariosQueSeguem = new HashSet<>();
+
+    private boolean ativo = true;
 }
