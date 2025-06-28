@@ -1,209 +1,231 @@
 const API_BASE = 'http://localhost:8080';
-const token = localStorage.getItem('token');
-const userId = localStorage.getItem('userId');
 
+// Lê token e usuário do localStorage
+const token   = localStorage.getItem('token')   || '';
+const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+const userId  = usuario.id;
+
+// Monta headers de autênticação (e JSON opcional)
 function authHeaders(isJson = true) {
-  const h = { 'Authorization': `Bearer ${token}` };
-  if (isJson) h['Content-Type'] = 'application/json';
-  return h;
+  const headers = { Authorization: `Bearer ${token}` };
+  if (isJson) headers['Content-Type'] = 'application/json';
+  return headers;
 }
 
-function abrirModal() { document.getElementById('modal').classList.add('show'); document.body.classList.add('modal-ativa'); }
-function fecharModal() { document.getElementById('modal').classList.remove('show'); document.body.classList.remove('modal-ativa'); }
-function abrirModalSenha() { document.getElementById('modalSenha').classList.add('show'); document.body.classList.add('modal-ativa'); }
-function fecharModalSenha() { document.getElementById('modalSenha').classList.remove('show'); document.body.classList.remove('modal-ativa'); }
+// Se não tiver token ou userId, redireciona para login
+if (!token || !userId) {
+  alert('Usuário não autenticado.');
+  window.location.href = 'login.html';
+  throw new Error('Não autenticado');
+}
 
-window.addEventListener('click', e => {
-  if (e.target.id === 'modal') fecharModal();
-  if (e.target.id === 'modalSenha') fecharModalSenha();
+document.addEventListener('DOMContentLoaded', () => {
+  fetchUserData();
+  fetchParticipatedCampaigns();
+  fetchFollowedCampaigns();
+
+  // Abertura/fechamento de modal de perfil
+  document.getElementById('editProfileBtn').onclick  = abrirModal;
+  document.getElementById('closeModal').onclick      = fecharModal;
+  document.getElementById('cancelModal').onclick     = fecharModal;
+
+  // Abertura/fechamento de modal de senha
+  document.getElementById('closeModalSenha').onclick = fecharModalSenha;
+
+  // Preview de avatar em tempo real
+  document.getElementById('inputAvatar').onchange    = previewProfileImage;
+
+  // Submissão de formulários
+  document.getElementById('profileForm').onsubmit    = e => {
+    e.preventDefault();
+    updateUser();
+  };
+  document.getElementById('passwordForm').onsubmit   = e => {
+    e.preventDefault();
+    updatePassword();
+  };
+
+  // Gerenciar Campanhas — único listener
+  document
+    .getElementById('manageCampaignsBtn')
+    .addEventListener('click', () => {
+      window.location.href = 'inicioAdm.html';
+    });
 });
 
-window.previewProfileImage = event => {
-  const [file] = event.target.files;
-  if (!file) return;
-  document.getElementById('avatarIcon').innerHTML =
-    `<img src="${URL.createObjectURL(file)}" style="width:80px;height:80px;border-radius:50%;">`;
-  document.getElementById('inputFoto').value = '';
-};
-
-async function fetchUserData(userId) {
+async function fetchUserData() {
   try {
-    const resp = await fetch(`${API_BASE}/usuarios/${userId}`, {
+    const res = await fetch(`${API_BASE}/usuarios/${userId}`, {
       headers: authHeaders(false)
     });
-    if (!resp.ok) throw new Error(`Status ${resp.status}`);
-    const data = await resp.json();
+    if (!res.ok) throw new Error('Falha ao buscar perfil');
+    const data = await res.json();
 
-    document.getElementById('userName').textContent = data.nome || '';
-    document.getElementById('userEmail').textContent = data.email || '';
+    // Preenche header
+    document.getElementById('userName').textContent      = data.nome;
+    document.getElementById('userEmail').textContent     = data.email;
+    const end = data.idEndereco || {};
     document.getElementById('userCityState').textContent =
-      `${data.idEndereco?.cidade || ''}${data.idEndereco?.estado ? ', ' + data.idEndereco.estado : ''}`;
+      `${end.cidade || ''}, ${end.uf || end.estado || ''}`;
 
-    const imgEl = document.getElementById('profileImg');
+    // Exibe avatar
     if (data.midia) {
-      imgEl.src = `data:${data.midiaContentType};base64,${data.midia}`;
-      document.getElementById('avatarIcon').innerHTML =
-        `<img src="${imgEl.src}" style="width:80px;height:80px;border-radius:50%;">`;
-    } else {
-      imgEl.src = '../img/cachorro.jpg';
+      const src = `data:${data.midiaContentType};base64,${data.midia}`;
+      document.getElementById('profileImg').src = src;
+      document.getElementById('avatarIcon').src = src;
     }
 
-    document.getElementById('nome').value = data.nome || '';
-    document.getElementById('email').value = data.email || '';
-    document.getElementById('cpfOuCnpj').value = data.cpfOuCnpj || '';
-    document.getElementById('logradouro').value = data.idEndereco?.logradouro || '';
-    document.getElementById('numero').value = data.idEndereco?.numero || '';
-    document.getElementById('bairro').value = data.idEndereco?.bairro || '';
-    document.getElementById('complemento').value = data.idEndereco?.complemento || '';
-    document.getElementById('cep').value = data.idEndereco?.cep || '';
-    document.getElementById('cidade').value = data.idEndereco?.cidade || '';
-    document.getElementById('estado').value = data.idEndereco?.estado || '';
+    // Preenche form de edição
+    document.getElementById('inputCpf').value        = data.cpfOuCnpj || '';
+    document.getElementById('inputEmail').value      = data.email     || '';
+    document.getElementById('inputName').value       = data.nome      || '';
+    document.getElementById('inputLogradouro').value = end.logradouro || '';
+    document.getElementById('inputNumero').value     = end.numero     || '';
+    document.getElementById('inputBairro').value     = end.bairro     || '';
+    document.getElementById('inputComplemento').value = end.complemento|| '';
+    document.getElementById('inputCep').value        = end.cep        || '';
+    document.getElementById('inputCidade').value     = end.cidade     || '';
+    document.getElementById('inputUf').value         = end.uf || end.estado || '';
   } catch (err) {
-    console.error('fetchUserData error:', err);
+    console.error(err);
     alert('Erro ao carregar dados do usuário.');
   }
 }
 
-async function updateUser(userId) {
-  const formData = new FormData();
-  const userDto = {
-    nome: document.getElementById('nome').value,
-    email: document.getElementById('email').value,
-    cpfOuCnpj: document.getElementById('cpfOuCnpj').value,
-    tipoUsuario: 1,
-    password: '',
-    endereco: {
-      logradouro: document.getElementById('logradouro').value,
-      bairro: document.getElementById('bairro').value,
-      numero: document.getElementById('numero').value,
-      cidade: document.getElementById('cidade').value,
-      uf: document.getElementById('estado').value,
-      cep: document.getElementById('cep').value
-    }
-  };
-  formData.append('user', new Blob([JSON.stringify(userDto)], { type: 'application/json' }));
-
-  const fileInput = document.getElementById('inputFoto');
-  if (fileInput.files.length) {
-    formData.append('midia', fileInput.files[0]);
+async function fetchParticipatedCampaigns() {
+  try {
+    const res = await fetch(
+      `${API_BASE}/participacao/byIdUsuario/${userId}`,
+      { headers: authHeaders(false) }
+    );
+    if (!res.ok) return;
+    const list = await res.json();
+    const ul = document.getElementById('donatedCampaigns');
+    ul.innerHTML = '';
+    list.forEach(p => {
+      const li = document.createElement('li');
+      li.className = 'campanha-card';
+      li.innerHTML = `
+        <h4>${p.tituloCampanha}</h4>
+        <p>${new Date(p.dataHoraParticipacao).toLocaleDateString()}</p>
+      `;
+      ul.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
   }
-
-  const resp = await fetch(`${API_BASE}/usuarios/${userId}`, {
-    method: 'PUT',
-    headers: { 'Authorization': `Bearer ${token}` },
-    body: formData
-  });
-
-  if (!resp.ok) {
-    let errBody = null;
-    try { errBody = await resp.json() } catch { }
-    console.error('updateUser error body:', errBody);
-    alert(`Erro ao atualizar: ${errBody?.message || resp.status}`);
-    return;
-  }
-
-  alert('Perfil atualizado com sucesso!');
-  fecharModal();
-  await fetchUserData(userId);
 }
 
-async function changePassword(userId) {
-  const payload = {
-    oldPassword: document.getElementById('senhaAtual').value,
-    newPassword: document.getElementById('senhaNova').value
+async function fetchFollowedCampaigns() {
+  try {
+    const res = await fetch(
+      `${API_BASE}/usuarios/${userId}/campanhas-seguidas`,
+      { headers: authHeaders(false) }
+    );
+    if (!res.ok) return;
+    const list = await res.json();
+    const ul = document.getElementById('followedCampaigns');
+    ul.innerHTML = '';
+    list.forEach(camp => {
+      const li = document.createElement('li');
+      li.className = 'campanha-card';
+      li.innerHTML = `
+        <h4>${camp.titulo}</h4>
+        <p>${new Date(camp.dtInicio).toLocaleDateString()} – ${new Date(camp.dtFim).toLocaleDateString()}</p>
+      `;
+      ul.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function abrirModal() {
+  document.getElementById('modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function fecharModal() {
+  document.getElementById('modal').classList.remove('show');
+  document.body.style.overflow = 'auto';
+}
+function abrirModalSenha() {
+  document.getElementById('modalSenha').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function fecharModalSenha() {
+  document.getElementById('modalSenha').classList.remove('show');
+  document.body.style.overflow = 'auto';
+}
+
+function previewProfileImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const url = URL.createObjectURL(file);
+  document.getElementById('avatarIcon').src = url;
+  document.getElementById('profileImg').src = url;
+}
+
+async function updateUser() {
+  const userDto = {
+    nome:        document.getElementById('inputName').value,
+    email:       document.getElementById('inputEmail').value,
+    cpfOuCnpj:   document.getElementById('inputCpf').value,
+    tipoUsuario: usuario.tipoUsuario,
+    endereco: {
+      logradouro:  document.getElementById('inputLogradouro').value,
+      numero:      document.getElementById('inputNumero').value,
+      bairro:      document.getElementById('inputBairro').value,
+      complemento: document.getElementById('inputComplemento').value,
+      cep:         document.getElementById('inputCep').value,
+      cidade:      document.getElementById('inputCidade').value,
+      uf:          document.getElementById('inputUf').value,
+    }
   };
+
+  const formData = new FormData();
+  formData.append('user', new Blob([JSON.stringify(userDto)], {
+    type: 'application/json'
+  }));
+  const avatar = document.getElementById('inputAvatar');
+  if (avatar.files.length) formData.append('midia', avatar.files[0]);
 
   try {
-    const resp = await fetch(`${API_BASE}/usuarios/alterarSenha/${userId}`, {
-      method: 'PUT',
-      headers: authHeaders(true),
-      body: JSON.stringify(payload)
+    const res = await fetch(`${API_BASE}/usuarios/${userId}`, {
+      method:  'PUT',
+      headers: { Authorization: `Bearer ${token}` },
+      body:    formData
     });
-
-    if (!resp.ok) {
-      let errBody = null;
-      try { errBody = await resp.json() } catch { }
-      throw new Error(errBody?.message || `Status ${resp.status}`);
+    if (!res.ok) {
+      const err = await res.json();
+      alert(`Erro: ${err.message || res.statusText}`);
+    } else {
+      fecharModal();
+      fetchUserData();
     }
-
-    alert('Senha alterada com sucesso!');
-    fecharModalSenha();
-    document.getElementById('senhaAtual').value = '';
-    document.getElementById('senhaNova').value = '';
   } catch (err) {
-    console.error('changePassword error:', err);
-    alert(`Falha ao trocar senha: ${err.message}`);
+    console.error(err);
+    alert('Erro na atualização de perfil.');
   }
 }
 
-async function fetchParticipatedCampaigns(userId) {
-  const resp = await fetch(`${API_BASE}/participacao/byIdUsuario/${userId}`, {
-    headers: authHeaders(false)
-  });
-  const ul = document.getElementById('donatedCampaigns');
-  if (!resp.ok) {
-    ul.innerHTML = `<li class="empty-card">Você não participou de nenhuma campanha</li>`;
-    return;
-  }
-  const list = await resp.json();
-  if (!list.length) {
-    ul.innerHTML = `<li class="empty-card">Você não participou de nenhuma campanha</li>`;
-  } else {
-    ul.innerHTML = list.map(c => `
-      <li class="campanha-card">
-        <strong>${c.titulo}</strong>
-        <p>${new Date(c.dtInicio).toLocaleDateString()} – ${new Date(c.dt_fim).toLocaleDateString()}</p>
-      </li>
-    `).join('');
-  }
-}
-
-async function fetchFollowedCampaigns(userId) {
-  const resp = await fetch(`${API_BASE}/usuarios/${userId}/campanhas-seguidas`, {
-    headers: authHeaders(false)
-  });
-  const ul = document.getElementById('followedCampaigns');
-  if (!resp.ok) {
-    ul.innerHTML = `<li class="empty-card">Você ainda não segue nenhuma campanha</li>`;
-    return;
-  }
-  const list = await resp.json();
-  if (!list.length) {
-    ul.innerHTML = `<li class="empty-card">Você ainda não segue nenhuma campanha</li>`;
-  } else {
-    ul.innerHTML = list.map(c => `
-      <li class="campanha-card">
-        <strong>${c.titulo}</strong>
-        <p>${new Date(c.dtInicio).toLocaleDateString()} – ${new Date(c.dt_fim).toLocaleDateString()}</p>
-      </li>
-    `).join('');
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  if (!token || !userId) {
-    alert('Usuário não autenticado.');
-    return;
-  }
-
-  fetchUserData(userId);
-  fetchParticipatedCampaigns(userId);
-  fetchFollowedCampaigns(userId);
-
-  document.getElementById('editProfileForm')
-    .addEventListener('submit', e => {
-      e.preventDefault();
-      updateUser(userId);
+async function updatePassword() {
+  const oldPassword = document.getElementById('inputOldPass').value;
+  const newPassword = document.getElementById('inputNewPass').value;
+  try {
+    const res = await fetch(`${API_BASE}/usuarios/alterarSenha/${userId}`, {
+      method:  'PUT',
+      headers: authHeaders(true),
+      body:    JSON.stringify({ oldPassword, newPassword })
     });
-
-  document.getElementById('formAlterarSenha')
-    .addEventListener('submit', e => {
-      e.preventDefault();
-      changePassword(userId);
-    });
-});
-
-function goToCampanhaAdm() {
-  window.location.href = `CampanhaAdm.html?id=${userId}`;
+    if (!res.ok) {
+      const err = await res.json();
+      alert(`Erro: ${err.message || res.statusText}`);
+    } else {
+      fecharModalSenha();
+      alert('Senha alterada com sucesso!');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Erro na troca de senha.');
+  }
 }
-window.goToCampanhaAdm = goToCampanhaAdm;
