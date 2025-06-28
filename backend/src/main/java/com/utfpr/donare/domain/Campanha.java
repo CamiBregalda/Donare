@@ -1,5 +1,7 @@
 package com.utfpr.donare.domain;
 
+import com.utfpr.donare.domain.enums.CategoriaEnum;
+import com.utfpr.donare.domain.enums.TipoCertificadoEnum;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
@@ -29,7 +31,8 @@ public class Campanha {
 
     private String categoriaCampanha;
 
-    private String endereco;
+    @OneToOne(mappedBy = "campanha", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Endereco endereco;
 
     @Lob
     @Basic(fetch = FetchType.LAZY)

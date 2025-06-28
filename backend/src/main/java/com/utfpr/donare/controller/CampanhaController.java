@@ -10,6 +10,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -31,7 +33,7 @@ public class CampanhaController {
             @RequestPart("campanha") CampanhaRequestDTO campanhaRequestDTO,
             @RequestPart(value = "imagemCapa", required = false) MultipartFile imagemCapa) {
 
-        String organizadorEmail = obterMockOrganizadorEmail();
+        String organizadorEmail = getOrganizadorEmail();
         CampanhaResponseDTO novaCampanha = campanhaService.criarCampanha(campanhaRequestDTO, imagemCapa, organizadorEmail);
         return new ResponseEntity<>(novaCampanha, HttpStatus.CREATED);
     }
@@ -75,14 +77,14 @@ public class CampanhaController {
             @RequestPart("campanha") CampanhaRequestDTO campanhaRequestDTO,
             @RequestPart(value = "imagemCapa", required = false) MultipartFile imagemCapa) {
 
-        String organizadorEmail = obterMockOrganizadorEmail();
+        String organizadorEmail = getOrganizadorEmail();
         CampanhaResponseDTO campanhaAtualizada = campanhaService.atualizarCampanha(id, campanhaRequestDTO, imagemCapa, organizadorEmail);
         return ResponseEntity.ok(campanhaAtualizada);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        String organizadorEmail = obterMockOrganizadorEmail();
+        String organizadorEmail = getOrganizadorEmail();
         campanhaService.deletarCampanha(id, organizadorEmail);
         return ResponseEntity.noContent().build();
     }
@@ -94,18 +96,18 @@ public class CampanhaController {
     }
 
     @GetMapping("/categorias")
-    public ResponseEntity<List<TipoCampanhaResponseDTO>> listarTiposCampanha() {
-        List<TipoCampanhaResponseDTO> tipos = Arrays.stream(CategoriaEnum.values())
-                .map(tipo -> new TipoCampanhaResponseDTO(tipo.name(), tipo.getDescricao()))
+    public ResponseEntity<List<String>> listarTiposCampanha() {
+        List<String> tipos = Arrays.stream(CategoriaEnum.values())
+                .map(CategoriaEnum::getDescricao)
                 .toList();
 
         return ResponseEntity.ok(tipos);
     }
 
     @GetMapping("/certificados")
-    public ResponseEntity<List<TipoCertificadoResponseDTO>> listarTiposCertificado() {
-        List<TipoCertificadoResponseDTO> tipos = Arrays.stream(TipoCertificadoEnum.values())
-                .map(tipo -> new TipoCertificadoResponseDTO(tipo.name(), tipo.getDescricao()))
+    public ResponseEntity<List<String>> listarTiposCertificado() {
+        List<String> tipos = Arrays.stream(TipoCertificadoEnum.values())
+                .map(TipoCertificadoEnum::getDescricao)
                 .toList();
 
         return ResponseEntity.ok(tipos);
@@ -128,7 +130,8 @@ public class CampanhaController {
         return new ResponseEntity<>(qrCodeImage, headers, HttpStatus.OK);
     }
 
-    private String obterMockOrganizadorEmail() {
-        return ".com";
+    private String getOrganizadorEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 }
