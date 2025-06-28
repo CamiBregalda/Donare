@@ -1,12 +1,11 @@
 package com.utfpr.donare.controller;
 
-import com.utfpr.donare.dto.CampanhaRequestDTO;
-import com.utfpr.donare.dto.CampanhaResponseDTO;
-import com.utfpr.donare.dto.VoluntarioResponseDTO;
+import com.utfpr.donare.domain.enums.CategoriaEnum;
+import com.utfpr.donare.domain.enums.TipoCertificadoEnum;
+import com.utfpr.donare.dto.*;
 import com.utfpr.donare.service.CampanhaService;
 import com.utfpr.donare.service.QRCodeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -91,6 +91,24 @@ public class CampanhaController {
     public ResponseEntity<List<VoluntarioResponseDTO>> listVolunteersByCampaign(@PathVariable Long id) {
         List<VoluntarioResponseDTO> voluntarios = campanhaService.listarVoluntariosPorCampanha(id);
         return ResponseEntity.ok(voluntarios);
+    }
+
+    @GetMapping("/categorias")
+    public ResponseEntity<List<TipoCampanhaResponseDTO>> listarTiposCampanha() {
+        List<TipoCampanhaResponseDTO> tipos = Arrays.stream(CategoriaEnum.values())
+                .map(tipo -> new TipoCampanhaResponseDTO(tipo.name(), tipo.getDescricao()))
+                .toList();
+
+        return ResponseEntity.ok(tipos);
+    }
+
+    @GetMapping("/certificados")
+    public ResponseEntity<List<TipoCertificadoResponseDTO>> listarTiposCertificado() {
+        List<TipoCertificadoResponseDTO> tipos = Arrays.stream(TipoCertificadoEnum.values())
+                .map(tipo -> new TipoCertificadoResponseDTO(tipo.name(), tipo.getDescricao()))
+                .toList();
+
+        return ResponseEntity.ok(tipos);
     }
 
     @GetMapping("/{id}/qrcode")
