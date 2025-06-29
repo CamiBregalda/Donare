@@ -28,9 +28,15 @@
 .dropdown.aberto {
   display: block !important;
 }
+
+.dropdown > button {
+  width: 100%;
+  border-radius: 8px;
+}
+
 #ver-perfil{
   cursor: pointer;
-  background: white;
+  background: #f2f2f2;
   border: none;
   padding:5px 10px;
 }
@@ -40,12 +46,13 @@
 
 #logout {
   cursor: pointer;
-  background: white;
+  background: #f2f2f2;
   border: none;
   padding:5px 10px;
 }
 #logout:hover {
-  background-color: #e0e0e0;
+  color: #f2f2f2;
+  background-color:rgb(196, 60, 60);
 }
 
 .search-container {

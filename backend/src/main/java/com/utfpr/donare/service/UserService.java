@@ -189,7 +189,6 @@ public class UserService implements UserDetailsService {
     }
 
     private User findUserById(Long id) {
-
         return userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
     }

@@ -32,6 +32,7 @@ public class Campanha {
     private String categoriaCampanha;
 
     @OneToOne(mappedBy = "campanha", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
     private Endereco endereco;
 
     @Lob

@@ -26,6 +26,7 @@ public class User implements UserDetails {
     private Long id;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @EqualsAndHashCode.Exclude
     private Endereco idEndereco;
 
     private String nome;
