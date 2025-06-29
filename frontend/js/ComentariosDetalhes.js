@@ -3,20 +3,23 @@ import { fetchData } from "./lib/auth.js";
 const usuario = await fetchData();
 
 if (!usuario) {
-      console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
-      return;
+    console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
+    return;
 }
 
 function getIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
     return params.get('id');
 }
-const idCampanha = getIdFromUrl();
-let comments = [];
+const campanhaId = getIdFromUrl();
+const idCampanha = campanhaId;
+
+console.log('OLHAAA:', idCampanha)
+console.log('OLHAAA:', campanhaId)
 
 const token = localStorage.getItem('token');
 function authHeadersForm() {
-  return { 'Authorization': `Bearer ${token}` };
+    return { 'Authorization': `Bearer ${token}` };
 }
 // Carrega dados da campanha, necessidades e postagens
 async function loadCampaignData() {
@@ -402,7 +405,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     document.querySelector('.back-button').addEventListener('click', function (e) {
-    e.preventDefault();
-    window.history.back();
-});
+        e.preventDefault();
+        window.history.back();
+    });
 });

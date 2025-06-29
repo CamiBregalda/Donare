@@ -7,11 +7,23 @@ const main = document.querySelector('main');
 const campanhasSeguidasLista = document.getElementById('campanhas-seguidas');
 const campanhasProximasLista = document.getElementById('campanhas-proximas');
 
-function getImageUrl(imagemCapaBase64) {
-    if (imagemCapaBase64) {
-        return `data:image/jpeg;base64,${imagemCapaBase64}`;
+async function carregarImagem(campanhaId, imgElement) {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`http://localhost:8080/campanhas/${campanhaId}/imagem`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        if (response.ok) {
+            const blob = await response.blob();
+            imgElement.src = URL.createObjectURL(blob);
+        } else {
+            console.warn(`Erro ao carregar imagem da campanha ${campanhaId}:`);
+        }
+    } catch (error) {
+        console.error(`Erro de rede ao carregar imagem da campanha ${campanhaId}:`, error);
     }
-    return 'https://via.placeholder.com/250x150?text=Sem+Imagem';
 }
 
 function criarItemListaLateral(campanha) {
@@ -21,12 +33,11 @@ function criarItemListaLateral(campanha) {
 }
 
 function criarCardCampanha(campanha) {
-    const imageUrl = getImageUrl(campanha.imagemCapa);
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML = `
         <div class="imagem">
-            <img src="${imageUrl}" alt="${campanha.titulo}">
+            <img alt="${campanha.titulo}" data-id="${campanha.id}">
         </div>
         <div class="infos">
             <h3>${campanha.titulo}</h3>
@@ -46,6 +57,10 @@ function criarCardCampanha(campanha) {
                 </button>
             </div>
         </div>`;
+
+    const imgElement = card.querySelector('img');
+    carregarImagem(campanha.id, imgElement);
+    
     return card;
 }
 
@@ -62,7 +77,7 @@ async function atualizarListaCampanhasSeguidas() {
 
     console.log('ID do Usuário para a requisição:', usuario.id);
     try {
-        
+
         const response = await fetch(`http://localhost:8080/usuarios/${usuario.id}/campanhas-seguidas`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -83,7 +98,7 @@ async function atualizarListaCampanhasSeguidas() {
             campanhasSeguidasLista.innerHTML = '<li>Nenhuma campanha seguida no momento.</li>';
         }
     } catch {
-        
+
     }
 }
 
@@ -107,7 +122,7 @@ async function seguirCampanha(idCampanha) {
     console.log('Dados do usuário:', usuario);
     console.log('ID do usuário:', usuario?.id);
     console.log('ID da campanha a ser seguida:', idCampanha);
-    
+
     if (!token || !usuario) {
         alert('Você precisa estar logado para seguir uma campanha')
         return;
