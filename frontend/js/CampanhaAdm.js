@@ -4,6 +4,10 @@ function getIdFromUrl() {
 }
 const idCampanha = getIdFromUrl();
 
+const token = localStorage.getItem('token');
+function authHeadersForm() {
+  return { 'Authorization': `Bearer ${token}` };
+}
 
 //formatação da data apenas
 function formatDateBr(dateStr) {

@@ -5,6 +5,10 @@ function getIdFromUrl() {
 const idCampanha = getIdFromUrl();
 let comments = [];
 
+const token = localStorage.getItem('token');
+function authHeadersForm() {
+  return { 'Authorization': `Bearer ${token}` };
+}
 // Carrega dados da campanha, necessidades e postagens
 async function loadCampaignData() {
     try {

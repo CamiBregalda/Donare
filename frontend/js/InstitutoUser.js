@@ -1,17 +1,10 @@
-document.addEventListener('DOMContentLoaded', () => {
-    function getIdFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('id');
-    }
-    const idUsuario = getIdFromUrl();
-    fetchInstitutionDetails(idUsuario);
-    fetchInstitutionCampaigns(idUsuario);
+const token = localStorage.getItem('token');
+function authHeadersForm() {
+  return { 'Authorization': `Bearer ${token}` };
+}
 
-    document.querySelector('.back-button').addEventListener('click', function (e) {
-    e.preventDefault();
-    window.history.back();
-});
-});
+
+
 
 async function fetchInstitutionDetails(idUsuario) {
     try {
@@ -233,3 +226,18 @@ async function fetchInstitutionCampaigns(idUsuario) {
         document.getElementById('campaignsList').innerHTML = '<p>Erro ao carregar campanhas.</p>';
     }
 } 
+
+document.addEventListener('DOMContentLoaded', () => {
+    function getIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
+    }
+    const idUsuario = getIdFromUrl();
+    fetchInstitutionDetails(idUsuario);
+    fetchInstitutionCampaigns(idUsuario);
+
+    document.querySelector('.back-button').addEventListener('click', function (e) {
+    e.preventDefault();
+    window.history.back();
+    });
+});
