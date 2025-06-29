@@ -73,25 +73,35 @@
                         <span class="seta-necessidades">→</span>
                     </button>
                 </div>
+
                 <div class="form-field">
-                    <label>Rua do Evento:</label>
+                    <label>Logradouro:</label>
                     <input type="text" id="logradouro">
                 </div>
+
                 <div class="form-field">
-                    <label>Número do Evento:</label>
+                    <label>Número:</label>
                     <input type="text" id="numero">
                 </div>
+
                 <div class="form-field">
-                    <label>Bairro do Evento:</label>
+                    <label>Bairro:</label>
                     <input type="text" id="bairro">
                 </div>
 
-<!-- certiicado - tipo certificado
-    categoria - categorias -->
+                <div class="form-field">
+                    <label>Cidade:</label>
+                    <input type="text" id="cidade">
+                </div>
 
                 <div class="form-field">
-                    <label>Cidade do Evento:</label>
-                    <input type="text" id="cidade">
+                    <label>Estado:</label>
+                    <input type="text" id="estado" placeholder="Ex: PR">
+                </div>
+
+                <div class="form-field">
+                    <label>CEP:</label>
+                    <input type="text" id="cep" placeholder="00000-000">
                 </div>
 
                 <div class="form-field">
@@ -101,14 +111,6 @@
                         <option value="a">sijfosaglag</option>
                         <option value="b">asfaesfcaf</option>
                     </select>
-                </div>
-
-                <div class="form-field upload-field">
-                    <label>Adicionar imagem:</label>
-                    <div class="upload-area" onclick="abrirSeletorArquivo()">
-                        <div class="upload-circle">+</div>
-                    </div>
-                    <input type="file" id="arquivoImagem" accept="image/*" style="display: none;">
                 </div>
 
                 <div class="form-field">
@@ -124,6 +126,14 @@
                 <div class="form-field description-field">
                     <label>Descrição da Campanha:</label>
                     <textarea id="descricaoCampanha" rows="6"></textarea>
+                </div>
+
+                <div class="form-field upload-field">
+                    <label>Adicionar imagem:</label>
+                    <div class="upload-area" onclick="abrirSeletorArquivo()">
+                        <div class="upload-circle">+</div>
+                    </div>
+                    <input type="file" id="arquivoImagem" accept="image/*" style="display: none;">
                 </div>
             </div>
 

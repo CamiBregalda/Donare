@@ -2,6 +2,25 @@ const API_CONFIG = {
     baseURL: 'http://localhost:8080'
 };
 
+function verificarAutenticacao() {
+    const token = localStorage.getItem('token');
+    
+    if (!token) {
+        alert('Você precisa fazer login para acessar esta página.');
+        window.location.href = '../pages/login.html';
+        return false;
+    }
+    
+    if (token.trim() === '' || token === 'null' || token === 'undefined') {
+        alert('Sessão expirada. Faça login novamente.');
+        localStorage.removeItem('token');
+        window.location.href = '../pages/login.html';
+        return false;
+    }
+    
+    return true;
+}
+
 function authHeaders(isJson = true) {
     const token = localStorage.getItem('token') || '';
     const response = { Authorization: `Bearer ${token}` };
@@ -76,7 +95,7 @@ class APIService {
     static async deletarCampanha(id) {
         const response = await fetch(`${API_CONFIG.baseURL}/campanhas/${id}`, {
             method: 'DELETE',
-            headers: authHeaders(false) 
+            headers: authHeaders(false)
         });
         if (!response.ok) throw new Error('Erro ao deletar campanha');
     }
@@ -85,7 +104,7 @@ class APIService {
 class APIServiceNecessidades {
     static async getNecessidadesCampanha(campanhaId) {
         const response = await fetch(`${API_CONFIG.baseURL}/necessidade/campanhas/${campanhaId}/necessidades`, {
-            headers: authHeaders(false) 
+            headers: authHeaders(false)
         });
         if (!response.ok) throw new Error('Erro ao carregar necessidades');
         return await response.json();
@@ -94,7 +113,7 @@ class APIServiceNecessidades {
     static async criarNecessidade(campanhaId, necessidade) {
         const response = await fetch(`${API_CONFIG.baseURL}/necessidade/campanhas/${campanhaId}/necessidade`, {
             method: 'POST',
-            headers: authHeaders(true), 
+            headers: authHeaders(true),  
             body: JSON.stringify(necessidade)
         });
         if (!response.ok) throw new Error('Erro ao criar necessidade');
@@ -127,6 +146,10 @@ class GerenciadorCampanhas {
     }
 
     async inicializar() {
+        if (!verificarAutenticacao()) {
+            return;
+        }
+
         try {
             console.log('Tentando carregar campanhas da API...');
             const campanhas = await APIService.getCampanhas();
@@ -161,8 +184,11 @@ class GerenciadorCampanhas {
             }));
             console.log('Campanhas carregadas da API:', this.campanhas);
         } catch (error) {
-            console.log('API indisponível: ', error.message);
+            console.log('Erro ao conectar com a API:', error.message);
+            alert('Erro ao conectar com o servidor. Tente novamente mais tarde.');
+            this.campanhas = [];
         }
+        
         this.renderizarCampanhas();
         this.iniciarVerificadorExpiracao();
     }
@@ -207,24 +233,34 @@ class GerenciadorCampanhas {
             campanha.dataFim.split('-').reverse().join('/') : 
             'Data não informada';
         
+        let enderecoTexto = 'Endereço não informado';
+        if (campanha.local && typeof campanha.local === 'object') {
+            const { logradouro, numero, bairro, cidade } = campanha.local;
+            enderecoTexto = `${logradouro || ''} ${numero || ''}, ${bairro || ''}, ${cidade || ''}`.replace(/\s+/g, ' ').trim();
+            if (enderecoTexto === ',') enderecoTexto = 'Endereço não informado';
+        } else if (campanha.local && typeof campanha.local === 'string') {
+            enderecoTexto = campanha.local;
+        }
+        
         const botaoEditar = campanha.status === 'ativa' ? 
             `<button class="btn-editar" onclick="gerenciadorCampanhas.editarCampanha(${campanha.id})">✏️ Editar</button>` : '';
+        
+        setTimeout(() => this.carregarImagemCampanha(campanha.id), 100);
         
         return `
             <div class="cartao-campanha">
                 <div class="imagem-campanha">
-                    ${campanha.urlImagem ? `<img src="${campanha.urlImagem}" alt="${campanha.titulo}" onerror="this.style.display='none'">` : ''}
+                    <img id="imagem-campanha-${campanha.id}" src="" alt="${campanha.titulo}" style="display: none;">
                     <div class="titulo-campanha">${campanha.titulo}</div>
                     ${botaoEditar}
                 </div>
                 <div class="info-campanha">
-                    <div><strong>Local do evento:</strong> ${campanha.local}</div>
+                    <div><strong>Local do evento:</strong> ${enderecoTexto}</div>
                     <div><strong>Data de início:</strong> ${dataInicio}</div>
                     <div><strong>Data de fim:</strong> ${dataFim}</div>
                 </div>
             </div>`;
     }
-
     verificarCampanhasExpiradas() {
         const hoje = new Date();
         hoje.setHours(0, 0, 0, 0);
@@ -257,40 +293,26 @@ class GerenciadorCampanhas {
         if (campanha) abrirModal(campanha);
     }
 
-    adicionarDadosExemplo() {
-        const hoje = new Date();
-        const proximaSemana = new Date(hoje);
-        proximaSemana.setDate(proximaSemana.getDate() + 7);
-        const ontem = new Date(hoje);
-        ontem.setDate(ontem.getDate() - 1);
-
-        this.campanhas = [
-            {
-                id: 1, titulo: 'Doação de Alimentos', local: 'UTFPR',
-                dataInicio: hoje.toISOString().split('T')[0], dataFim: proximaSemana.toISOString().split('T')[0],
-                urlImagem: 'https://img.migalhas.com.br/gf_Base/empresas/miga/imagens/C834420846D5510C90B88E720709A471B8E5_doacao.jpg',
-                status: 'ativa', necessidades: JSON.stringify([
-                    {id: 1, nome: 'Arroz', quantidade: 50, formato: 'kg'},
-                    {id: 2, nome: 'Feijão', quantidade: 30, formato: 'kg'},
-                    {id: 3, nome: 'Óleo', quantidade: 20, formato: 'litros'}
-                ]),
-                certificados: 'fulano', categoria: 'a',
-                descricao: 'Campanha de arrecadação de alimentos para famílias carentes'
-            },
-            {
-                id: 2, titulo: 'Campanha de Agasalhos', local: 'Praça 500',
-                dataInicio: ontem.toISOString().split('T')[0], dataFim: ontem.toISOString().split('T')[0],
-                urlImagem: 'https://ogimg.infoglobo.com.br/in/22799539-a0c-cff/FT1086A/70757225.jpg',
-                status: 'expirada', necessidades: JSON.stringify([
-                    {id: 3, nome: 'Casacos', quantidade: 100, formato: 'unidades'},
-                    {id: 4, nome: 'Cobertores', quantidade: 50, formato: 'unidades'}
-                ]),
-                certificados: 'fulano', categoria: 'b',
-                descricao: 'Arrecadação de agasalhos para o período de inverno.'
+    async carregarImagemCampanha(campanhaId) {
+    try {
+        const response = await fetch(`http://localhost:8080/campanhas/${campanhaId}/imagem`, {
+            headers: authHeaders(false)
+        });
+        
+        if (response.ok) {
+            const imageBlob = await response.blob();
+            const imageUrl = URL.createObjectURL(imageBlob);
+            
+            const imgElement = document.getElementById(`imagem-campanha-${campanhaId}`);
+            if (imgElement) {
+                imgElement.src = imageUrl;
+                imgElement.style.display = 'block';
             }
-        ];
-        this.renderizarCampanhas();
+        }
+    } catch (error) {
+        console.log(`Erro ao carregar imagem da campanha ${campanhaId}:`, error.message);
     }
+}
 }
 
 let gerenciadorCampanhas;
@@ -323,13 +345,11 @@ function configurarModalNecessidades() {
         btnAdicionar.textContent = 'Adicionar';
     }
 }
-
 function fecharModalNecessidades() {
     document.getElementById('modalNecessidades').style.display = 'none';
 }
 
 function adicionarItemModal() {
-    if (modoEdicaoNecessidades) return;
     
     const nome = document.getElementById('nomeItemModal').value.trim();
     const quantidade = document.getElementById('quantidadeItemModal').value;
@@ -355,8 +375,8 @@ function adicionarItemModal() {
     document.getElementById('formatoItemModal').selectedIndex = 0;
 }
 
+
 function removerItemModal(id) {
-    if (modoEdicaoNecessidades) return;
     necessidadesAtual = necessidadesAtual.filter(item => item.id !== id);
     renderizarListaNecessidades();
 }
@@ -382,11 +402,8 @@ function renderizarListaNecessidades() {
     container.innerHTML = necessidadesAtual.map(item => `
         <div class="item-lista">
             <span class="info-item">
-                ${modoEdicaoNecessidades && item.jaExiste ? 
-                    `${item.nome} - ` : 
-                    `${item.nome} - `
-                }
-                ${modoEdicaoNecessidades && item.jaExiste ? 
+                ${item.nome} - 
+                ${modoEdicaoNecessidades ? 
                     `<input type="number" value="${item.quantidade}" min="1" 
                      oninput="editarQuantidadeItem(${item.id}, this.value)" 
                      onchange="editarQuantidadeItem(${item.id}, this.value)"
@@ -454,7 +471,9 @@ function obterDadosFormulario() {
             logradouro: document.getElementById('logradouro').value.trim(),
             numero: document.getElementById('numero').value.trim(),
             bairro: document.getElementById('bairro').value.trim(),
-            cidade: document.getElementById('cidade').value.trim()
+            cidade: document.getElementById('cidade').value.trim(),
+            estado: document.getElementById('estado').value.trim(),
+            cep: document.getElementById('cep').value.trim()
         },
         necessidades: obterNecessidadesJSON(),
         certificados: document.getElementById('certificados').value,
@@ -471,8 +490,8 @@ function obterArquivoImagem() {
 }
 
 function validarDados(dados) {
-    if (!dados.nome || !dados.dataInicio || !dados.dataFinal || !dados.endereco.logradouro || !dados.endereco.numero || !dados.endereco.bairro || !dados.endereco.cidade) {
-        alert('Por favor, preencha todos os campos obrigatórios: Nome da Campanha, Endereço do Evento, Data de Início e Data Final.');
+    if (!dados.nome || !dados.endereco || !dados.dataInicio || !dados.dataFinal) {
+        alert('Por favor, preencha os campos obrigatórios: Nome da Campanha, Endereço do Evento, Data de Início e Data Final.');
         return false;
     }
     if (new Date(dados.dataFinal) <= new Date(dados.dataInicio)) {
@@ -490,11 +509,15 @@ function preencherFormulario(campanha) {
         document.getElementById('numero').value = campanha.local.numero || '';
         document.getElementById('bairro').value = campanha.local.bairro || '';
         document.getElementById('cidade').value = campanha.local.cidade || '';
+        document.getElementById('estado').value = campanha.local.estado || '';
+        document.getElementById('cep').value = campanha.local.cep || '';
     } else {
         document.getElementById('logradouro').value = '';
         document.getElementById('numero').value = '';
         document.getElementById('bairro').value = '';
         document.getElementById('cidade').value = '';
+        document.getElementById('estado').value = '';
+        document.getElementById('cep').value = '';
     }
 
     document.getElementById('dataInicio').value = campanha.dataInicio || '';
@@ -681,7 +704,7 @@ async function excluirCampanha(id) {
 }
 
 function limparFormulario() {
-    ['nomeCampanha', 'enderecoEvento', 'dataInicio', 'dataFinal', 'descricaoCampanha', 'arquivoImagem'].forEach(id => {
+    ['nomeCampanha', 'logradouro', 'numero', 'bairro', 'cidade', 'estado', 'cep', 'dataInicio', 'dataFinal', 'descricaoCampanha', 'arquivoImagem'].forEach(id => {
         const elemento = document.getElementById(id);
         if (elemento) elemento.value = '';
     });
@@ -713,6 +736,10 @@ document.addEventListener('click', e => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    if (!verificarAutenticacao()) {
+        return;
+    }
+    
     gerenciadorCampanhas = new GerenciadorCampanhas();
     
     const inputArquivo = document.getElementById('arquivoImagem');
