@@ -46,12 +46,10 @@ public class UserService implements UserDetailsService {
     public  UserResponseDTO save(UserRequestDTO dto, MultipartFile midia) {
 
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-
             throw new BadRequestException("O e-mail '" + dto.getEmail() + "' já está em uso.");
         }
 
         if (userRepository.findByCpfOuCnpj(dto.getCpfOuCnpj()).isPresent()) {
-
             throw new BadRequestException("O CPF/CNPJ '" + dto.getCpfOuCnpj() + "' já está cadastrado.");
         }
 

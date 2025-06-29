@@ -2,7 +2,7 @@
 	const API_BASE = 'http://localhost:8080';
 
 	function authHeaders(isJson = true) {
-		const token = localStorage.getItem('authToken') || '';
+		const token = localStorage.getItem('token') || '';
 		const response = { Authorization: `Bearer ${token}` };
 		if (isJson) response['Content-Type'] = 'application/json';
 		return response;

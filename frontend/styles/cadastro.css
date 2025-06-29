@@ -15,7 +15,7 @@
 }
 
 form{
-    padding: 3vh;
+    padding: 4vh;
     width: 100%;
     display: flex;
     flex-direction: column;
@@ -32,14 +32,25 @@ form{
     flex-direction: column;
 }
 
+.endereco div{
+    gap: 1vh;
+    display: flex;
+}
 .endereco{
     display: flex;
+    flex-direction: column;
+    gap: 2vh;
+}
+#cep{
+    flex: 1;
+}
+#bairro{
+    flex: 2;
 }
 
 label{
   margin-top: 2vh;
   font-size: 1rem;
-  margin-bottom: 1vh;
   padding-left: 1vw;
 }
 
@@ -47,12 +58,12 @@ input{
     width: 100%;
     border: none;
     border-radius: 10px;
-    padding: 2vh;
+    padding: 1.5vh;
     background-color: #f2f2f2;
 }
 
 button{
-    margin-top: 5vw;
+    margin-top: 3vw;
     padding: 2vh;
     border: none;
     width: 60%;

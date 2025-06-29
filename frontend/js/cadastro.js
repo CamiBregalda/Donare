@@ -22,6 +22,11 @@ document.querySelector('form').addEventListener('submit', function(e){
         return;
     }
 
+    if(estado.length != 2){
+        alert('Lembre-se a Sigla possuiu dois caracteres');
+        document.getElementById('estado').focus();
+    }
+
     let tipoDocumento;
     if(cpfCnpj.length === 11){
         tipoDocumento = 1;
@@ -49,7 +54,6 @@ document.querySelector('form').addEventListener('submit', function(e){
 
     console.log(novoUsuario);
 
-
     const formData = new FormData();
     formData.append('user', new Blob(
     [JSON.stringify(novoUsuario)],
@@ -61,7 +65,6 @@ document.querySelector('form').addEventListener('submit', function(e){
         headers: {'Accept': 'application/json'},
         body: formData
     })
-
     .then(res=>{
         if(!res.ok) throw new Error('Erro no Cadastro');
         return res.json();

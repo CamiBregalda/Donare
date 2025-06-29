@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="../styles/main.css">
     <link rel="stylesheet" href="../styles/cadastro.css">
 </head>
+
 <body>
     <div class="container">
         <div class="lado-cadastro">
@@ -27,15 +29,21 @@
 
                 <label>Endereço:</label>
                 <div class="endereco">
-                    <input type="text" id="logradouro" placeholder=" Logradouro" required>
-                    <input type="text" id="numero" placeholder=" Número" required>
-                    <input type="text" id="complemento" placeholder=" Complemento" required>
-                    <input type="text" id="bairro" placeholder=" Bairro" required>
-                    <input type="text" id="cidade" placeholder="Cidade" required>
-                    <input type="text" id="estado" placeholder=" Estado" required>
-                    <input type="text" id="cep" placeholder=" CEP" required>
-                </div>
+                    <div class="linha">
+                        <input type="text" id="logradouro" placeholder=" Logradouro" required>
+                        <input type="text" id="numero" placeholder=" Número" required>
+                        <input type="text" id="complemento" placeholder=" Complemento" required>
+                    </div>
+                    <div class="linha">
+                        <input type="text" id="cep" placeholder=" CEP" required>
+                        <input type="text" id="bairro" placeholder=" Bairro" required>
+                    </div>
+                    <div class="linha">
+                        <input type="text" id="cidade" placeholder="Cidade" required>
+                        <input type="text" id="estado" placeholder="Sigla do Estado" required>
+                    </div>
 
+                </div>
 
                 <label for="senha" class="senha">Senha:</label>
                 <input type="password" id="senha" placeholder="Digite sua senha" required>
@@ -43,7 +51,7 @@
                 <label for="confirma-senha" class="confirma-senha">Confirme sua senha:</label>
                 <input type="password" id="confirma-senha" placeholder="Confirme sua senha" required>
 
-                <button type="submit">Cadasrar</button>
+                <button type="submit">Cadastrar</button>
             </form>
         </div>
         <div class="lado-logo">
@@ -52,4 +60,5 @@
     </div>
     <script src="../js/cadastro.js"></script>
 </body>
+
 </html>
