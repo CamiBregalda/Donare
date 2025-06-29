@@ -67,6 +67,7 @@ main {
 
 .card {
     flex: 0 0 auto;
+    cursor: pointer;
     background: #f2f2f2;
     border-radius: 10px;
     width: 45vh;
@@ -79,7 +80,7 @@ main {
 
 .imagem img {
     width: 100%;
-    height: 12vw;
+    height: 20vh;
     object-fit: cover;
 }
 
@@ -96,25 +97,18 @@ main {
     margin-bottom: 1vh;
 }
 
-.acoes {
+.acao {
     display: flex;
-    gap: 2vw;
-}
-
-.icon-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1.2rem;
+    justify-content: flex-end;
 }
 
 .seguir {
     background: #7DBFA8;
     border: none;
-    padding: 1vh 5vh;
+    margin-right: 1vw;
+    padding: 1vh 8vh;
     border-radius: 5px;
     font-weight: bolder;
     color: #f2f2f2;
     cursor: pointer;
-    margin-left: 4vh;
 }
