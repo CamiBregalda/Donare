@@ -21,6 +21,13 @@ public class EnderecoRequestDto {
     @Size(min = 3, max = 100, message = "O logradouro deve ter entre 3 e 100 caracteres.")
     private String logradouro;
 
+    @Schema(description = "Nome do complemento (apto, etc.).",
+            example = "Apto 18",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "O complemento é obrigatório.")
+    @Size(min = 3, max = 100, message = "O complemento deve ter entre 3 e 100 caracteres.")
+    private String complemento;
+
     @Schema(description = "Nome do bairro.",
             example = "Centro",
             requiredMode = Schema.RequiredMode.REQUIRED)
@@ -42,10 +49,17 @@ public class EnderecoRequestDto {
     @Size(min = 3, max = 50, message = "A cidade deve ter entre 3 e 50 caracteres.")
     private String cidade;
 
-    @Schema(description = "Sigla da Unidade Federativa (UF) do Brasil (ex: PR, SP, RJ).",
+    @Schema(description = "Sigla do estado do Brasil (ex: PR, SP, RJ).",
             example = "PR",
             requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "A UF é obrigatória.")
-    @Size(min = 2, max = 2, message = "A UF deve ter 2 caracteres.")
-    private String uf;
+    @NotBlank(message = "O estado é obrigatória.")
+    @Size(min = 2, max = 2, message = "O estado deve ter 2 caracteres.")
+    private String estado;
+
+    @Schema(description = "Sigla do CEP (ex: 00000000000).",
+            example = "85660000",
+            requiredMode = Schema.RequiredMode.REQUIRED)
+    @NotBlank(message = "O CEP é obrigatória.")
+    @Size(min = 8, max = 20, message = "O CEP deve ter no mínimo 8 caracteres.")
+    private String cep;
 }

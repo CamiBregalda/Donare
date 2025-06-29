@@ -30,7 +30,7 @@ form.addEventListener('submit', async function (e) {
         }
 
         const token = await response.text();
-        localStorage.setItem('authToken', token);
+        localStorage.setItem('token', token);
 
         const userDataResponse = await fetch(`http://localhost:8080/usuarios/email/${email}`, {
             headers: { 'Authorization': `Bearer ${token}` }

@@ -1,19 +1,21 @@
 package com.utfpr.donare.controller;
 
-import com.utfpr.donare.dto.CampanhaRequestDTO;
-import com.utfpr.donare.dto.CampanhaResponseDTO;
-import com.utfpr.donare.dto.VoluntarioResponseDTO;
+import com.utfpr.donare.domain.enums.CategoriaEnum;
+import com.utfpr.donare.domain.enums.TipoCertificadoEnum;
+import com.utfpr.donare.dto.*;
 import com.utfpr.donare.service.CampanhaService;
 import com.utfpr.donare.service.QRCodeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -31,9 +33,22 @@ public class CampanhaController {
             @RequestPart("campanha") CampanhaRequestDTO campanhaRequestDTO,
             @RequestPart(value = "imagemCapa", required = false) MultipartFile imagemCapa) {
 
-        String organizadorEmail = obterMockOrganizadorEmail();
+        String organizadorEmail = getOrganizadorEmail();
         CampanhaResponseDTO novaCampanha = campanhaService.criarCampanha(campanhaRequestDTO, imagemCapa, organizadorEmail);
         return new ResponseEntity<>(novaCampanha, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/historico")
+    public ResponseEntity<List<CampanhaResponseDTO>> findAllHistory(
+            @RequestParam(required = false) String tipo,
+            @RequestParam(required = false) String localidade,
+            @RequestParam(required = false) String usuario,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "dtInicio") String sort) {
+
+        List<CampanhaResponseDTO> campanhas = campanhaService.listarHistoricoCampanhas(tipo, localidade, usuario, page, size, sort);
+        return ResponseEntity.ok(campanhas);
     }
 
     @GetMapping
@@ -75,14 +90,14 @@ public class CampanhaController {
             @RequestPart("campanha") CampanhaRequestDTO campanhaRequestDTO,
             @RequestPart(value = "imagemCapa", required = false) MultipartFile imagemCapa) {
 
-        String organizadorEmail = obterMockOrganizadorEmail();
+        String organizadorEmail = getOrganizadorEmail();
         CampanhaResponseDTO campanhaAtualizada = campanhaService.atualizarCampanha(id, campanhaRequestDTO, imagemCapa, organizadorEmail);
         return ResponseEntity.ok(campanhaAtualizada);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        String organizadorEmail = obterMockOrganizadorEmail();
+        String organizadorEmail = getOrganizadorEmail();
         campanhaService.deletarCampanha(id, organizadorEmail);
         return ResponseEntity.noContent().build();
     }
@@ -91,6 +106,24 @@ public class CampanhaController {
     public ResponseEntity<List<VoluntarioResponseDTO>> listVolunteersByCampaign(@PathVariable Long id) {
         List<VoluntarioResponseDTO> voluntarios = campanhaService.listarVoluntariosPorCampanha(id);
         return ResponseEntity.ok(voluntarios);
+    }
+
+    @GetMapping("/categorias")
+    public ResponseEntity<List<String>> listarTiposCampanha() {
+        List<String> tipos = Arrays.stream(CategoriaEnum.values())
+                .map(CategoriaEnum::getDescricao)
+                .toList();
+
+        return ResponseEntity.ok(tipos);
+    }
+
+    @GetMapping("/certificados")
+    public ResponseEntity<List<String>> listarTiposCertificado() {
+        List<String> tipos = Arrays.stream(TipoCertificadoEnum.values())
+                .map(TipoCertificadoEnum::getDescricao)
+                .toList();
+
+        return ResponseEntity.ok(tipos);
     }
 
     @GetMapping("/{id}/qrcode")
@@ -110,7 +143,8 @@ public class CampanhaController {
         return new ResponseEntity<>(qrCodeImage, headers, HttpStatus.OK);
     }
 
-    private String obterMockOrganizadorEmail() {
-        return ".com";
+    private String getOrganizadorEmail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
     }
 }

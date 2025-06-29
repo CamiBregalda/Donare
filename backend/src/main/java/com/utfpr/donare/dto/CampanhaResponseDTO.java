@@ -16,7 +16,7 @@ public class CampanhaResponseDTO {
     private String titulo;
     private String descricao;
     private String categoriaCampanha;
-    private String endereco;
+    private EnderecoResponseDto endereco;
     private byte[] imagemCapa;
     private String status;
     private String tipoCertificado;
