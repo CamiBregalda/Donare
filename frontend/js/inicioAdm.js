@@ -449,7 +449,13 @@ function criarNovaCampanha() {
 function obterDadosFormulario() {
     return {
         nome: document.getElementById('nomeCampanha').value.trim(),
-        endereco: document.getElementById('enderecoEvento').value.trim(),
+        
+        endereco:{
+            logradouro: document.getElementById('logradouro').value.trim(),
+            numero: document.getElementById('numero').value.trim(),
+            bairro: document.getElementById('bairro').value.trim(),
+            cidade: document.getElementById('cidade').value.trim()
+        },
         necessidades: obterNecessidadesJSON(),
         certificados: document.getElementById('certificados').value,
         categoria: document.getElementById('categoriaCampanha').value,
@@ -465,8 +471,8 @@ function obterArquivoImagem() {
 }
 
 function validarDados(dados) {
-    if (!dados.nome || !dados.endereco || !dados.dataInicio || !dados.dataFinal) {
-        alert('Por favor, preencha os campos obrigatórios: Nome da Campanha, Endereço do Evento, Data de Início e Data Final.');
+    if (!dados.nome || !dados.dataInicio || !dados.dataFinal || !dados.endereco.logradouro || !dados.endereco.numero || !dados.endereco.bairro || !dados.endereco.cidade) {
+        alert('Por favor, preencha todos os campos obrigatórios: Nome da Campanha, Endereço do Evento, Data de Início e Data Final.');
         return false;
     }
     if (new Date(dados.dataFinal) <= new Date(dados.dataInicio)) {
@@ -478,7 +484,19 @@ function validarDados(dados) {
 
 function preencherFormulario(campanha) {
     document.getElementById('nomeCampanha').value = campanha.titulo || '';
-    document.getElementById('enderecoEvento').value = campanha.local || '';
+    
+    if (campanha.local && typeof campanha.local === 'object') {
+        document.getElementById('logradouro').value = campanha.local.logradouro || '';
+        document.getElementById('numero').value = campanha.local.numero || '';
+        document.getElementById('bairro').value = campanha.local.bairro || '';
+        document.getElementById('cidade').value = campanha.local.cidade || '';
+    } else {
+        document.getElementById('logradouro').value = '';
+        document.getElementById('numero').value = '';
+        document.getElementById('bairro').value = '';
+        document.getElementById('cidade').value = '';
+    }
+
     document.getElementById('dataInicio').value = campanha.dataInicio || '';
     document.getElementById('dataFinal').value = campanha.dataFim || '';
     document.getElementById('descricaoCampanha').value = campanha.descricao || '';
