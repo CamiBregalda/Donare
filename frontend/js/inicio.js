@@ -35,6 +35,7 @@ function criarItemListaLateral(campanha) {
 function criarCardCampanha(campanha) {
     const card = document.createElement('div');
     card.className = 'card';
+    card.dataset.id = campanha.id;
     card.innerHTML = `
         <div class="imagem">
             <img alt="${campanha.titulo}" data-id="${campanha.id}">
@@ -42,25 +43,19 @@ function criarCardCampanha(campanha) {
         <div class="infos">
             <h3>${campanha.titulo}</h3>
             <p>${campanha.descricao}</p>
-            <div class="acoes">
-                <button class="icon-btn">
-                    <img src="../assets/fi-rr-heart.png" alt="curtir">
-                </button>
-                <button class="icon-btn" id="comentar" data-id="${campanha.id}">
-                    <img src="../assets/fi-rr-comment.png" alt="comentar">
-                </button>
-                
+            <div class="acao">    
                 <button class="seguir" data-id="${campanha.id}">Seguir</button>
-                
-                <button class="icon-btn">
-                    <img src="../assets/fi-rr-share.png" alt="compartilhar">
-                </button>
             </div>
         </div>`;
 
     const imgElement = card.querySelector('img');
     carregarImagem(campanha.id, imgElement);
     
+    card.addEventListener('dblclick', (event) => {
+        if(!event.target.closest('.seguir')){
+            window.location.href = `../pages/ComentariosDetalhes.html?id=${campanha.id}`;
+        }
+    })
     return card;
 }
 
@@ -113,11 +108,9 @@ function atualizarListaCampanhasProximas(campanhasProximas) {
     }
 }
 
-
 async function seguirCampanha(idCampanha) {
     const token = localStorage.getItem('token');
     const usuario = await fetchData();
-
 
     console.log('Dados do usuário:', usuario);
     console.log('ID do usuário:', usuario?.id);
@@ -232,15 +225,6 @@ main.addEventListener('click', (event) => {
         const campanhaId = parseInt(btnSeguir.dataset.id, 10);
         seguirCampanha(campanhaId);
     }
-
-    const btnComentar = event.target.closest('#comentar');
-    if (btnComentar) {
-        event.preventDefault();
-        const campanhaId = parseInt(btnComentar.dataset.id, 10);
-        window.location.href = `../pages/ComentariosDetalhes.html?id=${campanhaId}`;
-
-    }
-
 });
 
 document.addEventListener('DOMContentLoaded', () => {
