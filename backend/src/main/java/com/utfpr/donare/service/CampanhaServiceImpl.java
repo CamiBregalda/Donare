@@ -1,25 +1,23 @@
 package com.utfpr.donare.service;
 
-import com.utfpr.donare.domain.Campanha;
-import com.utfpr.donare.domain.Endereco;
 import com.utfpr.donare.dto.CampanhaRequestDTO;
 import com.utfpr.donare.dto.CampanhaResponseDTO;
 import com.utfpr.donare.dto.VoluntarioResponseDTO;
 import com.utfpr.donare.exception.ResourceNotFoundException;
 import com.utfpr.donare.mapper.CampanhaMapper;
-import com.utfpr.donare.mapper.EnderecoMapper;
+import com.utfpr.donare.domain.Campanha;
 import com.utfpr.donare.repository.CampanhaRepository;
-import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.data.jpa.domain.Specification;
 
+import jakarta.persistence.criteria.Predicate;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +29,6 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     private final CampanhaRepository campanhaRepository;
     private final CampanhaMapper campanhaMapper;
-    private final EnderecoMapper enderecoMapper;
 
     @Override
     @Transactional
@@ -50,13 +47,7 @@ public class CampanhaServiceImpl implements CampanhaService {
                 throw new RuntimeException("Erro ao processar imagem de capa", e);
             }
         }
-        Endereco endereco = campanha.getEndereco();
-        endereco.setCampanha(campanha);
-
-        campanha.setAtivo(true);
-
         Campanha campanhaSalva = campanhaRepository.save(campanha);
-
         return campanhaMapper.entityToResponseDto(campanhaSalva);
     }
 
@@ -81,7 +72,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CampanhaResponseDTO> listarHistoricoCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort) {
+    public List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort) {
         Sort.Direction direction = Sort.Direction.DESC;
         String property = "dtInicio";
         if (sort != null && !sort.isEmpty()) {
@@ -103,37 +94,8 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort) {
-        Sort.Direction direction = Sort.Direction.DESC;
-        String property = "dtInicio";
-        if (sort != null && !sort.isEmpty()) {
-            if (sort.equalsIgnoreCase("dt_fim")) {
-                property = "dt_fim";
-            } else if (sort.equalsIgnoreCase("titulo")) {
-                property = "titulo";
-            }
-        }
-
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, property));
-
-        Specification<Campanha> spec = criarFiltroCampanha(tipo, localidade, usuario);
-        Specification<Campanha> ativoSpec = (root, query, criteriaBuilder) ->
-                criteriaBuilder.isTrue(root.get("ativo"));
-
-        Specification<Campanha> combinedSpec = Specification.where(spec).and(ativoSpec);
-
-        Page<Campanha> campanhasPage = campanhaRepository.findAll(combinedSpec, pageable);
-
-        return campanhasPage.getContent().stream()
-                .map(campanhaMapper::entityToResponseDto)
-                .collect(Collectors.toList());
-    }
-
-
-    @Override
-    @Transactional(readOnly = true)
     public CampanhaResponseDTO buscarCampanhaPorId(Long id) {
-        Campanha campanha = campanhaRepository.findByIdAndAtivoTrue(id)
+        Campanha campanha = campanhaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
         return campanhaMapper.entityToResponseDto(campanha);
     }
@@ -173,7 +135,7 @@ public class CampanhaServiceImpl implements CampanhaService {
         if (!campanha.getOrganizador().equals(organizadorEmail)) {
             throw new RuntimeException("Apenas o organizador pode deletar a campanha");
         }
-        campanhaRepository.deletePorId(campanha.getId());
+        campanhaRepository.delete(campanha);
     }
 
     @Override

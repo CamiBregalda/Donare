@@ -102,7 +102,7 @@ async function renderizaCampanhas() {
 
         const cidadeUsuario = usuario?.idEndereco?.cidade;
 
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('authToken');
         const response = await fetch('http://localhost:8080/campanhas', {
             headers: {
                 Authorization: `Bearer ${token}`,

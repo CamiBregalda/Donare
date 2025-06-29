@@ -19,7 +19,7 @@ public class CampanhaRequestDTO {
 
     private String categoriaCampanha;
 
-    private EnderecoRequestDto endereco;
+    private String endereco;
 
     private String status;
 

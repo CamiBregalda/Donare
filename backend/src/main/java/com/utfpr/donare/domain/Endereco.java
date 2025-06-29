@@ -20,27 +20,15 @@ public class Endereco {
 
     private String logradouro;
 
-    private String complemento;
-
     private String bairro;
 
     private String numero;
 
     private String cidade;
 
-    private String estado;
-
-    private String cep;
+    private String uf;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true)
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User user;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "campanha_id", unique = true)
-    private Campanha campanha;
-
-    public String getEnderecoString() {
-        return logradouro + " número " + numero + ", " + complemento + ", " + bairro + ", " + cidade + ", " + estado + ", " + cep;
-    }
 }

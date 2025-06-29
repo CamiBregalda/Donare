@@ -2,7 +2,7 @@ import { jwtDecode } from "./jwt-decode.js";
 
 export async function fetchData() {
     try {
-        const token = localStorage.getItem("token");
+        const token = localStorage.getItem("authToken");
 
         if (!token) {
             alert("Você precisa estar logado para acessar esta página.");
@@ -15,7 +15,7 @@ export async function fetchData() {
             payload = jwtDecode(token);
         } catch (decodeError) {
             console.error("Erro ao decodificar o token JWT. O token pode ser inválido ou não é um JWT válido.", decodeError);
-            localStorage.removeItem("token");
+            localStorage.removeItem("authToken");
             window.location.href = "../pages/login.html";
             return null;
         }
@@ -29,7 +29,7 @@ export async function fetchData() {
         });
 
         if (!response.ok) {
-            localStorage.removeItem("token");
+            localStorage.removeItem("authToken");
             throw new Error("Falha ao buscar dados do usuário.");
         }
 
@@ -40,7 +40,7 @@ export async function fetchData() {
 
     } catch (err) {
         console.error("Erro ao carregar dados:", err);
-        localStorage.removeItem("token");
+        localStorage.removeItem("authToken");
         window.location.href = "../pages/login.html";
         return null;
     }

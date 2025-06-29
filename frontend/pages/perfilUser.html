@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Donare – Perfil</title>
   <link rel="stylesheet" href="../styles/header.css">
   <link rel="stylesheet" href="../styles/main.css">
   <link rel="stylesheet" href="../styles/perfilUser.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
+
 <body>
   <div id="header-placeholder"></div>
 
@@ -17,14 +19,14 @@
       <section class="user-info">
         <img id="profileImg" src="../img/cachorro.jpg" alt="Foto de perfil" class="profile-img">
         <div class="user-details">
-          <h1 id="userName"></h1>
-          <p id="userEmail"></p>
-          <p id="userCityState"></p>
+          <h2 id="userName">Nome Usuário</h2>
+          <p id="userEmail">email@email.com</p>
+          <p id="userCityState">Cidade, Estado</p>
         </div>
       </section>
       <div class="floating-buttons">
-        <button id="editProfileBtn" class="edit-button">Editar Perfil</button>
-        <button id="manageCampaignsBtn" class="edit-button">Gerenciar Campanhas</button>
+        <button id="btnEditProfile" class="edit-button" onclick="abrirModal()">Editar Perfil</button>
+        <button id="btnManageCampaigns" class="edit-button" onclick="goToCampanhaAdm()">Gerenciar Campanhas</button>
       </div>
     </div>
 
@@ -40,89 +42,89 @@
     </section>
   </main>
 
-  <!-- Modal de edição de perfil -->
+
   <div id="modal" class="modal">
     <div class="modal-content">
-      <span id="closeModal" class="modal-close">&times;</span>
-      <form id="profileForm">
+      <span class="modal-close" onclick="fecharModal()">&times;</span>
+      <form id="editProfileForm">
         <div class="modal-body">
           <div class="modal-left">
             <div class="avatar-container">
-              <img id="avatarIcon" class="avatar-icon" src="../img/cachorro.jpg" alt="Preview do avatar" />
-              <button type="button" class="btn-alterar-foto" onclick="document.getElementById('inputAvatar').click()">
+              <div class="avatar-icon" id="avatarIcon"><i class="fas fa-user"></i></div>
+              <button type="button" class="btn-alterar-foto" onclick="document.getElementById('inputFoto').click()">
                 Alterar Foto
               </button>
-              <input type="file" id="inputAvatar" accept="image/*" style="display:none" />
+              <input type="file" id="inputFoto" accept="image/*" style="display:none"
+                onchange="previewProfileImage(event)">
             </div>
-            <label for="inputCpf">CPF/CNPJ:</label>
-            <input type="text" id="inputCpf" disabled>
-
+            <label>CPF/CNPJ:</label>
+            <input type="text" id="cpfOuCnpj" disabled>
             <label>Senha:</label>
-            <input type="password" id="displayPassword" value="*******" disabled>
+            <input type="password" id="password" value="*******" disabled>
             <button type="button" class="btn-alterar-senha" onclick="abrirModalSenha()">
               Alterar Senha
             </button>
           </div>
           <div class="modal-right">
             <div class="field full">
-              <label for="inputEmail">Email:</label>
-              <input type="email" id="inputEmail" required>
+              <label for="email">Email:</label>
+              <input type="email" id="email" required>
             </div>
             <div class="field full">
-              <label for="inputName">Nome:</label>
-              <input type="text" id="inputName" required>
+              <label for="nome">Nome:</label>
+              <input type="text" id="nome" required>
             </div>
             <div class="field full">
-              <label for="inputLogradouro">Logradouro:</label>
-              <input type="text" id="inputLogradouro" required>
+              <label for="logradouro">Logradouro:</label>
+              <input type="text" id="logradouro" required>
             </div>
             <div class="field full">
-              <label for="inputNumero">Número:</label>
-              <input type="text" id="inputNumero" required>
+              <label for="numero">Número:</label>
+              <input type="text" id="numero" required>
             </div>
             <div class="field full">
-              <label for="inputBairro">Bairro:</label>
-              <input type="text" id="inputBairro" required>
+              <label for="bairro">Bairro:</label>
+              <input type="text" id="bairro" required>
             </div>
             <div class="field half">
-              <label for="inputComplemento">Complemento:</label>
-              <input type="text" id="inputComplemento">
+              <label for="complemento">Complemento:</label>
+              <input type="text" id="complemento">
             </div>
             <div class="field half">
-              <label for="inputCep">CEP:</label>
-              <input type="text" id="inputCep">
+              <label for="cep">CEP:</label>
+              <input type="text" id="cep">
             </div>
             <div class="field half">
-              <label for="inputCidade">Cidade:</label>
-              <input type="text" id="inputCidade" required>
+              <label for="cidade">Cidade:</label>
+              <input type="text" id="cidade" required>
             </div>
             <div class="field half">
-              <label for="inputUf">Estado (UF):</label>
-              <input type="text" id="inputUf" maxlength="2" required>
+              <label for="estado">Estado (UF):</label>
+              <input type="text" id="estado" maxlength="2" required>
             </div>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" id="cancelModal" class="btn-cancelar">Cancelar</button>
+          <button type="button" class="btn-cancelar" onclick="fecharModal()">Cancelar</button>
           <button type="submit" class="btn-confirmar">Concluir</button>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Modal de troca de senha -->
   <div id="modalSenha" class="modal">
-    <div class="modal-content" style="max-width:400px;">
-      <span id="closeModalSenha" class="modal-close">&times;</span>
-      <form id="passwordForm">
-        <h3 style="text-align:center; margin-bottom:1rem;">Alterar Senha</h3>
-        <label for="inputOldPass">Senha atual:</label>
-        <input type="password" id="inputOldPass" required>
-        <label for="inputNewPass">Nova senha:</label>
-        <input type="password" id="inputNewPass" required>
+    <div class="modal-content" style="max-width: 400px;">
+      <span class="modal-close" onclick="fecharModalSenha()">&times;</span>
+      <form id="formAlterarSenha">
+        <h3 style="text-align:center; color:white; margin-bottom:1rem;">Alterar Senha</h3>
+        <label for="senhaAtual" style="color:white;">Senha atual:</label>
+        <input type="password" id="senhaAtual" required>
+        <label for="senhaNova" style="color:white;">Nova senha:</label>
+        <input type="password" id="senhaNova" required>
         <div class="modal-footer">
-          <button type="button" class="btn-cancelar" onclick="fecharModalSenha()">Cancelar</button>
-          <button type="submit" class="btn-confirmar">Confirmar</button>
+          <button type="submit" class="btn-confirmar" style="background-color:#4A6D7C;">
+            Confirmar
+          </button>
         </div>
       </form>
     </div>
@@ -131,4 +133,5 @@
   <script defer src="../js/header.js"></script>
   <script defer src="../js/perfilUser.js"></script>
 </body>
+
 </html>

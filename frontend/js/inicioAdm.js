@@ -1,180 +1,12 @@
-const API_CONFIG = {
-    baseURL: 'http://localhost:8080'
-};
-
-function authHeaders(isJson = true) {
-    const token = localStorage.getItem('token') || '';
-    const response = { Authorization: `Bearer ${token}` };
-    if (isJson) response['Content-Type'] = 'application/json';
-    return response;
-}
-
-class APIService {
-    static async getCampanhas() {
-        const response = await fetch(`${API_CONFIG.baseURL}/campanhas`, {
-            headers: authHeaders(false) 
-        });
-        if (!response.ok) throw new Error('Erro ao carregar campanhas');
-        return await response.json();
-    }
-
-    static async criarCampanha(dados, arquivo = null) {
-        const formData = new FormData();
-        
-        const campanhaBlob = new Blob([JSON.stringify(dados)], {
-            type: 'application/json'
-        });
-        formData.append('campanha', campanhaBlob);
-        
-        if (arquivo) {
-            formData.append('imagemCapa', arquivo);
-        }
-        
-        console.log('Enviando form-data com application/json...');
-        console.log('Dados da campanha:', JSON.stringify(dados, null, 2));
-        console.log('Arquivo:', arquivo ? arquivo.name : 'Nenhum');
-        
-        const token = localStorage.getItem('token') || '';
-        const response = await fetch(`${API_CONFIG.baseURL}/campanhas`, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: formData
-        });
-        
-        console.log('Response status:', response.status);
-        
-        if (!response.ok) throw new Error('Erro ao criar campanha');
-        return await response.json();
-    }
-
-    static async atualizarCampanha(id, dados, arquivo = null) {
-        const formData = new FormData();
-        
-        const campanhaBlob = new Blob([JSON.stringify(dados)], {
-            type: 'application/json'
-        });
-        formData.append('campanha', campanhaBlob);
-        
-        if (arquivo) {
-            formData.append('imagemCapa', arquivo);
-        }
-        
-        const token = localStorage.getItem('token') || '';
-        const response = await fetch(`${API_CONFIG.baseURL}/campanhas/${id}`, {
-            method: 'PUT',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
-            body: formData
-        });
-        if (!response.ok) throw new Error('Erro ao atualizar campanha');
-        return await response.json();
-    }
-
-    static async deletarCampanha(id) {
-        const response = await fetch(`${API_CONFIG.baseURL}/campanhas/${id}`, {
-            method: 'DELETE',
-            headers: authHeaders(false) 
-        });
-        if (!response.ok) throw new Error('Erro ao deletar campanha');
-    }
-}
-
-class APIServiceNecessidades {
-    static async getNecessidadesCampanha(campanhaId) {
-        const response = await fetch(`${API_CONFIG.baseURL}/necessidade/campanhas/${campanhaId}/necessidades`, {
-            headers: authHeaders(false) 
-        });
-        if (!response.ok) throw new Error('Erro ao carregar necessidades');
-        return await response.json();
-    }
-
-    static async criarNecessidade(campanhaId, necessidade) {
-        const response = await fetch(`${API_CONFIG.baseURL}/necessidade/campanhas/${campanhaId}/necessidade`, {
-            method: 'POST',
-            headers: authHeaders(true), 
-            body: JSON.stringify(necessidade)
-        });
-        if (!response.ok) throw new Error('Erro ao criar necessidade');
-        return await response.json();
-    }
-
-    static async atualizarNecessidade(necessidadeId, necessidade) {
-        const response = await fetch(`${API_CONFIG.baseURL}/necessidade/necessidades/${necessidadeId}`, {
-            method: 'PUT',
-            headers: authHeaders(true), 
-            body: JSON.stringify(necessidade)
-        });
-        if (!response.ok) throw new Error('Erro ao atualizar necessidade');
-        return await response.json();
-    }
-
-    static async deletarNecessidade(necessidadeId) {
-        const response = await fetch(`${API_CONFIG.baseURL}/necessidade/necessidades/${necessidadeId}`, {
-            method: 'DELETE',
-            headers: authHeaders(false) 
-        });
-        if (!response.ok) throw new Error('Erro ao deletar necessidade');
-    }
-}
-
 class GerenciadorCampanhas {
     constructor() {
         this.campanhas = [];
         this.inicializar();
     }
 
-    async inicializar() {
-        try {
-            console.log('Tentando carregar campanhas da API...');
-            const campanhas = await APIService.getCampanhas();
-            
-            this.campanhas = await Promise.all(campanhas.map(async c => {
-                let necessidades = '[]';
-                try {
-                    const necessidadesAPI = await APIServiceNecessidades.getNecessidadesCampanha(c.id);
-                    necessidades = JSON.stringify(necessidadesAPI.map(n => ({
-                        id: n.id,
-                        nome: n.nome,
-                        quantidade: n.quantidadeNecessaria,
-                        formato: n.unidadeMedida
-                    })));
-                } catch (error) {
-                    console.log(`Erro ao carregar necessidades da campanha ${c.id}:`, error.message);
-                }
-
-                return {
-                    id: c.id,
-                    titulo: c.titulo,
-                    local: c.endereco,
-                    dataInicio: c.dtInicio?.split('T')[0] || '',
-                    dataFim: c.dt_fim?.split('T')[0] || '',
-                    urlImagem: c.imagemCapa,
-                    status: this.determinarStatus(c.dt_fim),
-                    necessidades: necessidades,
-                    certificados: c.tipoCertificado || '',
-                    categoria: c.categoriaCampanha || '',
-                    descricao: c.descricao || ''
-                };
-            }));
-            console.log('Campanhas carregadas da API:', this.campanhas);
-        } catch (error) {
-            console.log('API indisponível, usando dados locais:', error.message);
-            this.adicionarDadosExemplo();
-        }
+    inicializar() {
         this.renderizarCampanhas();
         this.iniciarVerificadorExpiracao();
-    }
-
-    determinarStatus(dataFim) {
-        if (!dataFim) return 'ativa';
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
-        const fim = new Date(dataFim);
-        fim.setHours(0, 0, 0, 0);
-        return fim < hoje ? 'expirada' : 'ativa';
     }
 
     salvarCampanhas() {
@@ -201,13 +33,8 @@ class GerenciadorCampanhas {
     }
 
     criarCard(campanha) {
-        const dataInicio = campanha.dataInicio ? 
-            campanha.dataInicio.split('-').reverse().join('/') : 
-            'Data não informada';
-        const dataFim = campanha.dataFim ? 
-            campanha.dataFim.split('-').reverse().join('/') : 
-            'Data não informada';
-        
+        const dataInicio = new Date(campanha.dataInicio).toLocaleDateString('pt-BR');
+        const dataFim = new Date(campanha.dataFim).toLocaleDateString('pt-BR');
         const botaoEditar = campanha.status === 'ativa' ? 
             `<button class="btn-editar" onclick="gerenciadorCampanhas.editarCampanha(${campanha.id})">✏️ Editar</button>` : '';
         
@@ -232,13 +59,11 @@ class GerenciadorCampanhas {
         let mudou = false;
 
         this.campanhas.forEach(campanha => {
-            if (campanha.dataFim) {
-                const dataFim = new Date(campanha.dataFim);
-                dataFim.setHours(0, 0, 0, 0);
-                if (campanha.status === 'ativa' && dataFim < hoje) {
-                    campanha.status = 'expirada';
-                    mudou = true;
-                }
+            const dataFim = new Date(campanha.dataFim);
+            dataFim.setHours(0, 0, 0, 0);
+            if (campanha.status === 'ativa' && dataFim < hoje) {
+                campanha.status = 'expirada';
+                mudou = true;
             }
         });
 
@@ -251,6 +76,25 @@ class GerenciadorCampanhas {
     iniciarVerificadorExpiracao() {
         setInterval(() => this.verificarCampanhasExpiradas(), 60000);
         this.verificarCampanhasExpiradas();
+    }
+
+    mostrarNotificacao(mensagem) {
+        const notificacao = document.createElement('div');
+        notificacao.style.cssText = `position: fixed; top: 20px; right: 20px; background: #8BC6A3; color: white; padding: 15px 25px; border-radius: 10px; box-shadow: 0 5px 15px #000000; z-index: 2000; font-weight: 500; animation: deslizarEntrada 0.3s ease;`;
+        notificacao.textContent = mensagem;
+
+        if (!document.querySelector('style[data-notification]')) {
+            const estilo = document.createElement('style');
+            estilo.setAttribute('data-notification', 'true');
+            estilo.textContent = '@keyframes deslizarEntrada { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }';
+            document.head.appendChild(estilo);
+        }
+
+        document.body.appendChild(notificacao);
+        setTimeout(() => {
+            notificacao.style.animation = 'deslizarEntrada 0.3s ease reverse';
+            setTimeout(() => notificacao.remove(), 300);
+        }, 3000);
     }
 
     editarCampanha(id) {
@@ -313,10 +157,13 @@ function configurarModalNecessidades() {
     const btnAdicionar = document.getElementById('btnAdicionarItem');
     
     if (modoEdicaoNecessidades) {
-        inputItem.disabled = false;
-        inputFormato.disabled = false;
-        btnAdicionar.disabled = false;
-        btnAdicionar.textContent = 'Adicionar';
+        inputItem.disabled = true;
+        inputFormato.disabled = true;
+        btnAdicionar.disabled = true;
+        btnAdicionar.textContent = 'Não disponível';
+        inputItem.value = '';
+        document.getElementById('quantidadeItemModal').value = '';
+        inputFormato.selectedIndex = 0;
     } else {
         inputItem.disabled = false;
         inputFormato.disabled = false;
@@ -383,11 +230,8 @@ function renderizarListaNecessidades() {
     container.innerHTML = necessidadesAtual.map(item => `
         <div class="item-lista">
             <span class="info-item">
-                ${modoEdicaoNecessidades && item.jaExiste ? 
-                    `${item.nome} - ` : 
-                    `${item.nome} - `
-                }
-                ${modoEdicaoNecessidades && item.jaExiste ? 
+                ${item.nome} - 
+                ${modoEdicaoNecessidades ? 
                     `<input type="number" value="${item.quantidade}" min="1" 
                      oninput="editarQuantidadeItem(${item.id}, this.value)" 
                      onchange="editarQuantidadeItem(${item.id}, this.value)"
@@ -396,7 +240,10 @@ function renderizarListaNecessidades() {
                 } 
                 ${item.formato}
             </span>
-            <button class="btn-remover-item" onclick="removerItemModal(${item.id})">×</button>
+            ${!modoEdicaoNecessidades ? 
+                `<button class="btn-remover-item" onclick="removerItemModal(${item.id})">×</button>` 
+                : ''
+            }
         </div>
     `).join('');
 }
@@ -418,18 +265,13 @@ function carregarNecessidadesExistentes(necessidadesString) {
     }
     
     try {
-        const necessidades = JSON.parse(necessidadesString);
-        necessidadesAtual = necessidades.map(item => ({
-            ...item,
-            jaExiste: true
-        }));
+        necessidadesAtual = JSON.parse(necessidadesString);
     } catch {
         necessidadesAtual = necessidadesString.split(',').map((item, index) => ({
             id: Date.now() + index,
             nome: item.trim(),
             quantidade: 1,
-            formato: 'unidades',
-            jaExiste: true
+            formato: 'unidades'
         }));
     }
     
@@ -458,11 +300,6 @@ function obterDadosFormulario() {
         dataFinal: document.getElementById('dataFinal').value,
         descricao: document.getElementById('descricaoCampanha').value.trim()
     };
-}
-
-function obterArquivoImagem() {
-    const input = document.getElementById('arquivoImagem');
-    return input.files[0] || null;
 }
 
 function validarDados(dados) {
@@ -538,128 +375,62 @@ function fecharModal() {
     configurarModal(false);
 }
 
-async function salvarCampanha() {
+function salvarCampanha() {
     const dados = obterDadosFormulario();
     if (!validarDados(dados)) return;
 
-    try {
-        const dadosAPI = {
-            titulo: dados.nome,
-            descricao: dados.descricao,
-            categoriaCampanha: dados.categoria,
-            endereco: dados.endereco,
-            tipoCertificado: dados.certificados,
-            dtInicio: new Date(dados.dataInicio + 'T00:00:00.000Z').toISOString(),
-            dt_fim: new Date(dados.dataFinal + 'T00:00:00.000Z').toISOString(),
-            status: "ativa"
-        };
+    const novaCampanha = {
+        id: Date.now(), 
+        titulo: dados.nome, 
+        local: dados.endereco,
+        dataInicio: dados.dataInicio, 
+        dataFim: dados.dataFinal, 
+        urlImagem: null,
+        status: new Date(dados.dataFinal) < new Date() ? 'expirada' : 'ativa',
+        necessidades: dados.necessidades, 
+        certificados: dados.certificados,
+        categoria: dados.categoria, 
+        descricao: dados.descricao
+    };
 
-        const arquivo = obterArquivoImagem();
-        const novaCampanha = await APIService.criarCampanha(dadosAPI, arquivo);
-        
-        if (necessidadesAtual.length > 0) {
-            for (const necessidade of necessidadesAtual) {
-                const necessidadeAPI = {
-                    nome: necessidade.nome,
-                    unidadeMedida: necessidade.formato,
-                    quantidadeNecessaria: necessidade.quantidade,
-                    quantidadeRecebida: 0
-                };
-                
-                try {
-                    await APIServiceNecessidades.criarNecessidade(novaCampanha.id, necessidadeAPI);
-                } catch (error) {
-                    console.log('Erro ao salvar necessidade:', necessidade.nome, error.message);
-                }
-            }
-        }
-        
-        await gerenciadorCampanhas.inicializar();
-        fecharModal();
-        
-    } catch (error) {
-        alert('Erro ao salvar campanha: ' + error.message);
-    }
+    gerenciadorCampanhas.campanhas.push(novaCampanha);
+    gerenciadorCampanhas.renderizarCampanhas();
+    gerenciadorCampanhas.mostrarNotificacao('Campanha criada com sucesso!');
+    fecharModal();
 }
 
-async function salvarEdicaoCampanha(id) {
+function salvarEdicaoCampanha(id) {
     const dados = obterDadosFormulario();
     if (!validarDados(dados)) return;
 
-    try {
-        const dadosAPI = {
-            titulo: dados.nome,
+    const campanha = gerenciadorCampanhas.campanhas.find(c => c.id === id);
+    if (campanha) {
+        Object.assign(campanha, {
+            titulo: dados.nome, 
+            local: dados.endereco, 
+            necessidades: dados.necessidades,
+            certificados: dados.certificados, 
+            categoria: dados.categoria,
+            dataInicio: dados.dataInicio, 
+            dataFim: dados.dataFinal, 
             descricao: dados.descricao,
-            categoriaCampanha: dados.categoria,
-            endereco: dados.endereco,
-            tipoCertificado: dados.certificados,
-            dtInicio: new Date(dados.dataInicio + 'T00:00:00.000Z').toISOString(),
-            dt_fim: new Date(dados.dataFinal + 'T00:00:00.000Z').toISOString(),
-            status: "ativa"
-        };
+            status: new Date(dados.dataFinal) < new Date() ? 'expirada' : 'ativa'
+        });
 
-        const arquivo = obterArquivoImagem();
-        await APIService.atualizarCampanha(id, dadosAPI, arquivo);
-        
-        let necessidadesExistentes = [];
-        try {
-            necessidadesExistentes = await APIServiceNecessidades.getNecessidadesCampanha(id);
-        } catch (error) {
-            console.log('Erro ao carregar necessidades existentes:', error.message);
-        }
-        
-        for (const necessidadeAtual of necessidadesAtual) {
-            if (necessidadeAtual.jaExiste) {
-                const necessidadeExistente = necessidadesExistentes.find(n => n.nome === necessidadeAtual.nome);
-                if (necessidadeExistente) {
-                    const necessidadeAtualizada = {
-                        nome: necessidadeExistente.nome,
-                        unidadeMedida: necessidadeExistente.unidadeMedida,
-                        quantidadeNecessaria: necessidadeAtual.quantidade,
-                        quantidadeRecebida: necessidadeExistente.quantidadeRecebida || 0
-                    };
-                    await APIServiceNecessidades.atualizarNecessidade(necessidadeExistente.id, necessidadeAtualizada);
-                }
-            } else {
-                const novaNecessidade = {
-                    nome: necessidadeAtual.nome,
-                    unidadeMedida: necessidadeAtual.formato,
-                    quantidadeNecessaria: necessidadeAtual.quantidade,
-                    quantidadeRecebida: 0
-                };
-                await APIServiceNecessidades.criarNecessidade(id, novaNecessidade);
-            }
-        }
-        
-        const necessidadesAtuaisNomes = necessidadesAtual.map(n => n.nome);
-        for (const necessidadeExistente of necessidadesExistentes) {
-            if (!necessidadesAtuaisNomes.includes(necessidadeExistente.nome)) {
-                await APIServiceNecessidades.deletarNecessidade(necessidadeExistente.id);
-            }
-        }
-        
-        await gerenciadorCampanhas.inicializar();
+        gerenciadorCampanhas.salvarCampanhas();
+        gerenciadorCampanhas.renderizarCampanhas();
+        gerenciadorCampanhas.mostrarNotificacao('Campanha atualizada com sucesso!');
         fecharModal();
-        
-    } catch (error) {
-        alert('Erro ao atualizar campanha: ' + error.message);
     }
 }
 
-async function excluirCampanha(id) {
+function excluirCampanha(id) {
     if (confirm('Tem certeza que deseja excluir esta campanha? Esta ação não pode ser desfeita.')) {
-        try {
-            console.log('Tentando excluir na API...');
-            await APIService.deletarCampanha(id);
-            console.log('Campanha excluída da API');
-            
-            await gerenciadorCampanhas.inicializar();
-            fecharModal();
-            
-        } catch (error) {
-            console.log('Erro na API:', error.message);
-            alert('Erro ao excluir campanha: ' + error.message);
-        }
+        gerenciadorCampanhas.campanhas = gerenciadorCampanhas.campanhas.filter(c => c.id !== id);
+        gerenciadorCampanhas.salvarCampanhas();
+        gerenciadorCampanhas.renderizarCampanhas();
+        gerenciadorCampanhas.mostrarNotificacao('Campanha excluída com sucesso!');
+        fecharModal();
     }
 }
 
@@ -709,4 +480,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 '<div class="upload-circle">+</div>';
         });
     }
+    
+    setTimeout(() => gerenciadorCampanhas.adicionarDadosExemplo(), 500);
 });
