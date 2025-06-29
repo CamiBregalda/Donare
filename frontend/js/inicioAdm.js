@@ -161,8 +161,7 @@ class GerenciadorCampanhas {
             }));
             console.log('Campanhas carregadas da API:', this.campanhas);
         } catch (error) {
-            console.log('API indisponível, usando dados locais:', error.message);
-            this.adicionarDadosExemplo();
+            console.log('API indisponível: ', error.message);
         }
         this.renderizarCampanhas();
         this.iniciarVerificadorExpiracao();

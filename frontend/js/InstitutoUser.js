@@ -1,3 +1,18 @@
+document.addEventListener('DOMContentLoaded', () => {
+    function getIdFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        return params.get('id');
+    }
+    const idUsuario = getIdFromUrl();
+    fetchInstitutionDetails(idUsuario);
+    fetchInstitutionCampaigns(idUsuario);
+
+    document.querySelector('.back-button').addEventListener('click', function (e) {
+    e.preventDefault();
+    window.history.back();
+    });
+});
+
 const token = localStorage.getItem('token');
 function authHeadersForm() {
   return { 'Authorization': `Bearer ${token}` };
@@ -227,17 +242,3 @@ async function fetchInstitutionCampaigns(idUsuario) {
     }
 } 
 
-document.addEventListener('DOMContentLoaded', () => {
-    function getIdFromUrl() {
-        const params = new URLSearchParams(window.location.search);
-        return params.get('id');
-    }
-    const idUsuario = getIdFromUrl();
-    fetchInstitutionDetails(idUsuario);
-    fetchInstitutionCampaigns(idUsuario);
-
-    document.querySelector('.back-button').addEventListener('click', function (e) {
-    e.preventDefault();
-    window.history.back();
-    });
-});

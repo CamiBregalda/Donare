@@ -94,6 +94,7 @@
 
 			const btnVerPerfil = dropdown?.querySelector('#ver-perfil');
 			const btnEditarPerfil = dropdown?.querySelector('#editar-perfil');
+			const btnLogout = dropdown?.querySelector('#logout');
 
 			btnVerPerfil?.addEventListener('click', () => {
 				const tipoUsuario = parseInt(usuario.tipoUsuario, 10);
@@ -105,6 +106,20 @@
 				}
 				window.location.href = destino;
 			});
+
+			if (!btnLogout) {
+				btnLogout = document.createElement('button');
+				btnLogout.id = 'logout';
+				btnLogout.textContent = 'Logout';
+
+				dropdown?.appendChild(btnLogout);
+			}
+			btnLogout.addEventListener('click', () => {
+				localStorage.removeItem('token');
+				localStorage.removeItem('usuario');
+				window.location.href = 'login.html';
+			});
+
 
 		} else {
 			console.log("Usuário não logado ou sem ID. O avatar e o menu de perfil não serão configurados.");

@@ -34,6 +34,19 @@
   border: none;
   padding:5px 10px;
 }
+#ver-perfil:hover {
+  background-color: #e0e0e0;
+}
+
+#logout {
+  cursor: pointer;
+  background: white;
+  border: none;
+  padding:5px 10px;
+}
+#logout:hover {
+  background-color: #e0e0e0;
+}
 
 .search-container {
   position: relative;
