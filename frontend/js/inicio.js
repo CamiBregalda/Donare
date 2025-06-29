@@ -134,9 +134,14 @@ async function seguirCampanha(idCampanha) {
             alert('Campanha seguida com sucesso!');
             await atualizarListaCampanhasSeguidas();
         } else {
-            const errorText = await response.text();
-            alert(`Erro ao seguir a campanha: ${errorText}`);
-            console.error('Erro na requisição para seguir campanha:', response.status, errorText);
+                       const errorResponse = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
+            
+            if (response.status === 400 && errorResponse.message === "Usuário já segue esta campanha.") {
+                alert('Você já está seguindo esta campanha.');
+            } else {
+                alert(`Erro ao seguir a campanha: ${errorResponse.message || 'Ocorreu um erro.'}`);
+                console.error('Erro na requisição para seguir campanha:', response.status, errorResponse);
+            }
         }
     } catch (error) {
         console.error('Erro na rede ou ao seguir campanha:', error);
