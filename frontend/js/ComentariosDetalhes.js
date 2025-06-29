@@ -1,3 +1,12 @@
+import { fetchData } from "./lib/auth.js";
+
+const usuario = await fetchData();
+
+if (!usuario) {
+      console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
+      return;
+}
+
 function getIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
     return params.get('id');

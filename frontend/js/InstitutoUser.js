@@ -1,3 +1,16 @@
+import { fetchData } from "./lib/auth.js";
+
+const usuario = await fetchData();
+
+if (!usuario) {
+      console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
+      return;
+}
+const token = localStorage.getItem('token');
+function authHeadersForm() {
+    return { 'Authorization': `Bearer ${token}` };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     function getIdFromUrl() {
         const params = new URLSearchParams(window.location.search);
@@ -8,15 +21,12 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchInstitutionCampaigns(idUsuario);
 
     document.querySelector('.back-button').addEventListener('click', function (e) {
-    e.preventDefault();
-    window.history.back();
+        e.preventDefault();
+        window.history.back();
     });
 });
 
-const token = localStorage.getItem('token');
-function authHeadersForm() {
-  return { 'Authorization': `Bearer ${token}` };
-}
+
 
 
 
@@ -240,5 +250,5 @@ async function fetchInstitutionCampaigns(idUsuario) {
         console.error('Failed to fetch campaigns:', error);
         document.getElementById('campaignsList').innerHTML = '<p>Erro ao carregar campanhas.</p>';
     }
-} 
+}
 
