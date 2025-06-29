@@ -7,8 +7,6 @@ const main = document.querySelector('main');
 const campanhasSeguidasLista = document.getElementById('campanhas-seguidas');
 const campanhasProximasLista = document.getElementById('campanhas-proximas');
 
-let campanhasSeguidas = JSON.parse(localStorage.getItem('campanhasSeguidas')) || [];
-
 function getImageUrl(imagemCapaBase64) {
     if (imagemCapaBase64) {
         return `data:image/jpeg;base64,${imagemCapaBase64}`;
@@ -51,14 +49,41 @@ function criarCardCampanha(campanha) {
     return card;
 }
 
-function atualizarListaCampanhasSeguidas() {
+async function atualizarListaCampanhasSeguidas() {
     campanhasSeguidasLista.innerHTML = '';
-    if (campanhasSeguidas.length > 0) {
-        campanhasSeguidas.forEach(campanha => {
-            campanhasSeguidasLista.appendChild(criarItemListaLateral(campanha));
+
+    const token = localStorage.getItem('token');
+    const usuario = await fetchData();
+
+    if (!token || !usuario) {
+        campanhasSeguidasLista.innerHTML = '<li>Erro ao carregar (Usuário não autenticado)</li>';
+        return;
+    }
+
+    console.log('ID do Usuário para a requisição:', usuario.id);
+    try {
+        
+        const response = await fetch(`http://localhost:8080/usuarios/${usuario.id}/campanhas-seguidas`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
         });
-    } else {
-        campanhasSeguidasLista.innerHTML = '<li>Nenhuma campanha seguida no momento.</li>';
+
+        if (!response.ok) {
+            throw new Error(`Erro ao buscar campanhas seguidas: ${response.status}`);
+        }
+
+        const campanhasSeguidas = await response.json();
+
+        if (campanhasSeguidas.length > 0) {
+            campanhasSeguidas.forEach(campanha => {
+                campanhasSeguidasLista.appendChild(criarItemListaLateral(campanha));
+            });
+        } else {
+            campanhasSeguidasLista.innerHTML = '<li>Nenhuma campanha seguida no momento.</li>';
+        }
+    } catch {
+        
     }
 }
 
@@ -73,21 +98,41 @@ function atualizarListaCampanhasProximas(campanhasProximas) {
     }
 }
 
-function seguirCampanha(campanhaId) {
-    const campanhaParaSeguir = todasCampanhas.find(c => c.id === campanhaId);
 
-    if (campanhaParaSeguir) {
-        const jaSegue = campanhasSeguidas.some(c => c.id === campanhaId);
-        if (!jaSegue) {
-            campanhasSeguidas.push(campanhaParaSeguir);
-            localStorage.setItem('campanhasSeguidas', JSON.stringify(campanhasSeguidas));
-            atualizarListaCampanhasSeguidas();
-            alert(`Você agora está seguindo a campanha: ${campanhaParaSeguir.titulo}`);
+async function seguirCampanha(idCampanha) {
+    const token = localStorage.getItem('token');
+    const usuario = await fetchData();
+
+
+    console.log('Dados do usuário:', usuario);
+    console.log('ID do usuário:', usuario?.id);
+    console.log('ID da campanha a ser seguida:', idCampanha);
+    
+    if (!token || !usuario) {
+        alert('Você precisa estar logado para seguir uma campanha')
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:8080/usuarios/${usuario.id}/seguir-campanha/${idCampanha}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+
+        if (response.ok) {
+            alert('Campanha seguida com sucesso!');
+            await atualizarListaCampanhasSeguidas();
         } else {
-            alert('Você já está seguindo esta campanha.');
+            const errorText = await response.text();
+            alert(`Erro ao seguir a campanha: ${errorText}`);
+            console.error('Erro na requisição para seguir campanha:', response.status, errorText);
         }
-    } else {
-        console.error(`Campanha com ID ${campanhaId} não encontrada.`);
+    } catch (error) {
+        console.error('Erro na rede ou ao seguir campanha:', error);
+        alert('Ocorreu um erro ao tentar seguir a campanha. Tente novamente.');
     }
 }
 
@@ -113,23 +158,24 @@ async function renderizaCampanhas() {
         if (!response.ok) {
             throw new Error(`Erro HTTP! Status: ${response.status}`);
         }
+
         todasCampanhas = await response.json();
         console.log('Dados da API (todasCampanhas):', todasCampanhas);
 
         let campanhasProximasFiltradas = [];
         if (cidadeUsuario) {
             campanhasProximasFiltradas = todasCampanhas.filter(campanha => {
-                return campanha.endereco && campanha.endereco.toLowerCase().includes(cidadeUsuario.toLowerCase());
+                const cidadeCampanha = campanha.endereco?.cidade;
+                return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
             });
             console.log('Campanhas próximas encontradas:', campanhasProximasFiltradas);
         } else {
             console.warn('Cidade do usuário não definida. A lista de campanhas próximas não pode ser filtrada.');
         }
 
-        localStorage.setItem('campanhasProximas', JSON.stringify(campanhasProximasFiltradas));
         atualizarListaCampanhasProximas(campanhasProximasFiltradas);
 
-        atualizarListaCampanhasSeguidas(); 
+        await atualizarListaCampanhasSeguidas();
 
         main.innerHTML = '';
         const categoriasCampanhas = todasCampanhas.reduce((acc, campanha) => {
@@ -166,20 +212,20 @@ async function renderizaCampanhas() {
 
 main.addEventListener('click', (event) => {
     const btnSeguir = event.target.closest('.seguir');
-    if (btnSeguir){
+    if (btnSeguir) {
         event.preventDefault();
         const campanhaId = parseInt(btnSeguir.dataset.id, 10);
         seguirCampanha(campanhaId);
     }
 
     const btnComentar = event.target.closest('#comentar');
-    if(btnComentar){
+    if (btnComentar) {
         event.preventDefault();
         const campanhaId = parseInt(btnComentar.dataset.id, 10);
         window.location.href = `../pages/ComentariosDetalhes.html?id=${campanhaId}`;
 
     }
-    
+
 });
 
 document.addEventListener('DOMContentLoaded', () => {
