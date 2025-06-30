@@ -99,6 +99,22 @@ class APIService {
         });
         if (!response.ok) throw new Error('Erro ao deletar campanha');
     }
+
+    static async getCategorias() {
+        const response = await fetch(`${API_CONFIG.baseURL}/campanhas/categorias`, {
+            headers: authHeaders(false)
+        });
+        if (!response.ok) throw new Error('Erro ao carregar categorias');
+        return await response.json();
+    }
+
+    static async getCertificados() {
+        const response = await fetch(`${API_CONFIG.baseURL}/campanhas/certificados`, {
+            headers: authHeaders(false)
+        });
+        if (!response.ok) throw new Error('Erro ao carregar certificados');
+        return await response.json();
+    }
 }
 
 class APIServiceNecessidades {
@@ -155,6 +171,9 @@ class GerenciadorCampanhas {
             const campanhas = await APIService.getCampanhas();
             
             this.campanhas = await Promise.all(campanhas.map(async c => {
+
+    console.log('RECEBIDO - dtInicio:', c.dtInicio);
+    console.log('RECEBIDO - dt_fim:', c.dt_fim);    
                 let necessidades = '[]';
                 try {
                     const necessidadesAPI = await APIServiceNecessidades.getNecessidadesCampanha(c.id);
@@ -243,13 +262,13 @@ class GerenciadorCampanhas {
         }
         
         const botaoEditar = campanha.status === 'ativa' ? 
-            `<button class="btn-editar" onclick="gerenciadorCampanhas.editarCampanha(${campanha.id})">✏️ Editar</button>` : '';
+            `<button class="btn-editar" onclick="event.stopPropagation(); gerenciadorCampanhas.editarCampanha(${campanha.id})">✏️ Editar</button>` : '';
         
         setTimeout(() => this.carregarImagemCampanha(campanha.id), 100);
         
         return `
             <div class="cartao-campanha">
-                <div class="imagem-campanha">
+                <div class="imagem-campanha" onclick="abrirCampanha(${campanha.id})" style="cursor: pointer;">
                     <img id="imagem-campanha-${campanha.id}" src="" alt="${campanha.titulo}" style="display: none;">
                     <div class="titulo-campanha">${campanha.titulo}</div>
                     ${botaoEditar}
@@ -494,10 +513,22 @@ function validarDados(dados) {
         alert('Por favor, preencha os campos obrigatórios: Nome da Campanha, Endereço do Evento, Data de Início e Data Final.');
         return false;
     }
-    if (new Date(dados.dataFinal) <= new Date(dados.dataInicio)) {
+    
+    const dataInicio = new Date(dados.dataInicio);
+    const dataFinal = new Date(dados.dataFinal);
+    const hoje = new Date();
+    hoje.setHours(0, 0, 0, 0);
+    
+    if (dataFinal <= dataInicio) {
         alert('A data final deve ser posterior à data de início.');
         return false;
     }
+    
+    if (dataFinal < hoje) {
+        alert('A data final não pode ser anterior à data atual. Não é possível criar campanhas que já expiraram.');
+        return false;
+    }
+    
     return true;
 }
 
@@ -583,6 +614,9 @@ async function salvarCampanha() {
     if (!validarDados(dados)) return;
 
     try {
+
+        console.log('ENVIANDO - dataInicio:', dados.dataInicio);
+        console.log('ENVIANDO - dataFinal:', dados.dataFinal);
         const dadosAPI = {
             titulo: dados.nome,
             descricao: dados.descricao,
@@ -593,7 +627,9 @@ async function salvarCampanha() {
             dt_fim: new Date(dados.dataFinal + 'T00:00:00.000Z').toISOString(),
             status: "ativa"
         };
-
+        
+        console.log('ENVIANDO - dtInicio formatado:', dadosAPI.dtInicio);
+        console.log('ENVIANDO - dt_fim formatado:', dadosAPI.dt_fim);
         const arquivo = obterArquivoImagem();
         const novaCampanha = await APIService.criarCampanha(dadosAPI, arquivo);
         
@@ -735,12 +771,34 @@ document.addEventListener('click', e => {
     if (e.target.id === 'modalCampanha') fecharModal();
 });
 
+function configurarValidacoesDatas() {
+    const hoje = new Date().toISOString().split('T')[0];
+    const inputDataFinal = document.getElementById('dataFinal');
+    const inputDataInicio = document.getElementById('dataInicio');
+    
+    if (inputDataFinal) inputDataFinal.min = hoje;
+    
+    if (inputDataInicio && inputDataFinal) {
+        inputDataFinal.addEventListener('change', () => {
+            const dataFinal = inputDataFinal.value;
+            if (dataFinal && dataFinal < hoje) {
+                alert('A data final não pode ser anterior à data atual.');
+                inputDataFinal.value = '';
+            }
+        });
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     if (!verificarAutenticacao()) {
         return;
     }
     
     gerenciadorCampanhas = new GerenciadorCampanhas();
+    configurarValidacoesDatas();   
+    carregarCategorias();
+    carregarCertificados();
+    
     
     const inputArquivo = document.getElementById('arquivoImagem');
     const uploadArea = document.querySelector('.upload-area');
@@ -754,3 +812,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+function abrirCampanha(campanhaId) {
+    window.location.href = `../pages/CampanhaAdm.html?id=${campanhaId}`;
+}
+
+async function carregarCategorias() {
+    try {
+        const categorias = await APIService.getCategorias();
+        const selectCategoria = document.getElementById('categoriaCampanha');
+        
+        selectCategoria.innerHTML = '<option value="">Selecione uma categoria</option>';
+        
+        categorias.forEach(categoria => {
+            const option = document.createElement('option');
+            option.value = categoria;
+            option.textContent = categoria;
+            selectCategoria.appendChild(option);
+        });
+        
+    } catch (error) {
+        console.log('Erro ao carregar categorias:', error.message);
+    }
+}
+
+async function carregarCertificados() {
+    try {
+        const certificados = await APIService.getCertificados();
+        const selectCertificados = document.getElementById('certificados');
+        
+        selectCertificados.innerHTML = '<option value="">Selecione um certificado</option>';
+        
+        certificados.forEach(certificado => {
+            const option = document.createElement('option');
+            option.value = certificado;
+            option.textContent = certificado;
+            selectCertificados.appendChild(option);
+        });
+        
+    } catch (error) {
+        console.log('Erro ao carregar certificados:', error.message);
+    }
+}
