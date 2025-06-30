@@ -29,7 +29,6 @@ function formatDateBr(dateStr) {
 }
 // Carrega dados da campanha, necessidades e postagens
 async function loadCampaignData() {
-    console.log('Chamou loadCampaignData');
     try {
 
         const usuario = await fetchData();
@@ -123,8 +122,6 @@ async function loadCampaignData() {
                     </div>
                     <span class="item-arrecadado">Meta: ${item.quantidadeNecessaria} ${item.unidadeMedida || ''}</span>
                 `;
-                console.log('Item:', item.nome, ' - Porcentagem:', porcentagem);
-                console.log('Item necessario:', item.quantidadeRecebida);
                 itemsUl.appendChild(li);
             });
 
@@ -144,16 +141,6 @@ async function loadCampaignData() {
 async function loadCampaignPosts() {
 
     try {
-
-        const usuario = await fetchData();
-        console.log('Usuário retornado:', usuario);
-
-
-        if (!usuario) {
-            console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
-            alert("Você não está autenticado! Faça login novamente.");
-            window.location.href = "Login.html";
-        }
         const postsResponse = await fetch(`http://localhost:8080/postagens/campanhas/${idCampanha}`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -168,7 +155,7 @@ async function loadCampaignPosts() {
 
         if (Array.isArray(posts) && posts.length > 0) {
             for (const post of posts) {
-                let imgUrl = 'https://via.placeholder.com/120x80?text=Postagem';
+                let imgUrl = '../img/icone.png'; // Placeholder para imagem
                 // Busca a imagem da postagem, se existir
                 try {
                     const imgResp = await fetch(`http://localhost:8080/postagens/${post.id}/midia`, {
@@ -250,7 +237,6 @@ function buildCommentsTree(commentsList) {
 // Envia novo comentário ou resposta
 async function sendComment(conteudo, idComentarioPai = null) {
     const usuario = await fetchData();
-    console.log('Usuário retornado:', usuario);
 
 
     if (!usuario) {
@@ -315,29 +301,46 @@ function renderComment(comment, parentElement) {
     const avatar = document.createElement('div');
     avatar.classList.add('comment-user-avatar');
 
-    if (comment.usuario && comment.usuario.id) {
-        fetch(`http://localhost:8080/usuarios/${comment.usuario.id}`, {
+    if (comment.userResponseDTO && comment.userResponseDTO.id) {
+        fetch(`http://localhost:8080/usuarios/${comment.userResponseDTO.id}`, {
             headers: { Authorization: `Bearer ${token}` }
         })
-        .then(r => r.ok ? r.json() : null)
-        .then(data => {
-            if (data && data.midia) {
-                // Cria uma imagem e coloca dentro do div.avatar
-                const img = document.createElement('img');
-                img.src = `data:${data.midiaContentType};base64,${data.midia}`;
-                img.alt = "Avatar";
-                img.style.width = "100%";
-                img.style.height = "100%";
-                img.style.objectFit = "cover";
-                img.style.borderRadius = "50%";
-                avatar.innerHTML = '';
-                avatar.appendChild(img);
-            } else {
-                avatar.innerHTML = '<span>&#128100;</span>';
-            }
-        });
+            .then(r => r.ok ? r.json() : null)
+            .then(data => {
+                if (data && data.midia) {
+                    const img = document.createElement('img');
+                    img.src = `data:${data.midiaContentType};base64,${data.midia}`;
+                    img.alt = "Avatar";
+                    img.style.width = "100%";
+                    img.style.height = "100%";
+                    img.style.objectFit = "cover";
+                    img.style.borderRadius = "50%";
+                    avatar.innerHTML = '';
+                    avatar.appendChild(img);
+                } else {
+                    // Sempre mostra a imagem padrão se não houver userResponseDTO ou id
+                    const img = document.createElement('img');
+                    img.src = '../img/user.png';
+                    img.alt = "Avatar";
+                    img.style.width = "100%";
+                    img.style.height = "100%";
+                    img.style.objectFit = "cover";
+                    img.style.borderRadius = "50%";
+                    avatar.innerHTML = '';
+                    avatar.appendChild(img);
+                }
+            });
     } else {
-        avatar.innerHTML = '<span>&#128100;</span>';
+        // Sempre mostra a imagem padrão se não houver userResponseDTO ou id
+        const img = document.createElement('img');
+        img.src = '../img/user.png';
+        img.alt = "Avatar";
+        img.style.width = "100%";
+        img.style.height = "100%";
+        img.style.objectFit = "cover";
+        img.style.borderRadius = "50%";
+        avatar.innerHTML = '';
+        avatar.appendChild(img);
     }
 
     const commentContent = document.createElement('div');
