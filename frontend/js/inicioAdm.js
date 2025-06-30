@@ -28,6 +28,19 @@ function authHeaders(isJson = true) {
     return response;
 }
 
+function obterEmailDoToken() {
+    const token = localStorage.getItem('token');
+    if (!token) return null;
+    
+    try {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        return payload.sub;
+    } catch (error) {
+        console.log('Erro ao decodificar token:', error.message);
+        return null;
+    }
+}
+
 class APIService {
     static async getCampanhas() {
         const response = await fetch(`${API_CONFIG.baseURL}/campanhas`, {
@@ -169,11 +182,16 @@ class GerenciadorCampanhas {
         try {
             console.log('Tentando carregar campanhas da API...');
             const campanhas = await APIService.getCampanhas();
-            
-            this.campanhas = await Promise.all(campanhas.map(async c => {
 
-    console.log('RECEBIDO - dtInicio:', c.dtInicio);
-    console.log('RECEBIDO - dt_fim:', c.dt_fim);    
+            const emailUsuarioAtual = obterEmailDoToken();
+            console.log('Email do usuário atual:', emailUsuarioAtual);
+            
+            const campanhasFiltradas = campanhas.filter(c => {
+                return c.organizador === emailUsuarioAtual;
+            });
+            
+            this.campanhas = await Promise.all(campanhasFiltradas.map(async c => {
+
                 let necessidades = '[]';
                 try {
                     const necessidadesAPI = await APIServiceNecessidades.getNecessidadesCampanha(c.id);
