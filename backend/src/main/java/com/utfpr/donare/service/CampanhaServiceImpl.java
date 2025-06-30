@@ -41,7 +41,6 @@ public class CampanhaServiceImpl implements CampanhaService {
     public CampanhaResponseDTO criarCampanha(CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail) {
         Campanha campanha = campanhaMapper.requestDtoToEntity(campanhaRequestDTO);
         campanha.setOrganizador(organizadorEmail);
-        campanha.setDtInicio(java.time.LocalDateTime.now());
 
         if (imagemCapa != null && !imagemCapa.isEmpty()) {
             try {
