@@ -18,7 +18,6 @@
       <section class="institution-details-section">
         <div class="institution-header">
           <h1 id="institutionName"></h1>
-          <span id="institutionType" class="institution-type-tag"></span>
           <button id="btnEditInstitution" class="btn-follow-institution">editar</button>
         </div>
         <div class="institution-image-and-info-wrapper">
@@ -27,8 +26,6 @@
             <h3>Localização:</h3>
             <p id="institutionLocation"></p>
           </div>
-        </div>
-        <div class="institution-description">
         </div>
       </section>
       <aside class="campaigns-section">
@@ -57,18 +54,17 @@
           <div class="field"><label for="cep">CEP:</label><input id="cep" type="text"/></div>
           <div class="field image-field">
             <label for="imagem">Alterar imagem:</label>
-            <div class="image-preview-container" onclick="document.getElementById('imagem').click()">
-              <img id="preview" alt="Preview da Instituição"/>
+            <div class="image-preview-bg">
+              <div class="image-preview-container" onclick="document.getElementById('imagem').click()">
+                <img id="preview" alt="Preview da Instituição"/>
+              </div>
             </div>
             <input id="imagem" type="file" accept="image/*" hidden onchange="previewImage(event)"/>
-          </div>
-          <div class="field full-span">
-            <label for="descricao">Descrição do Abrigo:</label>
-            <textarea id="descricao"></textarea>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-cancel" onclick="fecharModalInstitution()">Cancelar</button>
+          <button type="button" id="btnChangePassword" class="btn-submit">Alterar Senha</button>
           <button type="submit" class="btn-submit">Concluir</button>
         </div>
       </form>
@@ -88,6 +84,29 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-cancel" onclick="fecharModalSenha()">Cancelar</button>
+          <button type="submit" class="btn-submit">Confirmar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modalChangePassword" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeChangePasswordModal">×</button>
+      <h2 class="modal-title">Alterar Senha</h2>
+      <form id="changePasswordForm" class="modal-form">
+        <div class="form-grid">
+          <div class="field full-span">
+            <label for="inputOldPassword">Senha Atual:</label>
+            <input id="inputOldPassword" type="password" required />
+          </div>
+          <div class="field full-span">
+            <label for="inputNewPassword">Nova Senha:</label>
+            <input id="inputNewPassword" type="password" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" onclick="fecharModalChangePassword()">Cancelar</button>
           <button type="submit" class="btn-submit">Confirmar</button>
         </div>
       </form>

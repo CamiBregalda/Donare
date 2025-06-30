@@ -1,3 +1,5 @@
+// AdmPerfilInstituicao.js
+
 const API_BASE = 'http://localhost:8080';
 const token    = localStorage.getItem('token') || '';
 const usuario  = JSON.parse(localStorage.getItem('usuario') || '{}');
@@ -19,23 +21,23 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchInstitutionDetails(userId);
   fetchInstitutionCampaigns(userId);
 
-  document
-    .getElementById('btnEditInstitution')
-    .addEventListener('click', abrirModalInstitution);
+  document.getElementById('btnEditInstitution').addEventListener('click', abrirModalInstitution);
+  document.getElementById('institutionEditForm').addEventListener('submit', e => {
+    e.preventDefault();
+    abrirModalSenha();
+  });
+  document.getElementById('senhaConfirmForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    await confirmUpdate();
+  });
 
-  document
-    .getElementById('institutionEditForm')
-    .addEventListener('submit', e => {
-      e.preventDefault();
-      abrirModalSenha();
-    });
-
-  document
-    .getElementById('senhaConfirmForm')
-    .addEventListener('submit', async e => {
-      e.preventDefault();
-      await confirmUpdate();
-    });
+  // handlers do novo modal de alterar senha
+  document.getElementById('btnChangePassword').addEventListener('click', abrirModalChangePassword);
+  document.getElementById('closeChangePasswordModal').addEventListener('click', fecharModalChangePassword);
+  document.getElementById('changePasswordForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    await updatePassword();
+  });
 });
 
 async function fetchInstitutionDetails(id) {
@@ -45,12 +47,6 @@ async function fetchInstitutionDetails(id) {
     const data = await res.json();
 
     document.getElementById('institutionName').textContent = data.nome || '';
-    document.getElementById('institutionType').textContent = {
-      2: 'Abrigo de Animais',
-      3: 'Orfanato',
-      4: 'Asilo',
-    }[data.tipoUsuario] || '';
-
     if (data.midia) {
       const src = `data:${data.midiaContentType};base64,${data.midia}`;
       document.getElementById('institutionImage').src = src;
@@ -58,10 +54,8 @@ async function fetchInstitutionDetails(id) {
     }
 
     const end = data.idEndereco || {};
-    const location = [end.logradouro, end.bairro, end.cidade]
-      .filter(Boolean)
-      .join(', ');
-    document.getElementById('institutionLocation').textContent = location;
+    document.getElementById('institutionLocation').textContent =
+      [end.logradouro, end.bairro, end.cidade].filter(Boolean).join(', ');
 
     document.getElementById('enderecoId').value  = end.id || '';
     document.getElementById('nome').value        = data.nome || '';
@@ -74,6 +68,7 @@ async function fetchInstitutionDetails(id) {
     document.getElementById('cidade').value      = end.cidade || '';
     document.getElementById('estado').value      = end.estado || '';
     document.getElementById('cep').value         = end.cep || '';
+
   } catch (err) {
     console.error('Erro fetchInstitutionDetails:', err);
     alert('Não foi possível carregar os detalhes da instituição. Veja o console.');
@@ -89,8 +84,7 @@ async function fetchInstitutionCampaigns(idUsuario) {
       headers: { Authorization: `Bearer ${token}` }
     });
     if (!userRes.ok) throw new Error('Erro ao buscar dados da instituição.');
-    const userData = await userRes.json();
-    const userEmail = userData.email;
+    const { email: userEmail } = await userRes.json();
 
     const campsRes = await fetch(
       `${API_BASE}/campanhas?usuario=${encodeURIComponent(userEmail)}`,
@@ -117,6 +111,7 @@ async function fetchInstitutionCampaigns(idUsuario) {
           imgSrc = URL.createObjectURL(blob);
         }
       } catch {
+        // mantém placeholder
       }
 
       const card = document.createElement('div');
@@ -127,14 +122,21 @@ async function fetchInstitutionCampaigns(idUsuario) {
           <span class="campaign-card-title-on-image">${campaign.titulo}</span>
         </div>
         <div class="campaign-card-body">
+          <p class="campaign-card-description">${campaign.descricao || ''}</p>
           <button class="btn-follow-campaign btn-edit-campaign">Editar</button>
         </div>
       `;
       card.style.cursor = 'pointer';
 
+      // clique em qualquer lugar do card leva a ComentariosDetalhes.html
+      card.addEventListener('click', () => {
+        window.location.href = `ComentariosDetalhes.html?id=${campaign.id}`;
+      });
+
+      // botão de editar interrompe propagaçao e leva a CampanhaAdm
       card.querySelector('.btn-edit-campaign').addEventListener('click', e => {
         e.stopPropagation();
-        window.location.href = `inicioAdm.html?id=${campaign.id}`;
+        window.location.href = `CampanhaAdm.html?id=${campaign.id}`;
       });
 
       container.appendChild(card);
@@ -165,9 +167,9 @@ function fecharModalSenha() {
 }
 
 window.previewImage = e => {
-  const f = e.target.files[0];
-  if (!f) return;
-  document.getElementById('preview').src = URL.createObjectURL(f);
+  const file = e.target.files[0];
+  if (!file) return;
+  document.getElementById('preview').src = URL.createObjectURL(file);
 };
 
 async function confirmUpdate() {
@@ -211,9 +213,48 @@ async function confirmUpdate() {
 
     alert('Dados atualizados com sucesso!');
     fecharModalSenha();
-    await fetchInstitutionCampaigns(userId);
+    window.location.reload();
   } catch (err) {
     console.error('Erro confirmUpdate:', err);
     alert('Erro ao confirmar atualização. Veja o console.');
+  }
+}
+
+// === Novo modal de alterar senha ===
+
+function abrirModalChangePassword() {
+  document.getElementById('modalChangePassword').classList.add('show');
+  document.body.classList.add('modal-ativa');
+}
+function fecharModalChangePassword() {
+  document.getElementById('modalChangePassword').classList.remove('show');
+  document.body.classList.remove('modal-ativa');
+}
+async function updatePassword() {
+  const oldPassword = document.getElementById('inputOldPassword').value;
+  const newPassword = document.getElementById('inputNewPassword').value;
+  if (!oldPassword || !newPassword) {
+    alert('Preencha as duas senhas.');
+    return;
+  }
+  try {
+    const res = await fetch(
+      `${API_BASE}/usuarios/alterarSenha/${userId}`,
+      {
+        method: 'PUT',
+        headers: authHeaders(true),
+        body: JSON.stringify({ oldPassword, newPassword })
+      }
+    );
+    if (!res.ok) {
+      const errText = await res.text().catch(() => res.statusText);
+      alert(`Erro ${res.status}: ${errText}`);
+    } else {
+      alert('Senha alterada com sucesso!');
+      fecharModalChangePassword();
+    }
+  } catch (err) {
+    console.error('Erro updatePassword:', err);
+    alert('Falha na troca de senha. Veja o console.');
   }
 }
