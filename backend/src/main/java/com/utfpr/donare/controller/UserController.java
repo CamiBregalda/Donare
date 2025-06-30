@@ -220,7 +220,6 @@ public class UserController {
         userService.pararDeSeguirCampanha(idUsuario, idCampanha);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
     @Operation(summary = "Lista campanhas seguidas por um usuário.",
             description = "Retorna uma lista de todas as campanhas que um usuário específico está seguindo.")
     @ApiResponses(value = {
