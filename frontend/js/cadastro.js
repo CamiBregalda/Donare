@@ -44,11 +44,19 @@ document.querySelector('form').addEventListener('submit', function (e) {
     }
 
     if (cep.length !== 8 || isNaN(cep)) {
-        alert('O CEP deve conter 8 números.');
+        alert('O CEP deve conter 8 dígitos.');
         document.getElementById('cep').classList.add('input-error');
         document.getElementById('label-cep').classList.add('label-error');
         document.getElementById('cep').focus();
         return;
+    }
+
+    if (cpfCnpj.length !== 11 && cpfCnpj.length !== 14) {
+        alert('O CPF deve conter 11 dígitos ou o CNPJ 14 dígitos.');
+        document.getElementById('cpf-cnpj').classList.add('input-error');
+        document.getElementById('label-cpf-cnpj').classList.add('label-error');
+        document.getElementById('cpf-cnpj').focus();
+        return
     }
 
     let tipoDocumento;
