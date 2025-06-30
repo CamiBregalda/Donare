@@ -49,7 +49,7 @@ public class Campanha {
 
     private String tipoCertificado;
 
-    private LocalDateTime dtInicio = LocalDateTime.now();
+    private LocalDateTime dtInicio;
 
     private LocalDateTime dt_fim;
 
