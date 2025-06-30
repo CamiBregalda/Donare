@@ -13,21 +13,21 @@ O projeto tem como foco principal o atendimento à comunidade externa da UTFPR -
 ### 📣 Campanhas Solidárias
 - Cadastro e gerenciamento de campanhas (vacinas, arrecadações, doações, etc.)
 - Atualizações públicas sobre o progresso das campanhas
-- Compartilhamento via redes sociais e QR Code
 
 ### 💬 Engajamento Comunitário
 - Aba de comentários nas campanhas
-- Curtidas e reações nas postagens
+- Aba de postagens das campanhas
 - Seguir campanhas específicas para receber atualizações
 
 ### 🔔 Notificações
-- Receber alertas sobre novas campanhas por área de interesse
-- Notificações sobre campanhas que o usuário segue
+- Notificações no momento de criação da conta
+- Notificações sobre atualizações nas campanhas que o usuário segue
+- Notificações sobre postagens nas campanhas que o usuário segue
+- Notificações sobre comentários adicionados nas campanhas
+- Notificações sobre respostas adicionados a comentários
 
 ### 🙋‍♀️ Voluntariado
 - Cadastro como voluntário para campanhas específicas
-- Confirmação de presença via QR Code no dia do evento
-- Geração de certificados de participação
 
 ---
 
@@ -75,3 +75,24 @@ docker compose up -d
 
 # Execute o projeto com Maven
 mvn spring-boot:run
+```
+
+---
+
+### 📦 Frontend
+
+A tela inicial é o arquivo `login.html`, localizado na raiz do projeto.
+
+##### 🔐 Autenticação
+
+Todas as telas são protegidas. O usuário só poderá acessá-las se possuir uma conta válida e estiver autenticado no sistema.
+Ao realizar o login com sucesso, o sistema armazena os dados de sessão necessários para garantir o acesso às demais páginas.
+
+---
+
+#### ▶️ Rodando o Backend
+
+Siga os passos abaixo para iniciar o backend da aplicação:
+1. Clone o repositório ou baixe os arquivos do frontend.
+2. Abra o arquivo `login.html` em seu navegador.
+3. Cadastre uma conta e/ou se autentique no sistena para ter acesso as demais funcionalidades
