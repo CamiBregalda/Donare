@@ -1,22 +1,24 @@
 package com.utfpr.donare.service;
 
+import com.utfpr.donare.domain.Campanha;
+import com.utfpr.donare.domain.Comentario;
+import com.utfpr.donare.domain.EmailType;
 import com.utfpr.donare.domain.User;
 import com.utfpr.donare.dto.ComentarioRequestDTO;
 import com.utfpr.donare.dto.ComentarioResponseDTO;
-import com.utfpr.donare.dto.UserResponseDTO;
+import com.utfpr.donare.dto.EmailRequestDTO;
 import com.utfpr.donare.exception.ResourceNotFoundException;
-import com.utfpr.donare.domain.Campanha;
-import com.utfpr.donare.domain.Comentario;
 import com.utfpr.donare.mapper.ComentarioMapper;
 import com.utfpr.donare.mapper.UserMapper;
 import com.utfpr.donare.repository.CampanhaRepository;
 import com.utfpr.donare.repository.ComentarioRepository;
-import com.utfpr.donare.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +30,7 @@ public class ComentarioService {
     private final UserService userService;
     private final UserMapper userMapper;
     private final ComentarioMapper comentarioMapper;
+    private final EmailService emailService;
 
     @Transactional
     public ComentarioResponseDTO saveComentario(Long idCampanha, ComentarioRequestDTO comentarioRequestDTO) {
@@ -41,12 +44,32 @@ public class ComentarioService {
         comentario.setCampanha(campanha);
         comentario.setUser(user);
 
+        EmailType emailType = null;
+        String emailUser = null;
+        String nameUser = null;
+
+        Map<String, String> variables = new HashMap<>();
+        variables.put("name", user.getNome());
+        variables.put("tituloCampanha", campanha.getTitulo());
+        variables.put("comentario", comentario.getConteudo());
+
         // Trata o comentário pai, se houver
         if (comentarioRequestDTO.getIdComentarioPai() != null) {
             Comentario comentarioPai = comentarioRepository.findById(comentarioRequestDTO.getIdComentarioPai())
                     .orElseThrow(() -> new ResourceNotFoundException("Comentário pai não encontrado com o id: " + comentarioRequestDTO.getIdComentarioPai()));
             comentario.setComentarioPai(comentarioPai);
+
+            emailUser = comentarioPai.getUser().getEmail();
+            nameUser = comentarioPai.getUser().getNome();
+            emailType = EmailType.NOVARESPOSTA;
+        } else {
+            emailUser = campanha.getOrganizador();
+            nameUser = campanha.getOrganizador();
+            emailType = EmailType.NOVOCOMENTARIO;
         }
+
+        EmailRequestDTO request = new EmailRequestDTO(emailUser, nameUser, variables, emailType);
+        emailService.sendEmail(request);
 
         Comentario comentarioSalvo = comentarioRepository.save(comentario);
         return converterParaResponseDTO(comentarioSalvo);

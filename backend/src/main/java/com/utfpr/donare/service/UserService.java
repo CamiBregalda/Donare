@@ -1,14 +1,8 @@
 package com.utfpr.donare.service;
 
 import com.utfpr.donare.config.jwt.JwtTokenUtil;
-import com.utfpr.donare.domain.Campanha;
-import com.utfpr.donare.domain.Endereco;
-import com.utfpr.donare.domain.TipoUsuario;
-import com.utfpr.donare.domain.User;
-import com.utfpr.donare.dto.CampanhaResponseDTO;
-import com.utfpr.donare.dto.UserPasswordRequestDTO;
-import com.utfpr.donare.dto.UserRequestDTO;
-import com.utfpr.donare.dto.UserResponseDTO;
+import com.utfpr.donare.domain.*;
+import com.utfpr.donare.dto.*;
 import com.utfpr.donare.exception.BadRequestException;
 import com.utfpr.donare.exception.ResourceNotFoundException;
 import com.utfpr.donare.exception.UnauthorizedException;
@@ -27,7 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,6 +37,7 @@ public class UserService implements UserDetailsService {
     private final EnderecoMapper enderecoMapper;
     private final CampanhaRepository campanhaRepository;
     private final CampanhaMapper campanhaMapper;
+    private final EmailService emailService;
 
     @Transactional
     public  UserResponseDTO save(UserRequestDTO dto, MultipartFile midia) {
@@ -70,6 +67,11 @@ public class UserService implements UserDetailsService {
         setUserMidia(midia, user);
 
         userRepository.save(user);
+
+        Map<String, String> variables = new HashMap<>();
+        variables.put("name", user.getNome());
+        EmailRequestDTO request = new EmailRequestDTO(user.getEmail(), user.getNome(), variables, EmailType.CADASTROCONTA);
+        emailService.sendEmail(request);
 
         return userMapper.toUserResponseDTO(user);
     }
@@ -114,7 +116,7 @@ public class UserService implements UserDetailsService {
         user.setNome(dto.getNome());
         user.setEmail(dto.getEmail());
         user.setCpfOuCnpj(dto.getCpfOuCnpj());
-        user.setTipoUsuario(dto.getTipoUsuario() == 0 ? TipoUsuario.PESSOA_FISICA : TipoUsuario.PESSOA_JURIDICA);
+        user.setTipoUsuario(dto.getTipoUsuario() == 1 ? TipoUsuario.PESSOA_FISICA : TipoUsuario.PESSOA_JURIDICA);
 
         Endereco endereco = user.getIdEndereco();
 
