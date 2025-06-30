@@ -7,6 +7,11 @@ function getIdFromUrl() {
 }
 const idCampanha = getIdFromUrl();
 
+const token = localStorage.getItem('token');
+function authHeadersForm() {
+    return { 'Authorization': `Bearer ${token}` };
+}
+
 //formatação da data apenas
 function formatDateBr(dateStr) {
     if (!dateStr) return '';
@@ -33,11 +38,19 @@ async function loadCampaignData() {
         });
         if (!campResponse.ok) throw new Error('Erro ao buscar dados da campanha');
         const campData = await campResponse.json();
-
+        const endereco = campData.endereco;
+        let enderecoStr = '';
+        if (endereco) {
+            enderecoStr = `${endereco.logradouro}, ${endereco.numero}`;
+            if (endereco.complemento) enderecoStr += `, ${endereco.complemento}`;
+            enderecoStr += ` - ${endereco.bairro}, ${endereco.cidade} - ${endereco.estado}`;
+        }
+        console.log(campData);
+        console.log(enderecoStr);
         document.querySelector('.campaign-name-header').textContent = campData.titulo || '';
-        document.getElementById('campaignStartDate').textContent = formatDateBr(campData.dt_inicio);
+        document.getElementById('campaignStartDate').textContent = formatDateBr(campData.dtInicio);
         document.getElementById('campaignEndDate').textContent = formatDateBr(campData.dt_fim);
-        document.getElementById('campaignLocation').textContent = campData.endereco || '';
+        document.getElementById('campaignLocation').textContent = enderecoStr || '';
         document.getElementById('campaignCategory').textContent = campData.categoriaCampanha || '';
         document.getElementById('campaignDescriptionText').textContent = campData.descricao || '';
 
@@ -252,6 +265,7 @@ formPost.onsubmit = async function (e) {
     let url = '';
     let method = 'POST';
     let body = new FormData();
+    let headers = {};
 
     const postagem = {
         idCampanha: idCampanha,

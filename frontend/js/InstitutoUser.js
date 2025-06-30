@@ -113,8 +113,7 @@ async function fetchInstitutionCampaigns(idUsuario, token) {
         }
 
         campaigns.forEach(async campaign => {
-            console.log('ID da campanha:', campaign.id);
-            console.log('Título da campanha:', idUsuario);
+
             // Busca a imagem da campanha
             let imgSrc = 'https://via.placeholder.com/300x200?text=Campanha';
             try {
@@ -128,7 +127,7 @@ async function fetchInstitutionCampaigns(idUsuario, token) {
                     imgSrc = URL.createObjectURL(blob);
                 }
             } catch (e) {
-
+                
             }
 
             const card = document.createElement('div');
@@ -157,13 +156,27 @@ async function fetchInstitutionCampaigns(idUsuario, token) {
             const followBtn = card.querySelector('.btn-follow-campaign');
 
             // Verifica se já está seguindo (opcional, depende do backend)
-            let isFollowing = !!campaign.seguindo;
+            let isFollowing = false;
+            const usuarioLogado = JSON.parse(localStorage.getItem('usuario'));
+            if (usuarioLogado && usuarioLogado.id) {
+                try {
+                    const campResp = await fetch(`http://localhost:8080/campanhas/${campaign.id}`, {
+                        headers: { Authorization: `Bearer ${token}` }
+                    });
+                    if (campResp.ok) {
+                        const campData = await campResp.json();
+                        if (campData && Array.isArray(campData.usuariosQueSeguem)) {
+                            isFollowing = campData.usuariosQueSeguem.some(u => u.id === usuarioLogado.id);
+                        }
+                    }
+                } catch (e) {
+                    
+                }
+            }
             updateFollowButton(followBtn, isFollowing);
 
             followBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
-                // Pega o id do usuário logado do localStorage
-                const usuarioLogado = JSON.parse(localStorage.getItem('usuario'));
                 if (!usuarioLogado || !usuarioLogado.id) {
                     alert("Você não está autenticado! Faça login novamente.");
                     window.location.href = "Login.html";

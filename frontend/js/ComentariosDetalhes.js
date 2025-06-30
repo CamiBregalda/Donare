@@ -17,6 +17,16 @@ const token = localStorage.getItem('token');
 function authHeadersForm() {
     return { 'Authorization': `Bearer ${token}` };
 }
+
+function formatDateBr(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    if (isNaN(d)) return '';
+    const dia = String(d.getDate()).padStart(2, '0');
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const ano = d.getFullYear();
+    return `${dia}/${mes}/${ano}`;
+}
 // Carrega dados da campanha, necessidades e postagens
 async function loadCampaignData() {
     console.log('Chamou loadCampaignData');
@@ -45,14 +55,12 @@ async function loadCampaignData() {
         }
 
         document.getElementById('campaignNameHeader').textContent = campData.titulo || '';
-        document.getElementById('campaignStartDate').textContent = campData.dt_inicio ? campData.dt_inicio.split('T')[0] : '';
-        document.getElementById('campaignEndDate').textContent = campData.dt_fim ? campData.dt_fim.split('T')[0] : '';
+        document.getElementById('campaignStartDate').textContent = formatDateBr(campData.dtInicio);
+        document.getElementById('campaignEndDate').textContent = formatDateBr(campData.dt_fim);
         document.getElementById('campaignLocation').textContent = enderecoStr || '';
         document.getElementById('campaignCategory').textContent = campData.categoriaCampanha || '';
         document.getElementById('campaignCertificate').textContent = campData.tipoCertificado || '';
 
-        // Busca imagem da campanha
-        // Busca imagem da campanha
         const imgResp = await fetch(`http://localhost:8080/campanhas/${idCampanha}/imagem`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -98,12 +106,14 @@ async function loadCampaignData() {
 
         const itemsUl = document.getElementById('campaignItems');
         itemsUl.innerHTML = '';
+
         if (Array.isArray(necessidades) && necessidades.length > 0) {
             necessidades.forEach(item => {
                 const porcentagem = item.quantidadeNecessaria > 0
                     ? Math.min(100, (item.quantidadeRecebida / item.quantidadeNecessaria) * 100)
                     : 0;
                 const li = document.createElement('li');
+
                 li.innerHTML = `
                     <div class="item-info">
                         <span class="item-name">${item.nome}</span>
@@ -113,8 +123,11 @@ async function loadCampaignData() {
                     </div>
                     <span class="item-arrecadado">Meta: ${item.quantidadeNecessaria} ${item.unidadeMedida || ''}</span>
                 `;
+                console.log('Item:', item.nome, ' - Porcentagem:', porcentagem);
+                console.log('Item necessario:', item.quantidadeRecebida);
                 itemsUl.appendChild(li);
             });
+
         } else {
             itemsUl.innerHTML = '<li>Nenhuma necessidade cadastrada.</li>';
         }
@@ -158,7 +171,11 @@ async function loadCampaignPosts() {
                 let imgUrl = 'https://via.placeholder.com/120x80?text=Postagem';
                 // Busca a imagem da postagem, se existir
                 try {
-                    const imgResp = await fetch(`http://localhost:8080/postagens/${post.id}/midia`);
+                    const imgResp = await fetch(`http://localhost:8080/postagens/${post.id}/midia`, {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    });
                     if (imgResp.ok) {
                         const blob = await imgResp.blob();
                         imgUrl = URL.createObjectURL(blob);
@@ -295,13 +312,30 @@ function renderComment(comment, parentElement) {
     const commentItem = document.createElement('div');
     commentItem.classList.add('comment-item');
 
-
     const avatar = document.createElement('div');
     avatar.classList.add('comment-user-avatar');
-    if (comment.userImage) {
 
-        avatar.innerHTML = `<img src="data:image/jpeg;base64,${comment.userImage}" alt="Foto do usuário" class="avatar-img">`;
-
+    if (comment.usuario && comment.usuario.id) {
+        fetch(`http://localhost:8080/usuarios/${comment.usuario.id}`, {
+            headers: { Authorization: `Bearer ${token}` }
+        })
+        .then(r => r.ok ? r.json() : null)
+        .then(data => {
+            if (data && data.midia) {
+                // Cria uma imagem e coloca dentro do div.avatar
+                const img = document.createElement('img');
+                img.src = `data:${data.midiaContentType};base64,${data.midia}`;
+                img.alt = "Avatar";
+                img.style.width = "100%";
+                img.style.height = "100%";
+                img.style.objectFit = "cover";
+                img.style.borderRadius = "50%";
+                avatar.innerHTML = '';
+                avatar.appendChild(img);
+            } else {
+                avatar.innerHTML = '<span>&#128100;</span>';
+            }
+        });
     } else {
         avatar.innerHTML = '<span>&#128100;</span>';
     }
@@ -409,11 +443,27 @@ document.addEventListener('DOMContentLoaded', function () {
     const followBtn = document.querySelector('.btn-follow');
     if (followBtn) {
         let isFollowing = false;
+
         function updateFollowButton(following) {
             followBtn.textContent = following ? 'Seguindo' : 'Seguir';
             followBtn.dataset.following = following ? "true" : "false";
         }
-        updateFollowButton(isFollowing);
+
+        // Checa se o usuário já está seguindo a campanha
+        const usuario = JSON.parse(localStorage.getItem('usuario'));
+        if (usuario && usuario.id) {
+            fetch(`http://localhost:8080/campanhas/${idCampanha}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+                .then(resp => resp.ok ? resp.json() : null)
+                .then(campData => {
+                    if (campData && Array.isArray(campData.usuariosQueSeguem)) {
+                        isFollowing = campData.usuariosQueSeguem.some(u => u.id === usuario.id);
+                        updateFollowButton(isFollowing);
+                    }
+                });
+        }
+
 
         followBtn.addEventListener('click', async function () {
             // Pega o usuário autenticado do localStorage
@@ -471,14 +521,38 @@ document.addEventListener('DOMContentLoaded', function () {
     // Botão de voluntariado //AJUSTAR A URL
     const volunteerBtn = document.querySelector('.btn-volunteer');
     if (volunteerBtn) {
+        let isVoluntariado = false;
+
+        function updateVolunteerButton(voluntariado) {
+            volunteerBtn.textContent = voluntariado ? 'Voluntariar-se' : 'Voluntario!';
+            volunteerBtn.disabled = voluntariado; // Opcional: desabilita o botão se já for voluntário
+        }
+
+        // Checa se o usuário já é voluntário nesta campanha
+        const usuarioLogado = JSON.parse(localStorage.getItem('usuario'));
+        if (usuarioLogado && usuarioLogado.id) {
+            fetch(`http://localhost:8080/campanhas/${idCampanha}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+                .then(resp => resp.ok ? resp.json() : null)
+                .then(campData => {
+                    // Ajuste o nome do campo conforme o backend: voluntario ou voluntarios
+                    if (campData && Array.isArray(campData.voluntarios)) {
+                        isVoluntariado = campData.voluntarios.some(u => u.id === usuarioLogado.id);
+                        updateVolunteerButton(isVoluntariado);
+                    }
+                });
+        }
+
         volunteerBtn.addEventListener('click', async (e) => {
             e.stopPropagation();
-            const usuarioLogado = JSON.parse(localStorage.getItem('usuario'));
             if (!usuarioLogado || !usuarioLogado.id) {
                 alert("Você não está autenticado! Faça login novamente.");
                 window.location.href = "Login.html";
                 return;
             }
+            if (isVoluntariado) return; // Já voluntariado, não faz nada
+
             const userId = usuarioLogado.id;
             try {
                 const resp = await fetch(`http://localhost:8080/participacao/participacoes`, {
@@ -493,11 +567,13 @@ document.addEventListener('DOMContentLoaded', function () {
                     })
                 });
                 if (resp.ok) {
+                    isVoluntariado = true;
+                    updateVolunteerButton(true);
                     alert('Você se voluntariou com sucesso!');
                 } else {
                     const errorText = await resp.text();
-                    alert('Erro ao voluntariar-se: ' + errorText);
-                    console.error('Erro ao voluntariar-se:', errorText);
+                    alert('Voce ja é Voluntario nesta campanha');
+
                 }
             } catch (err) {
                 alert('Erro inesperado ao voluntariar-se.');

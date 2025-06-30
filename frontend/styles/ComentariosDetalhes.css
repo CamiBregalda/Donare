@@ -70,19 +70,13 @@ body {
     border-radius: 12px;
     display: flex;
     flex-direction: column;
-    /* <-- garante empilhamento vertical */
     align-items: center;
     justify-content: flex-start;
     color: #4A6D7C;
     font-size: 1.1em;
 }
 
-.campaign-info-area {
-    flex: 1 1 70%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
+
 
 .info-top-row {
     display: flex;
@@ -176,7 +170,7 @@ body {
 }
 
 .progress-bar {
-    background: #7d6dbf;
+    background: #7d6dbf !important;
     height: 100%;
     border-radius: 8px;
     transition: width 0.3s;
