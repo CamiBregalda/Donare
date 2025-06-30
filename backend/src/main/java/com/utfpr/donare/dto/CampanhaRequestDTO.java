@@ -25,5 +25,7 @@ public class CampanhaRequestDTO {
 
     private String tipoCertificado;
 
+    private LocalDateTime dtInicio;
+
     private LocalDateTime dt_fim;
 }
