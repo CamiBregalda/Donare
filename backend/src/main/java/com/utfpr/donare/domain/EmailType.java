@@ -9,7 +9,8 @@ public enum EmailType {
     CADASTROCONTA(1, "Cadastro de conta"),
     NOVOCOMENTARIO(2, "Novo comentário em campanha"),
     NOVARESPOSTA(3, "Nova resposta em comentário"),
-    ATUALIZACAOCAMPANHA(4, "Atualização de campanha");
+    ATUALIZACAOCAMPANHA(4, "Atualização de campanha"),
+    NOVAPOSTAGEM(5, "Nova postagem em campanha");
 
 
     private final int code;

@@ -20,19 +20,22 @@ public class EmailService {
         this.templateLoader = templateLoader;
     }
 
-    public void sendEmail(EmailRequestDTO request) throws Exception {
+    public void sendEmail(EmailRequestDTO request) {
+        try {
+            String templateName = request.getEmailType().name().toLowerCase();
+            Map<String, String> variables = request.getVariables();
 
-        String templateName = request.getEmailType().name().toLowerCase();
-        Map<String, String> variables = request.getVariables();
+            EmailTemplateLoader.EmailTemplate template = templateLoader.loadTemplate(templateName, variables);
 
-        EmailTemplateLoader.EmailTemplate template = templateLoader.loadTemplate(templateName, variables);
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+            helper.setTo(request.getEmail());
+            helper.setSubject(template.subject());
+            helper.setText(template.body(), true);
 
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
-        helper.setTo(request.getEmail());
-        helper.setSubject(template.subject());
-        helper.setText(template.body(), true);
-
-        mailSender.send(message);
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao enviar e-mail: " + e.getMessage(), e);
+        }
     }
 }

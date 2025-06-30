@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <emailTemplate>
-    <subject>Novo comentário adicionado a campanha {{tituloCampanha}}!</subject>
+    <subject>Novidades na campanha {{tituloCampanha}}!</subject>
     <body>
         <![CDATA[
             <!DOCTYPE html>
@@ -8,7 +8,7 @@
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Novo comentário adicionado a campanha {{tituloCampanha}}!</title>
+                <title>Uma nova postagem foi adicionada na campanha {{tituloCampanha}}!</title>
             </head>
             <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -17,14 +17,10 @@
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 0 auto;">
                                 <tr>
                                     <td style="padding: 30px;">
-                                        <h1 style="color: #333333; font-size: 24px; margin-bottom: 20px; text-align: center;">Novo comentário adicionado a campanha {{tituloCampanha}}!</h1>
-                                        <p style="color: #555555; font-size: 16px; line-height: 1.6;">Olá!</p>
-                                        <p style="color: #555555; font-size: 16px; line-height: 1.6;">Você recebeu um novo comentário na campanha <strong>"{{tituloCampanha}}"</strong>.</p>
-                                        <p style="color: #555555; font-size: 16px; line-height: 1.6;"><em>"{{comentario}}"</em></p>
-                                        <p style="color: #555555; font-size: 16px; line-height: 1.6;">Acesse sua conta para responder e interagir com os participantes!</p>
-
-                                        <br>
-
+                                        <h1 style="color: #333333; font-size: 24px; margin-bottom: 20px; text-align: center;">Uma nova postagem foi adicionada na campanha {{tituloCampanha}}!</h1>
+                                        <p style="color: #555555; font-size: 16px; line-height: 1.6;">Olá, {{name}}!</p>
+                                        <p style="color: #555555; font-size: 16px; line-height: 1.6;">A postagem <strong>"{{tituloPostagem}}"</strong> foi realizada na campanha <strong>"{{tituloCampanha}}"</strong>.</p>
+                                        <p style="color: #555555; font-size: 16px; line-height: 1.6;">Não perca as novidades! Acesse a plataforma para saber mais.</p><br>
                                         <p style="color: #555555; font-size: 13px; line-height: 1.2; margin-bottom: 10px;">Este é um e-mail automático. Não responda diretamente.</p>
                                         <p style="color: #555555; font-size: 13px; line-height: 1.2; margin-bottom: 10px;">Atenciosamente,</p>
                                         <p style="color: #555555; font-size: 13px; line-height: 1.2; margin-bottom: 10px;">Donare</p>

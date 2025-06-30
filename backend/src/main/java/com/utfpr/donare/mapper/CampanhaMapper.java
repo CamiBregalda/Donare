@@ -20,6 +20,8 @@ public interface CampanhaMapper {
     Campanha requestDtoToEntity(CampanhaRequestDTO dto);
 
     @Mapping(target = "imagemCapa", ignore = true)
+    @Mapping(target = "voluntarios", ignore = true)
+    @Mapping(target = "usuariosQueSeguem", ignore = true)
     CampanhaResponseDTO entityToResponseDto(Campanha campanha);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
