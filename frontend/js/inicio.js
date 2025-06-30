@@ -18,11 +18,15 @@ async function carregarImagem(campanhaId, imgElement) {
         if (response.ok) {
             const blob = await response.blob();
             imgElement.src = URL.createObjectURL(blob);
+        } else if (response.status === 404) {
+            imgElement.src = '../assets/LogoDonareBranca.png'
         } else {
-            console.warn(`Erro ao carregar imagem da campanha ${campanhaId}:`);
+            console.warn(`Erro ao carregar imagem da campanha ${campanhaId}: ${response.status}`);
+            imgElement.src = '../assets/LogoDonareBranca.png';
         }
     } catch (error) {
         console.error(`Erro de rede ao carregar imagem da campanha ${campanhaId}:`, error);
+        imgElement.src = '../assets/LogoDonareBranca.png';
     }
 }
 
@@ -50,9 +54,9 @@ function criarCardCampanha(campanha) {
 
     const imgElement = card.querySelector('img');
     carregarImagem(campanha.id, imgElement);
-    
-    card.addEventListener('dblclick', (event) => {
-        if(!event.target.closest('.seguir')){
+
+    card.addEventListener('click', (event) => {
+        if (!event.target.closest('.seguir')) {
             window.location.href = `../pages/ComentariosDetalhes.html?id=${campanha.id}`;
         }
     })
@@ -134,8 +138,8 @@ async function seguirCampanha(idCampanha) {
             alert('Campanha seguida com sucesso!');
             await atualizarListaCampanhasSeguidas();
         } else {
-                       const errorResponse = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
-            
+            const errorResponse = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
+
             if (response.status === 400 && errorResponse.message === "Usuário já segue esta campanha.") {
                 alert('Você já está seguindo esta campanha.');
             } else {
@@ -173,11 +177,21 @@ async function renderizaCampanhas() {
         }
 
         todasCampanhas = await response.json();
-        console.log('Dados da API (todasCampanhas):', todasCampanhas);
+
+        console.log("Todas campanhas recebidas:", todasCampanhas);
+
+        const hoje = new Date();
+        const campanhasAtivas = todasCampanhas.filter(c => {
+            const inicio = new Date(c.dtInicio);
+            const fim = new Date(c.dt_fim);
+            return inicio <= hoje && fim >= hoje;
+        });
+
+        console.log('Dados da API (todasCampanhas) Ativas:', campanhasAtivas);
 
         let campanhasProximasFiltradas = [];
         if (cidadeUsuario) {
-            campanhasProximasFiltradas = todasCampanhas.filter(campanha => {
+            campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
                 const cidadeCampanha = campanha.endereco?.cidade;
                 return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
             });
@@ -191,7 +205,7 @@ async function renderizaCampanhas() {
         await atualizarListaCampanhasSeguidas();
 
         main.innerHTML = '';
-        const categoriasCampanhas = todasCampanhas.reduce((acc, campanha) => {
+        const categoriasCampanhas = campanhasAtivas.reduce((acc, campanha) => {
             const categoria = campanha.categoriaCampanha || 'Outros';
             if (!acc[categoria]) {
                 acc[categoria] = [];
