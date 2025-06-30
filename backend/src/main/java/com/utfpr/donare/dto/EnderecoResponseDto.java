@@ -2,10 +2,14 @@ package com.utfpr.donare.dto;
 
 import com.utfpr.donare.domain.Endereco;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Schema(description = "DTO para resposta de dados de endereço.")
+@AllArgsConstructor
+@NoArgsConstructor
 public class EnderecoResponseDto {
 
     @Schema(description = "ID único do endereço.", example = "101")
@@ -31,15 +35,4 @@ public class EnderecoResponseDto {
 
     @Schema(description = "CEP do endereço.", example = "88000-000")
     private String cep;
-
-    public EnderecoResponseDto(Endereco endereco) {
-        this.id = endereco.getId();
-        this.logradouro = endereco.getLogradouro();
-        this.numero = endereco.getNumero();
-        this.complemento = endereco.getComplemento();
-        this.bairro = endereco.getBairro();
-        this.cidade = endereco.getCidade();
-        this.estado = endereco.getEstado();
-        this.cep = endereco.getCep();
-    }
 }
