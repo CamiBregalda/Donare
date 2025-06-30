@@ -44,18 +44,6 @@
 			});
 		}
 
-		const searchInput = headerEl.querySelector('.search-bar');
-		if (searchInput) {
-			searchInput.addEventListener('keydown', e => {
-				if (e.key === 'Enter') {
-					const q = e.target.value.trim();
-					if (q) {
-						window.location.href = `search.html?q=${encodeURIComponent(q)}`;
-					}
-				}
-			});
-		}
-
 		const avatar = headerEl.querySelector('.user-avatar');
 		const usuario = JSON.parse(localStorage.getItem('usuario'));
 		const userId = usuario.id;
