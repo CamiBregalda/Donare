@@ -219,3 +219,35 @@ body.modal-ativa .floating-buttons {
   filter: brightness(0.6);
   pointer-events: none;
 }
+
+#modalConfirmSenha .modal-content {
+  max-width: 350px;       
+  padding: 1.5rem;        
+}
+
+#modalConfirmSenha .modal-content h3 {
+  font-size: 1.1rem;     
+  margin-bottom: 0.75rem;
+}
+
+#modalConfirmSenha label {
+  font-size: 0.9rem;      
+  margin-bottom: 0.4rem;
+}
+
+#modalConfirmSenha input[type="password"] {
+  width: 100%;
+  padding: 0.4rem 0.6rem; 
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+#modalConfirmSenha .modal-footer {
+  gap: 0.5rem;            
+}
+
+#modalConfirmSenha .btn-cancelar,
+#modalConfirmSenha .btn-confirmar {
+  padding: 0.5rem 2rem;   
+  font-size: 0.9rem;
+}
