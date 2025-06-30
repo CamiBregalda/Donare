@@ -69,18 +69,14 @@ body {
     min-height: 280px;
     border-radius: 12px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     color: #4A6D7C;
     font-size: 1.1em;
 }
 
-.campaign-info-area {
-    flex: 1 1 70%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
+
 
 .info-top-row {
     display: flex;
@@ -162,6 +158,7 @@ body {
     color: #4a5568;
     font-size: 0.95em;
 }
+
 /* Barras de progresso das necessidades */
 .progress-bar-bg {
     background: #e0e0e0;
@@ -171,8 +168,9 @@ body {
     margin: 6px 0 6px 0;
     overflow: hidden;
 }
+
 .progress-bar {
-    background: #7d6dbf;
+    background: #7d6dbf !important;
     height: 100%;
     border-radius: 8px;
     transition: width 0.3s;
@@ -185,12 +183,14 @@ body {
     border-radius: 12px;
     padding: 18px 24px;
 }
+
 .posts-list {
     display: flex;
     flex-wrap: wrap;
     gap: 24px;
     margin-top: 12px;
 }
+
 .post-card {
     background: #e9f7f0;
     border-radius: 10px;
@@ -202,6 +202,7 @@ body {
     min-height: 180px;
     box-shadow: 0 2px 8px #0001;
 }
+
 .post-image {
     width: 100%;
     max-width: 120px;
@@ -209,12 +210,14 @@ body {
     margin-bottom: 10px;
     object-fit: cover;
 }
+
 .post-title {
     font-size: 1.1em;
     font-weight: bold;
     color: #4A6D7C;
     margin: 0 0 6px 0;
 }
+
 .post-text {
     font-size: 0.97em;
     color: #4a5568;
@@ -276,6 +279,24 @@ body {
     border: none;
     position: relative;
     margin-bottom: 0;
+}
+
+.organizador-info {
+    margin-top: 12px;
+    font-size: 1em;
+    color: #4A6D7C;
+    text-align: center;
+}
+
+.delete-btn {
+    font-size: 1.6em;
+    color: red;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
 }
 
 .comment-main-content {
@@ -370,16 +391,19 @@ body {
     .container {
         padding: 16px;
     }
+
     .campaign-content-grid {
         flex-direction: column;
         gap: 24px;
     }
+
     .campaign-image-placeholder {
         min-width: 100px;
         min-height: 120px;
         width: 100%;
         font-size: 1em;
     }
+
     .campaign-info-area {
         padding: 0;
     }
@@ -391,43 +415,53 @@ body {
         align-items: flex-start;
         gap: 10px;
     }
+
     .campaign-name-header {
         font-size: 1.3em;
     }
+
     .campaign-image-placeholder {
         min-width: 80px;
         min-height: 80px;
         width: 100%;
         font-size: 0.95em;
     }
+
     .info-top-row {
         flex-direction: column;
         gap: 12px;
     }
+
     .add-comment {
         flex-direction: column;
         align-items: stretch;
         padding: 12px 8px;
         gap: 10px;
     }
+
     .add-comment .comment-user-avatar {
         margin: 0 auto 8px auto;
     }
+
     .comments-list {
         gap: 10px;
     }
+
     .comment-item {
         padding: 12px 8px;
     }
+
     .comment-main-content {
         flex-direction: column;
         align-items: flex-start;
         gap: 8px;
     }
+
     .comment-user-avatar {
         margin-right: 0;
         margin-bottom: 8px;
     }
+
     .reply-form {
         flex-direction: column;
         gap: 6px;

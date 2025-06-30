@@ -54,12 +54,33 @@ label{
   padding-left: 1vw;
 }
 
+input,
+input:focus,
+input:hover,
+input:active,
+input:valid,
+input:invalid  {
+    background-color: #f2f2f2 !important;
+}
+
 input{
     width: 100%;
     border: none;
     border-radius: 10px;
     padding: 1.5vh;
-    background-color: #f2f2f2;
+}
+
+.input-error {
+  border: 2px solid red;
+}
+
+.label-error {
+  color: red;
+  font-weight: bold;
+}
+
+input:focus {
+  outline: 2px solid #308567;
 }
 
 button{

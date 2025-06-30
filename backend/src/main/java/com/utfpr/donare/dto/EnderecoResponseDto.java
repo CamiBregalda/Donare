@@ -1,10 +1,15 @@
 package com.utfpr.donare.dto;
 
+import com.utfpr.donare.domain.Endereco;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Schema(description = "DTO para resposta de dados de endereço.")
+@AllArgsConstructor
+@NoArgsConstructor
 public class EnderecoResponseDto {
 
     @Schema(description = "ID único do endereço.", example = "101")

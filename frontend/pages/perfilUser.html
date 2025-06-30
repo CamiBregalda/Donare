@@ -41,15 +41,17 @@
     </section>
   </main>
 
-  <!-- Modal de edição de perfil -->
   <div id="modal" class="modal">
     <div class="modal-content">
       <span id="closeModal" class="modal-close">&times;</span>
       <form id="profileForm">
+
+        <input type="hidden" id="inputEnderecoId" name="endereco.id" />
+
         <div class="modal-body">
           <div class="modal-left">
             <div class="avatar-container">
-              <img id="avatarIcon" class="avatar-icon" src="../img/cachorro.jpg" alt="Preview do avatar" />
+              <img id="avatarIcon" class="avatar-icon" src="../img/icone.png" alt="Preview do avatar" />
               <button type="button" class="btn-alterar-foto" onclick="document.getElementById('inputAvatar').click()">
                 Alterar Foto
               </button>
@@ -111,18 +113,33 @@
     </div>
   </div>
 
-  <!-- Modal de troca de senha -->
   <div id="modalSenha" class="modal">
-    <div class="modal-content" style="max-width:400px;">
+    <div class="modal-content" style="max-width:550px;">
       <span id="closeModalSenha" class="modal-close">&times;</span>
       <form id="passwordForm">
         <h3 style="text-align:center; margin-bottom:1rem;">Alterar Senha</h3>
         <label for="inputOldPass">Senha atual:</label>
         <input type="password" id="inputOldPass" required>
+        <br><br>
         <label for="inputNewPass">Nova senha:</label>
         <input type="password" id="inputNewPass" required>
         <div class="modal-footer">
           <button type="button" class="btn-cancelar" onclick="fecharModalSenha()">Cancelar</button>
+          <button type="submit" class="btn-confirmar">Confirmar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modalConfirmSenha" class="modal">
+    <div class="modal-content" style="max-width:400px;">
+      <span id="closeModalConfirmSenha" class="modal-close">&times;</span>
+      <form id="confirmPasswordForm">
+        <h3 style="text-align:center; margin-bottom:1rem;">Confirme sua senha</h3>
+        <label for="inputConfirmSenha">Senha atual:</label>
+        <input type="password" id="inputConfirmSenha" required />
+        <div class="modal-footer">
+          <button type="button" class="btn-cancelar" onclick="fecharModalConfirmSenha()">Cancelar</button>
           <button type="submit" class="btn-confirmar">Confirmar</button>
         </div>
       </form>

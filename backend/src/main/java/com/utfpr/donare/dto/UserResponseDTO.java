@@ -1,10 +1,15 @@
 package com.utfpr.donare.dto;
 
+import com.utfpr.donare.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Schema(description = "DTO para resposta de dados de usuário.")
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserResponseDTO {
 
     @Schema(description = "ID único do usuário.", example = "1")
@@ -33,5 +38,4 @@ public class UserResponseDTO {
 
     @Schema(description = "Tipo de conteúdo da mídia de perfil (ex: image/jpeg, image/png).", example = "image/jpeg")
     private String midiaContentType;
-
 }

@@ -1,11 +1,5 @@
 import { fetchData } from "./lib/auth.js";
 
-const usuario = await fetchData();
-
-if (!usuario) {
-      console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
-      return;
-}
 
 function getIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -15,7 +9,7 @@ const idCampanha = getIdFromUrl();
 
 const token = localStorage.getItem('token');
 function authHeadersForm() {
-  return { 'Authorization': `Bearer ${token}` };
+    return { 'Authorization': `Bearer ${token}` };
 }
 
 //formatação da data apenas
@@ -31,19 +25,40 @@ function formatDateBr(dateStr) {
 
 async function loadCampaignData() {
     try {
-  
-        const campResponse = await fetch(`http://localhost:8080/campanhas/${idCampanha}`);
+        const usuario = await fetchData();
+        if (!usuario) {
+            console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
+            alert("Você não está autenticado! Faça login novamente.");
+            window.location.href = "Login.html";
+        }
+        const campResponse = await fetch(`http://localhost:8080/campanhas/${idCampanha}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         if (!campResponse.ok) throw new Error('Erro ao buscar dados da campanha');
         const campData = await campResponse.json();
-
+        const endereco = campData.endereco;
+        let enderecoStr = '';
+        if (endereco) {
+            enderecoStr = `${endereco.logradouro}, ${endereco.numero}`;
+            if (endereco.complemento) enderecoStr += `, ${endereco.complemento}`;
+            enderecoStr += ` - ${endereco.bairro}, ${endereco.cidade} - ${endereco.estado}`;
+        }
+        console.log(campData);
+        console.log(enderecoStr);
         document.querySelector('.campaign-name-header').textContent = campData.titulo || '';
-        document.getElementById('campaignStartDate').textContent = formatDateBr(campData.dt_inicio);
+        document.getElementById('campaignStartDate').textContent = formatDateBr(campData.dtInicio);
         document.getElementById('campaignEndDate').textContent = formatDateBr(campData.dt_fim);
-        document.getElementById('campaignLocation').textContent = campData.endereco || '';
+        document.getElementById('campaignLocation').textContent = enderecoStr || '';
         document.getElementById('campaignCategory').textContent = campData.categoriaCampanha || '';
         document.getElementById('campaignDescriptionText').textContent = campData.descricao || '';
 
-        const imgResp = await fetch(`http://localhost:8080/campanhas/${idCampanha}/imagem`);
+        const imgResp = await fetch(`http://localhost:8080/campanhas/${idCampanha}/imagem`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         if (imgResp.ok) {
             const blob = await imgResp.blob();
             const imgUrl = URL.createObjectURL(blob);
@@ -54,7 +69,11 @@ async function loadCampaignData() {
             }
         }
 
-        const response = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/necessidades`);
+        const response = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/necessidades`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         if (!response.ok) throw new Error('Erro ao buscar necessidades');
         const necessidades = await response.json();
 
@@ -101,7 +120,7 @@ async function loadCampaignData() {
                     if (novaQtd < necessidade.quantidadeNecessaria) {
                         novaQtd++;
                     } else {
-                  
+
                         return;
                     }
                 } else if (action === 'remove' && novaQtd > 0) {
@@ -121,7 +140,7 @@ async function loadCampaignData() {
 
 
 window.onclick = (e) => {
-    
+
     if (e.target === modalPost) modalPost.style.display = 'none';
 };
 
@@ -129,7 +148,10 @@ async function updateNecessidade(idNecessidade, novaQtd, necessidade) {
     try {
         const response = await fetch(`http://localhost:8080/necessidade/necessidades/${idNecessidade}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`
+            },
             body: JSON.stringify({
                 nome: necessidade.nome,
                 quantidadeNecessaria: necessidade.quantidadeNecessaria,
@@ -194,7 +216,11 @@ async function loadPosts() {
     const postList = document.querySelector('.post-list');
     postList.innerHTML = '<p>Carregando...</p>';
     try {
-        const resp = await fetch(`http://localhost:8080/postagens/campanhas/${idCampanha}`);
+        const resp = await fetch(`http://localhost:8080/postagens/campanhas/${idCampanha}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
         if (!resp.ok) throw new Error('Erro ao buscar postagens');
         const posts = await resp.json();
         if (!Array.isArray(posts) || posts.length === 0) {
@@ -239,6 +265,7 @@ formPost.onsubmit = async function (e) {
     let url = '';
     let method = 'POST';
     let body = new FormData();
+    let headers = {};
 
     const postagem = {
         idCampanha: idCampanha,
@@ -251,14 +278,22 @@ formPost.onsubmit = async function (e) {
     if (editingPost) {
         url = `http://localhost:8080/postagens/${editingPost.id}`;
         method = 'PUT';
+        headers = {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`
+        };
     } else {
         url = `http://localhost:8080/postagens/campanhas/${idCampanha}`;
         method = 'POST';
+        headers = {
+            Authorization: `Bearer ${token}`
+        };
     }
 
     try {
         await fetch(url, {
             method,
+            headers: { Authorization: `Bearer ${token}` },
             body
         });
         closePostModal();
@@ -273,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadPosts();
 
     document.querySelector('.back-button').addEventListener('click', function (e) {
-    e.preventDefault();
-    window.history.back();
-});
+        e.preventDefault();
+        window.history.back();
+    });
 });

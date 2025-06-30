@@ -1,13 +1,14 @@
 package com.utfpr.donare.service;
 
 import com.utfpr.donare.domain.Campanha;
+import com.utfpr.donare.domain.EmailType;
 import com.utfpr.donare.domain.Endereco;
 import com.utfpr.donare.dto.CampanhaRequestDTO;
 import com.utfpr.donare.dto.CampanhaResponseDTO;
+import com.utfpr.donare.dto.EmailRequestDTO;
 import com.utfpr.donare.dto.VoluntarioResponseDTO;
 import com.utfpr.donare.exception.ResourceNotFoundException;
 import com.utfpr.donare.mapper.CampanhaMapper;
-import com.utfpr.donare.mapper.EnderecoMapper;
 import com.utfpr.donare.repository.CampanhaRepository;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,14 +34,13 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     private final CampanhaRepository campanhaRepository;
     private final CampanhaMapper campanhaMapper;
-    private final EnderecoMapper enderecoMapper;
+    private final EmailService emailService;
 
     @Override
     @Transactional
     public CampanhaResponseDTO criarCampanha(CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail) {
         Campanha campanha = campanhaMapper.requestDtoToEntity(campanhaRequestDTO);
         campanha.setOrganizador(organizadorEmail);
-        campanha.setDtInicio(java.time.LocalDateTime.now());
 
         if (imagemCapa != null && !imagemCapa.isEmpty()) {
             try {
@@ -135,7 +137,8 @@ public class CampanhaServiceImpl implements CampanhaService {
     public CampanhaResponseDTO buscarCampanhaPorId(Long id) {
         Campanha campanha = campanhaRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
-        return campanhaMapper.entityToResponseDto(campanha);
+
+        return new CampanhaResponseDTO(campanha);
     }
 
     @Override
@@ -162,6 +165,22 @@ public class CampanhaServiceImpl implements CampanhaService {
         }
 
         Campanha campanhaSalva = campanhaRepository.save(campanha);
+
+        campanha.getUsuariosQueSeguem().forEach(usuario -> {
+            Map<String, String> variables = new HashMap<>();
+            variables.put("tituloCampanha", campanha.getTitulo());
+            variables.put("name", usuario.getNome());
+
+            EmailRequestDTO request = new EmailRequestDTO(
+                    usuario.getEmail(),
+                    usuario.getNome(),
+                    variables,
+                    EmailType.ATUALIZACAOCAMPANHA
+            );
+
+            emailService.sendEmail(request);
+        });
+
         return campanhaMapper.entityToResponseDto(campanhaSalva);
     }
 

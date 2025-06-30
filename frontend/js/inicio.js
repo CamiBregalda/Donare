@@ -7,11 +7,27 @@ const main = document.querySelector('main');
 const campanhasSeguidasLista = document.getElementById('campanhas-seguidas');
 const campanhasProximasLista = document.getElementById('campanhas-proximas');
 
-function getImageUrl(imagemCapaBase64) {
-    if (imagemCapaBase64) {
-        return `data:image/jpeg;base64,${imagemCapaBase64}`;
+async function carregarImagem(campanhaId, imgElement) {
+    const token = localStorage.getItem('token');
+    try {
+        const response = await fetch(`http://localhost:8080/campanhas/${campanhaId}/imagem`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        if (response.ok) {
+            const blob = await response.blob();
+            imgElement.src = URL.createObjectURL(blob);
+        } else if (response.status === 404) {
+            imgElement.src = '../assets/LogoDonareBranca.png'
+        } else {
+            console.warn(`Erro ao carregar imagem da campanha ${campanhaId}: ${response.status}`);
+            imgElement.src = '../assets/LogoDonareBranca.png';
+        }
+    } catch (error) {
+        console.error(`Erro de rede ao carregar imagem da campanha ${campanhaId}:`, error);
+        imgElement.src = '../assets/LogoDonareBranca.png';
     }
-    return 'https://via.placeholder.com/250x150?text=Sem+Imagem';
 }
 
 function criarItemListaLateral(campanha) {
@@ -21,31 +37,29 @@ function criarItemListaLateral(campanha) {
 }
 
 function criarCardCampanha(campanha) {
-    const imageUrl = getImageUrl(campanha.imagemCapa);
     const card = document.createElement('div');
     card.className = 'card';
+    card.dataset.id = campanha.id;
     card.innerHTML = `
         <div class="imagem">
-            <img src="${imageUrl}" alt="${campanha.titulo}">
+            <img alt="${campanha.titulo}" data-id="${campanha.id}">
         </div>
         <div class="infos">
             <h3>${campanha.titulo}</h3>
             <p>${campanha.descricao}</p>
-            <div class="acoes">
-                <button class="icon-btn">
-                    <img src="../assets/fi-rr-heart.png" alt="curtir">
-                </button>
-                <button class="icon-btn" id="comentar" data-id="${campanha.id}">
-                    <img src="../assets/fi-rr-comment.png" alt="comentar">
-                </button>
-                
+            <div class="acao">    
                 <button class="seguir" data-id="${campanha.id}">Seguir</button>
-                
-                <button class="icon-btn">
-                    <img src="../assets/fi-rr-share.png" alt="compartilhar">
-                </button>
             </div>
         </div>`;
+
+    const imgElement = card.querySelector('img');
+    carregarImagem(campanha.id, imgElement);
+
+    card.addEventListener('click', (event) => {
+        if (!event.target.closest('.seguir')) {
+            window.location.href = `../pages/ComentariosDetalhes.html?id=${campanha.id}`;
+        }
+    })
     return card;
 }
 
@@ -62,7 +76,7 @@ async function atualizarListaCampanhasSeguidas() {
 
     console.log('ID do Usuário para a requisição:', usuario.id);
     try {
-        
+
         const response = await fetch(`http://localhost:8080/usuarios/${usuario.id}/campanhas-seguidas`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -83,7 +97,7 @@ async function atualizarListaCampanhasSeguidas() {
             campanhasSeguidasLista.innerHTML = '<li>Nenhuma campanha seguida no momento.</li>';
         }
     } catch {
-        
+
     }
 }
 
@@ -98,16 +112,14 @@ function atualizarListaCampanhasProximas(campanhasProximas) {
     }
 }
 
-
 async function seguirCampanha(idCampanha) {
     const token = localStorage.getItem('token');
     const usuario = await fetchData();
 
-
     console.log('Dados do usuário:', usuario);
     console.log('ID do usuário:', usuario?.id);
     console.log('ID da campanha a ser seguida:', idCampanha);
-    
+
     if (!token || !usuario) {
         alert('Você precisa estar logado para seguir uma campanha')
         return;
@@ -126,9 +138,14 @@ async function seguirCampanha(idCampanha) {
             alert('Campanha seguida com sucesso!');
             await atualizarListaCampanhasSeguidas();
         } else {
-            const errorText = await response.text();
-            alert(`Erro ao seguir a campanha: ${errorText}`);
-            console.error('Erro na requisição para seguir campanha:', response.status, errorText);
+            const errorResponse = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
+
+            if (response.status === 400 && errorResponse.message === "Usuário já segue esta campanha.") {
+                alert('Você já está seguindo esta campanha.');
+            } else {
+                alert(`Erro ao seguir a campanha: ${errorResponse.message || 'Ocorreu um erro.'}`);
+                console.error('Erro na requisição para seguir campanha:', response.status, errorResponse);
+            }
         }
     } catch (error) {
         console.error('Erro na rede ou ao seguir campanha:', error);
@@ -160,11 +177,21 @@ async function renderizaCampanhas() {
         }
 
         todasCampanhas = await response.json();
-        console.log('Dados da API (todasCampanhas):', todasCampanhas);
+
+        console.log("Todas campanhas recebidas:", todasCampanhas);
+
+        const hoje = new Date();
+        const campanhasAtivas = todasCampanhas.filter(c => {
+            const inicio = new Date(c.dtInicio);
+            const fim = new Date(c.dt_fim);
+            return inicio <= hoje && fim >= hoje;
+        });
+
+        console.log('Dados da API (todasCampanhas) Ativas:', campanhasAtivas);
 
         let campanhasProximasFiltradas = [];
         if (cidadeUsuario) {
-            campanhasProximasFiltradas = todasCampanhas.filter(campanha => {
+            campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
                 const cidadeCampanha = campanha.endereco?.cidade;
                 return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
             });
@@ -178,7 +205,7 @@ async function renderizaCampanhas() {
         await atualizarListaCampanhasSeguidas();
 
         main.innerHTML = '';
-        const categoriasCampanhas = todasCampanhas.reduce((acc, campanha) => {
+        const categoriasCampanhas = campanhasAtivas.reduce((acc, campanha) => {
             const categoria = campanha.categoriaCampanha || 'Outros';
             if (!acc[categoria]) {
                 acc[categoria] = [];
@@ -217,15 +244,6 @@ main.addEventListener('click', (event) => {
         const campanhaId = parseInt(btnSeguir.dataset.id, 10);
         seguirCampanha(campanhaId);
     }
-
-    const btnComentar = event.target.closest('#comentar');
-    if (btnComentar) {
-        event.preventDefault();
-        const campanhaId = parseInt(btnComentar.dataset.id, 10);
-        window.location.href = `../pages/ComentariosDetalhes.html?id=${campanhaId}`;
-
-    }
-
 });
 
 document.addEventListener('DOMContentLoaded', () => {

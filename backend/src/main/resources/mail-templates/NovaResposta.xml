@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <emailTemplate>
-    <subject>Nova resposta adicionada ao comentário {{tituloComentario}}!</subject>
+    <subject>Nova resposta adicionada ao seu comentário na campanha {{tituloCampanha}}!</subject>
     <body>
         <![CDATA[
             <!DOCTYPE html>
@@ -8,7 +8,7 @@
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <title>Nova resposta adicionada ao comentário {{tituloComentario}}!</title>
+                <title>Nova resposta adicionada ao seu comentário na campanha {{tituloCampanha}}!</title>
             </head>
             <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -17,9 +17,9 @@
                             <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="600" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 0 auto;">
                                 <tr>
                                     <td style="padding: 30px;">
-                                        <h1 style="color: #333333; font-size: 24px; margin-bottom: 20px; text-align: center;">Nova resposta adicionada ao comentário {{tituloComentario}}!</h1>
+                                        <h1 style="color: #333333; font-size: 24px; margin-bottom: 20px; text-align: center;">Nova resposta adicionada ao seu comentário na campanha {{tituloCampanha}}!</h1>
                                         <p style="color: #555555; font-size: 16px; line-height: 1.6;">Olá, {{name}}!</p>
-                                        <p style="color: #555555; font-size: 16px; line-height: 1.6;">Você recebeu uma nova resposta ao comentário <strong>"{{tituloComentario}}"</strong> da campanha <strong>"{{tituloCampanha}}"</strong>.</p>
+                                        <p style="color: #555555; font-size: 16px; line-height: 1.6;">Você recebeu uma nova resposta ao um comentário na campanha <strong>"{{tituloCampanha}}"</strong>.</p>
                                         <p style="color: #555555; font-size: 16px; line-height: 1.6;"><em>"{{comentario}}"</em></p>
                                         <p style="color: #555555; font-size: 16px; line-height: 1.6;">Acesse sua conta para responder e interagir com os participantes!</p>
 
