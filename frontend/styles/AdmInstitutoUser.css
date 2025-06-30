@@ -1,3 +1,4 @@
+/* ================= Global Styles ================= */
 body {
   background-color: #C8ECD1;
   font-family: "Montserrat", sans-serif;
@@ -14,6 +15,8 @@ header {
 .main-container {
   padding: 30px 20px;
 }
+
+/* =========== Institution Profile ============ */
 .institution-profile-container {
   display: flex;
   max-width: 90%;
@@ -37,60 +40,8 @@ header {
   margin: 0;
   font-weight: bold;
 }
-.institution-type-tag {
-  color: #4A6D7C;
-  padding: 5px 12px;
-  border-radius: 15px;
-  font-size: 1.2em;
-  font-weight: 500;
-}
-.btn-follow-institution,
-.btn-follow-campaign {
-  background-color: #7DBFA8;
-  color: white;
-  border: none;
-  padding: 8px 20px;
-  border-radius: 20px;
-  cursor: pointer;
-  font-weight: bold;
-  font-size: 0.95em;
-  transition: background-color 0.3s ease;
-}
-.btn-follow-institution:hover,
-.btn-follow-campaign:hover {
-  background-color: #6cae9a;
-}
-.institution-image-and-info-wrapper {
-  display: flex;
-  gap: 40px;
-  margin-bottom: 25px;
-}
-.institution-image {
-  flex: 1;
-  max-width: 50%;
-  height: auto;
-  max-height: 350px;
-  object-fit: cover;
-  border-radius: 8px;
-}
-.institution-info {
-  flex: 1;
-}
-.institution-info h3,
-.institution-description h3 {
-  color: #4A6D7C;
-  font-size: 1.3em;
-  margin-top: 20px;
-  margin-bottom: 8px;
-  font-weight: bold;
-}
-.institution-info p,
-.institution-description p {
-  color: #555;
-  font-size: 1em;
-  line-height: 1.6;
-  margin-bottom: 15px;
-}
+
+/* =========== Campaigns Sidebar ============ */
 .campaigns-section {
   flex: 1.2;
   padding: 25px;
@@ -122,6 +73,7 @@ header {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
+  cursor: pointer;
 }
 .campaign-card-image-container {
   position: relative;
@@ -144,32 +96,74 @@ header {
   font-size: 1.1em;
   font-weight: bold;
 }
+
+/* =========== Campaign Card Body & Description ============ */
 .campaign-card-body {
   padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .campaign-card-description {
-  font-size: 0.95em;
+  font-size: 0.9em;
   color: #555;
-  margin-bottom: 15px;
-  line-height: 1.5;
+  line-height: 1.4;
+  margin: 0;
+  max-height: 3.6em;      /* limita a duas linhas */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.campaign-card-actions {
-  display: flex;
-  justify-content: flex-end;
-}
-.campaign-card-actions .btn-follow-campaign {
+
+/* =========== Buttons ============ */
+.btn-follow-institution,
+.btn-follow-campaign {
   background-color: #7DBFA8;
   color: white;
   border: none;
-  padding: 6px 15px;
+  padding: 8px 20px;
   border-radius: 20px;
   cursor: pointer;
   font-weight: bold;
-  transition: background-color 0.3s;
+  font-size: 0.95em;
+  transition: background-color 0.3s ease;
 }
-.campaign-card-actions .btn-follow-campaign:hover {
+.btn-follow-institution:hover,
+.btn-follow-campaign:hover {
   background-color: #6cae9a;
 }
+
+/* =========== Institution Image & Info ============ */
+.institution-image-and-info-wrapper {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 25px;
+}
+.institution-image {
+  flex: 1;
+  max-width: 50%;
+  height: auto;
+  max-height: 350px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+.institution-info {
+  flex: 1;
+}
+.institution-info h3 {
+  color: #4A6D7C;
+  font-size: 1.3em;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+.institution-info p {
+  color: #555;
+  font-size: 1em;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+/* =========== Modal Base Styles ============ */
 .modal {
   display: none;
   position: fixed;
@@ -191,6 +185,8 @@ header {
   position: relative;
   max-height: 90vh;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #35505c transparent;
 }
 .modal-content::-webkit-scrollbar {
   width: 8px;
@@ -201,10 +197,6 @@ header {
 .modal-content::-webkit-scrollbar-thumb {
   background-color: #35505c;
   border-radius: 4px;
-}
-.modal-content {
-  scrollbar-width: thin;
-  scrollbar-color: #35505c transparent;
 }
 .modal-close {
   position: absolute;
@@ -223,9 +215,11 @@ header {
   color: #4a6d7c;
 }
 
+/* =========== Modal Form Grid ============ */
 .modal-form .form-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: auto;
   gap: 1.5rem;
 }
 @media (max-width: 1024px) {
@@ -240,6 +234,7 @@ header {
   }
 }
 
+/* Field styling */
 .field {
   display: flex;
   flex-direction: column;
@@ -252,7 +247,6 @@ header {
 .field input[type="text"],
 .field input[type="email"],
 .field input[type="password"],
-.field select,
 .field textarea {
   padding: 0.6rem 0.8rem;
   border: none;
@@ -266,17 +260,91 @@ header {
   min-height: 6rem;
 }
 
-.campaigns-section::-webkit-scrollbar {
-  width: 8px;
+/* =========== Image Preview Background & Container ============ */
+.image-preview-bg {
+  background-color: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 160px;
+  height: 160px;
+  margin: 0.5rem auto;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
-.campaigns-section::-webkit-scrollbar-track {
-  background: transparent;
+.image-preview-container {
+  width: 140px;
+  height: 140px;
+  overflow: hidden;
 }
-.campaigns-section::-webkit-scrollbar-thumb {
-  background-color: #7DBFA8;
-  border-radius: 4px;
+.image-preview-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
+/* =========== Modal Footer & Action Buttons ============ */
+.modal-footer {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.btn-cancel {
+  background-color: #ffcdd2;
+  color: #722;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.btn-cancel:hover {
+  background-color: #ef9a9a;
+}
+.btn-submit {
+  background-color: #c8e6c9;
+  color: #264b2a;
+  border: none;
+  padding: 0.6rem 1.5rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.btn-submit:hover {
+  background-color: #a5d6a7;
+}
+
+/* =========== Confirm & Change-Password Modals ======== */
+#modalSenhaConfirm .modal-content,
+#modalChangePassword .modal-content {
+  max-width: 500px;
+  width: 90%;
+  padding: 1.5rem;
+  max-height: 60vh;
+}
+#modalSenhaConfirm .form-grid,
+#modalChangePassword .form-grid {
+  grid-template-columns: 1fr !important;
+  justify-items: center;
+}
+#modalSenhaConfirm .field.full-span input,
+#modalChangePassword .field.full-span input {
+  width: 100%;
+  max-width: 300px;
+}
+#modalSenhaConfirm .modal-footer,
+#modalChangePassword .modal-footer {
+  justify-content: center;
+  margin-top: 1.5rem;
+}
+
+/* =========== Responsive Tweaks ============ */
 @media (max-width: 480px) {
   .modal-content {
     padding: 1rem;
@@ -290,18 +358,13 @@ header {
   .field input[type="text"],
   .field input[type="email"],
   .field input[type="password"],
-  .field select,
   .field textarea {
     font-size: 0.85rem;
     padding: 0.4rem 0.6rem;
   }
-  .time-btn {
-    padding: 0.4rem 0.6rem;
-    font-size: 0.8rem;
-  }
   .btn-cancel,
   .btn-submit {
-    padding: 0.6rem 1.5rem;
+    padding: 0.6rem 1.2rem;
     font-size: 0.9rem;
   }
 }
