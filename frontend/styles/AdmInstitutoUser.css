@@ -96,6 +96,8 @@ header {
   padding: 25px;
   max-height: 80vh;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #7DBFA8 transparent;
 }
 .campaigns-section h2 {
   font-size: 1.8em;
@@ -190,6 +192,20 @@ header {
   max-height: 90vh;
   overflow-y: auto;
 }
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+.modal-content::-webkit-scrollbar-track {
+  background: transparent;
+}
+.modal-content::-webkit-scrollbar-thumb {
+  background-color: #35505c;
+  border-radius: 4px;
+}
+.modal-content {
+  scrollbar-width: thin;
+  scrollbar-color: #35505c transparent;
+}
 .modal-close {
   position: absolute;
   top: 1rem;
@@ -206,6 +222,7 @@ header {
   font-size: 1.5rem;
   color: #4a6d7c;
 }
+
 .modal-form .form-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -222,6 +239,7 @@ header {
     gap: 1rem;
   }
 }
+
 .field {
   display: flex;
   flex-direction: column;
@@ -232,6 +250,8 @@ header {
   color: #4a6d7c;
 }
 .field input[type="text"],
+.field input[type="email"],
+.field input[type="password"],
 .field select,
 .field textarea {
   padding: 0.6rem 0.8rem;
@@ -245,239 +265,18 @@ header {
   resize: vertical;
   min-height: 6rem;
 }
-.image-field {
-  grid-column: 3;
-  grid-row: 2 / span 2;
-}
-.donation-field {
-  grid-column: 1;
-  grid-row: 3;
-}
-.institution-type-field {
-  grid-column: 2;
-  grid-row: 3;
-}
-.full-span {
-  grid-column: 1 / -1;
-}
-.time-field {
-  position: relative;
-}
-.time-btn {
-  position: absolute;
-  top: 70%;
-  right: 0.5rem;
-  transform: translateY(-50%);
-  background: #7dbfa8;
-  color: #fff;
-  border: none;
-  padding: 0.3rem 0.6rem;
-  border-radius: 0.5rem;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.time-btn:hover {
-  background: #54987e;
-}
-.time-popup {
-  display: none;
-  position: absolute;
-  top: calc(100% + 4px);
-  right: 0;
-  background: #fff;
-  border: 1px solid #bdbdbd;
-  border-radius: 0.5rem;
-  padding: 0.8rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  z-index: 200;
-  width: 200px;
-}
-.time-popup.show {
-  display: block;
-}
-.time-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-.time-rows label {
-  font-size: 0.9rem;
-  color: #4a6d7c;
-}
-.time-rows input[type="time"] {
-  padding: 0.4rem;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  font-size: 0.95rem;
-  background-color: #fff;
-  color: #4a6d7c;
-}
-.time-apply {
-  margin-top: 0.8rem;
-  width: 100%;
-  background: #7dbfa8;
-  color: #fff;
-  border: none;
-  padding: 0.5rem;
-  border-radius: 0.5rem;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-.time-apply:hover {
-  background: #54987e;
-}
-.image-preview-container {
-  width: 100%;
-  height: calc(2 * 3rem + 2rem);
-  background-color: #fff;
-  border: 1px solid #ccc;
-  border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.image-preview-container img {
-  max-width: 100%;
-  max-height: 100%;
-  object-fit: cover;
-  border-radius: 0.5rem;
-}
-.custom-multiselect {
-  position: relative;
-  background: #fff;
-  border: 1px solid #bdbdbd;
-  border-radius: 0.5rem;
-  padding: 0.5rem;
-  min-height: 2.5rem;
-  width: 100%;
-  cursor: pointer;
-}
-.custom-multiselect .selected-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
-}
-.custom-multiselect .tag {
-  background: #e0e0e0;
-  border-radius: 1rem;
-  padding: 0.2rem 0.6rem;
-  font-size: 0.9rem;
-  display: flex;
-  align-items: center;
-}
-.custom-multiselect .tag-close {
-  margin-left: 0.3rem;
-  font-size: 0.8rem;
-  cursor: pointer;
-  color: #4a6d7c;
-}
-.custom-multiselect > i.fa-chevron-down {
-  position: absolute;
-  top: 50%;
-  right: 0.6rem;
-  transform: translateY(-50%);
-  font-size: 0.9rem;
-  color: #4a6d7c;
-  pointer-events: none;
-}
-.options-list {
-  display: none;
-  position: absolute;
-  top: calc(100% + 0.2rem);
-  left: 0;
-  width: 100%;
-  background: #fff;
-  border: 1px solid #bdbdbd;
-  border-radius: 0.5rem;
-  max-height: 10rem;
-  overflow-y: auto;
-  z-index: 100;
-  padding: 0.4rem 0;
-}
-.options-list.show {
-  display: block;
-}
-.options-list li {
-  list-style: none;
-  padding: 0.4rem 1rem;
-}
-.options-list li:hover {
-  background: #f0f0f0;
-}
-.options-list input[type="checkbox"] {
-  margin-right: 0.5rem;
-}
-.single-select {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background: #fff;
-  border: 1px solid #bdbdbd;
-  border-radius: 0.5rem;
-  width: 100%;
-  cursor: pointer;
-}
-.single-select select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  appearance: none;
-  border: none;
-  background: transparent;
-  width: 100%;
-  font-size: 0.95rem;
-  padding: 0.6rem 2rem 0.6rem 0.8rem;
-  color: #4a6d7c;
-}
-.single-select > i.fa-chevron-down {
-  position: absolute;
-  right: 0.8rem;
-  font-size: 0.9rem;
-  color: #4a6d7c;
-  pointer-events: none;
-}
-.modal-footer {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin-top: 2rem;
-}
-.btn-cancel {
-  background: #f08080;
-  color: #fff;
-  border: none;
-  padding: 0.8rem 2.5rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border-radius: 0.8rem;
-  cursor: pointer;
-}
-.btn-submit {
-  background: #a3d9b1;
-  color: #fff;
-  border: none;
-  padding: 0.8rem 2.5rem;
-  font-size: 1.1rem;
-  font-weight: 600;
-  border-radius: 0.8rem;
-  cursor: pointer;
-}
-.modal-content::-webkit-scrollbar {
+
+.campaigns-section::-webkit-scrollbar {
   width: 8px;
 }
-.modal-content::-webkit-scrollbar-track {
+.campaigns-section::-webkit-scrollbar-track {
   background: transparent;
 }
-.modal-content::-webkit-scrollbar-thumb {
-  background-color: #35505c;
+.campaigns-section::-webkit-scrollbar-thumb {
+  background-color: #7DBFA8;
   border-radius: 4px;
 }
-.modal-content {
-  scrollbar-width: thin;
-  scrollbar-color: #35505c transparent;
-}
+
 @media (max-width: 480px) {
   .modal-content {
     padding: 1rem;
@@ -489,6 +288,8 @@ header {
     font-size: 0.85rem;
   }
   .field input[type="text"],
+  .field input[type="email"],
+  .field input[type="password"],
   .field select,
   .field textarea {
     font-size: 0.85rem;
