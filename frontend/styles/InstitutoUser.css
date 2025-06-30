@@ -1,23 +1,27 @@
 body {
-    background-color: #C8ECD1; /* Lighter green for the page background */
+    background-color: #C8ECD1;
+    /* Lighter green for the page background */
     font-family: "Montserrat", sans-serif;
     color: #333;
     margin: 0;
 }
 
 .main-container {
-     padding: 30px 20px;
+    padding: 30px 20px;
 }
 
 .institution-profile-container {
     display: flex;
-    /* max-width: 1200px; */ /* Previous fixed max-width */
-    max-width: 90%; /* Make it use 90% of the parent's width */
+    /* max-width: 1200px; */
+    /* Previous fixed max-width */
+    max-width: 90%;
+    /* Make it use 90% of the parent's width */
     margin: 0 auto;
 }
 
 .institution-details-section {
-    flex: 2; /* Takes more space */
+    flex: 2;
+    /* Takes more space */
     padding: 25px;
     border-radius: 10px;
 }
@@ -28,6 +32,21 @@ body {
     gap: 15px;
     margin-bottom: 20px;
     flex-wrap: wrap;
+}
+
+.back-button {
+    font-size: 1.2em;
+    text-decoration: none;
+    color: #4A6D7C;
+    margin-right: 15px;
+    background-color: #C8ECD1;
+    border-radius: 50%;
+    border: #4A6D7C 2px solid;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .institution-header h1 {
@@ -45,7 +64,8 @@ body {
     font-weight: 500;
 }
 
-.btn-follow-institution, .btn-follow-campaign {
+.btn-follow-institution,
+.btn-follow-campaign {
     background-color: #7DBFA8;
     color: white;
     border: none;
@@ -57,32 +77,42 @@ body {
     transition: background-color 0.3s ease;
 }
 
-.btn-follow-institution:hover, .btn-follow-campaign:hover {
+.btn-follow-institution:hover,
+.btn-follow-campaign:hover {
     background-color: #6cae9a;
 }
 
 .institution-image-and-info-wrapper {
     display: flex;
-    gap: 40px; /* Adjust gap as needed */
-    margin-bottom: 25px; /* Space before the description */
+    gap: 40px;
+    /* Adjust gap as needed */
+    margin-bottom: 25px;
+    /* Space before the description */
 }
 
 .institution-image {
-    flex: 1; /* Adjust flex ratio as needed, e.g., flex: 0 0 60%; */
-    max-width: 50%; /* Or a fixed width, ensure it fits with info */
-    height: auto; /* Maintain aspect ratio */
-    max-height: 350px; /* Adjust as per your design */
+    flex: 1;
+    /* Adjust flex ratio as needed, e.g., flex: 0 0 60%; */
+    max-width: 50%;
+    /* Or a fixed width, ensure it fits with info */
+    height: auto;
+    /* Maintain aspect ratio */
+    max-height: 350px;
+    /* Adjust as per your design */
     object-fit: cover;
     border-radius: 8px;
-    /* margin-bottom: 25px; */ /* Removed as margin is now on wrapper */
+    /* margin-bottom: 25px; */
+    /* Removed as margin is now on wrapper */
 }
 
 .institution-info {
-    flex: 1; /* Adjust flex ratio as needed, e.g., flex: 1; */
+    flex: 1;
+    /* Adjust flex ratio as needed, e.g., flex: 1; */
     /* Add any specific styling for the info block if needed */
 }
 
-.institution-info h3, .institution-description h3 {
+.institution-info h3,
+.institution-description h3 {
     color: #4A6D7C;
     font-size: 1.3em;
     margin-top: 20px;
@@ -90,7 +120,8 @@ body {
     font-weight: bold;
 }
 
-.institution-info p, .institution-description p {
+.institution-info p,
+.institution-description p {
     color: #555;
     font-size: 1em;
     line-height: 1.6;
@@ -112,7 +143,8 @@ body {
     margin-top: 0;
     margin-bottom: 20px;
     font-weight: bold;
-    flex-shrink: 0; /* Não encolhe */
+    flex-shrink: 0;
+    /* Não encolhe */
 }
 
 .campaigns-grid {
@@ -124,7 +156,8 @@ body {
     gap: 25px;
     overflow-y: auto;
     flex: 1;
-    min-height: 0; /* Necessário para scroll funcionar em flex */
+    min-height: 0;
+    /* Necessário para scroll funcionar em flex */
     max-height: 100%;
 }
 
@@ -133,7 +166,7 @@ body {
     border: 1px solid #b7e6ce;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     display: flex;
     flex-direction: column;
 }
@@ -141,7 +174,8 @@ body {
 .campaign-card-image-container {
     position: relative;
     width: 100%;
-    height: 180px; /* Adjust as needed */
+    height: 180px;
+    /* Adjust as needed */
 }
 
 .campaign-card-image-container img {
@@ -155,7 +189,8 @@ body {
     position: absolute;
     bottom: 10px;
     left: 10px;
-    background-color: rgba(125, 191, 168, 0.8); /* Semi-transparent green */
+    background-color: rgba(125, 191, 168, 0.8);
+    /* Semi-transparent green */
     color: white;
     padding: 5px 10px;
     border-radius: 5px;
@@ -203,8 +238,10 @@ body {
     .institution-profile-container {
         flex-direction: column;
     }
+
     .campaigns-section {
-        max-height: none; /* Remove max height on smaller screens if stacked */
+        max-height: none;
+        /* Remove max height on smaller screens if stacked */
         overflow-y: visible;
     }
 }
@@ -213,15 +250,20 @@ body {
     .main-container {
         padding: 20px;
     }
+
     .institution-header h1 {
         font-size: 1.8em;
     }
-    .institution-info h3, .institution-description h3 {
+
+    .institution-info h3,
+    .institution-description h3 {
         font-size: 1.1em;
     }
+
     .campaigns-section h2 {
         font-size: 1.5em;
     }
+
     .search-container input[type="text"] {
         width: 300px;
     }
@@ -233,28 +275,35 @@ body {
         flex-direction: column;
         gap: 10px;
     }
+
     .search-container {
         width: 100%;
         padding: 0;
     }
+
     .search-container input[type="text"] {
         width: 100%;
         font-size: 0.9em;
     }
+
     .institution-header {
         flex-direction: column;
         align-items: flex-start;
     }
+
     .btn-follow-institution {
         width: 100%;
         text-align: center;
     }
+
     .campaign-card-actions {
         flex-wrap: wrap;
         gap: 10px;
     }
+
     .campaign-card-actions .btn-follow-campaign {
-        flex-basis: 100%; /* Make follow button full width in card on small screens */
+        flex-basis: 100%;
+        /* Make follow button full width in card on small screens */
         text-align: center;
     }
 }
