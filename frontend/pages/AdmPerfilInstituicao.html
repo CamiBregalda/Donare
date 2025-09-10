@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perfil - Donare</title>
+  <link rel="icon" type="image/png" href="../img/icone.png">
+  <link rel="stylesheet" href="../styles/main.css" />
+  <link rel="stylesheet" href="../styles/header.css" />
+  <link rel="stylesheet" href="../styles/AdmInstitutoUser.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+<body>
+  <div id="header-placeholder"></div>
+
+  <div class="main-container">
+    <div class="institution-profile-container">
+      <section class="institution-details-section">
+        <div class="institution-header">
+          <h1 id="institutionName"></h1>
+          <button id="btnEditInstitution" class="btn-follow-institution">editar</button>
+        </div>
+        <div class="institution-image-and-info-wrapper">
+          <img id="institutionImage" src="" alt="Imagem da Instituição" class="institution-image"/>
+          <div class="institution-info">
+            <h3>Localização:</h3>
+            <p id="institutionLocation"></p>
+          </div>
+        </div>
+      </section>
+      <aside class="campaigns-section">
+        <h2>Campanhas:</h2>
+        <div id="campaignsList" class="campaigns-grid"></div>
+      </aside>
+    </div>
+  </div>
+
+  <div id="modalInstitution" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="fecharModalInstitution()">×</button>
+      <h2 class="modal-title">Edite sua Instituição</h2>
+      <form id="institutionEditForm" class="modal-form">
+        <input type="hidden" id="enderecoId"/>
+        <div class="form-grid">
+          <div class="field"><label for="nome">Nome:</label><input id="nome" type="text"/></div>
+          <div class="field"><label for="email">Email:</label><input id="email" type="email" readonly/></div>
+          <div class="field"><label for="cpfOuCnpj">CPF/CNPJ:</label><input id="cpfOuCnpj" type="text" readonly/></div>
+          <div class="field"><label for="rua">Rua:</label><input id="rua" type="text"/></div>
+          <div class="field"><label for="numero">Número:</label><input id="numero" type="text"/></div>
+          <div class="field"><label for="complemento">Complemento:</label><input id="complemento" type="text"/></div>
+          <div class="field"><label for="bairro">Bairro:</label><input id="bairro" type="text"/></div>
+          <div class="field"><label for="cidade">Cidade:</label><input id="cidade" type="text"/></div>
+          <div class="field"><label for="estado">Estado (UF):</label><input id="estado" type="text" maxlength="2"/></div>
+          <div class="field"><label for="cep">CEP:</label><input id="cep" type="text"/></div>
+          <div class="field image-field">
+            <label for="imagem">Alterar imagem:</label>
+            <div class="image-preview-bg">
+              <div class="image-preview-container" onclick="document.getElementById('imagem').click()">
+                <img id="preview" alt="Preview da Instituição"/>
+              </div>
+            </div>
+            <input id="imagem" type="file" accept="image/*" hidden onchange="previewImage(event)"/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" onclick="fecharModalInstitution()">Cancelar</button>
+          <button type="button" id="btnChangePassword" class="btn-submit">Alterar Senha</button>
+          <button type="submit" class="btn-submit">Concluir</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modalSenhaConfirm" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="fecharModalSenha()">×</button>
+      <h2 class="modal-title">Confirme sua Senha</h2>
+      <form id="senhaConfirmForm" class="modal-form">
+        <div class="form-grid">
+          <div class="field full-span">
+            <label for="senhaAtualConfirm">Senha atual:</label>
+            <input id="senhaAtualConfirm" type="password" required/>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" onclick="fecharModalSenha()">Cancelar</button>
+          <button type="submit" class="btn-submit">Confirmar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="modalChangePassword" class="modal">
+    <div class="modal-content">
+      <button class="modal-close" id="closeChangePasswordModal">×</button>
+      <h2 class="modal-title">Alterar Senha</h2>
+      <form id="changePasswordForm" class="modal-form">
+        <div class="form-grid">
+          <div class="field full-span">
+            <label for="inputOldPassword">Senha Atual:</label>
+            <input id="inputOldPassword" type="password" required />
+          </div>
+          <div class="field full-span">
+            <label for="inputNewPassword">Nova Senha:</label>
+            <input id="inputNewPassword" type="password" required />
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-cancel" onclick="fecharModalChangePassword()">Cancelar</button>
+          <button type="submit" class="btn-submit">Confirmar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/AdmPerfilInstituicao.js"></script>
+  <script src="../js/header.js"></script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil - Donare</title>
+    <link rel="icon" type="image/png" href="../img/icone.png">
+    <link rel="stylesheet" href="../styles/header.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/InstitutoUser.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+</head>
+
+<body>
+    <header>
+        <div id="header-placeholder"></div>
+    </header>
+
+    <div class="main-container">
+        <div class="institution-profile-container">
+            <section class="institution-details-section">
+                <div class="institution-header">
+                    <a href="#" class="back-button">&larr;</a>
+                    <h1 id="institutionName"></h1>
+                    <span id="institutionType" class="institution-type-tag"></span>
+                </div>
+                <div class="institution-image-and-info-wrapper">
+                    <img id="institutionImage"
+                        src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
+                        alt="Imagem da Instituição" class="institution-image">
+                    <div class="institution-info">
+                        <h3>Localização:</h3>
+                        <span id="institutionLocation"></span>
+                    </div>
+                </div>
+            </section>
+
+            <aside class="campaigns-section">
+                <h2>Campanhas:</h2>
+                <div id="campaignsList" class="campaigns-grid">
+
+                </div>
+        </div>
+        </aside>
+    </div>
+    </div>
+
+    <script type="module" src="../js/header.js"></script>
+    <script type="module" src="../js/InstitutoUser.js"></script>
+</body>
+
+</html>

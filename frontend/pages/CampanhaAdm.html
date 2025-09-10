@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campanha - Donare</title>
+    <link rel="icon" type="image/png" href="../img/icone.png">
+    <link rel="stylesheet" href="../styles/header.css">
+    <link rel="stylesheet" href="../styles/main.css">
+    <link rel="stylesheet" href="../styles/CampanhaAdm.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+</head>
+
+<body>
+    <header>
+        <div id="header-placeholder"></div>
+    </header>
+    <div class="container">
+        <section class="campaign-title-section">
+            <a href="#" class="back-button">&larr;</a>
+            <h1 class="campaign-name-header" id="campaignNameHeader">Nome Campanha</h1>
+        </section>
+        <div class="campaign-content-grid">
+            <div class="campaign-left">
+                <img class="campaign-image"
+                    src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80"
+                    alt="Campanha">
+                <div class="campaign-description">
+                    <h3>Descrição da Campanha:</h3>
+                    <p id="campaignDescriptionText"></p>
+
+                    <h4>Localização:</h4>
+                    <p id="campaignLocation"></p>
+
+                    <div class="info-row">
+                        <h4>Início:</h4>
+                        <p id="campaignStartDate"></p>
+                    </div>
+                    <div class="info-row">
+                        <h4>Fim:</h4>
+                        <p id="campaignEndDate"></p>
+                    </div>
+                    <div class="info-row">
+                        <h4>Categoria:</h4>
+                        <p id="campaignCategory"></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="campaign-right">
+
+                <h3>Itens necessários:</h3>
+                <div class="item-list"></div>
+
+                <div class="post-section">
+                    <h3>Postagens da campanha!</h3>
+                    <div class="post-list"></div>
+                    <button id="btnAddPost" class="btn-add-post">Adicionar nova postagem</button>
+                </div>
+            </div>
+            <div id="modalQrCode" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <span class="close-modal" id="closeModalQrCode">&times;</span>
+                    <h2>QrCode</h2>
+                    <img id="qrCodeImg" style="display:block; margin: 0 auto; max-width: 220px; max-height: 220px;"
+                        alt="QRCode da campanha" />
+                </div>
+            </div>
+        </div>
+        <div id="modalPost" class="modal" style="display:none;">
+            <div class="modal-content modal-post-content">
+                <span class="close-modal" id="closeModalPost">&times;</span>
+                <form id="formPost">
+                    <h2 id="modalPostTitle">Nova Postagem</h2>
+                    <label for="postTitulo">Título da postagem</label>
+                    <input type="text" id="postTitulo" name="titulo" required>
+                    <label for="postConteudo">Descrição</label>
+                    <textarea id="postConteudo" name="conteudo" required></textarea>
+                    <label>Alterar Imagem</label>
+                    <input type="file" id="postImagem" accept="image/*">
+                    <div id="imgPreview" class="img-preview"></div>
+                    <div class="modal-post-actions">
+                        <button type="button" id="cancelPost" class="btn-cancel">Cancelar</button>
+                        <button type="submit" id="createPost" class="btn-create">Criar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script type="module" src="../js/header.js"></script>
+    <script type="module" src="../js/CampanhaAdm.js"></script>
+</body>
+
+</html>

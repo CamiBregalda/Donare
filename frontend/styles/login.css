@@ -1,0 +1,85 @@
+.container{
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.lado-form{
+    background-color: #7DBFA8;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 3vw;
+    width: 40%;
+    overflow-x: auto;
+}
+
+form{
+    padding: 2vh;
+    margin-top: 5vw;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+}
+
+label{
+    margin-top: 4vh;
+    font-size: 1rem;
+    margin-bottom: 1vh;
+    padding-left: 1vw;
+}
+
+input{
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 2vh;
+    background-color: #f2f2f2;
+}
+
+form a,
+p a,
+p{
+    color: #f2f2f2;
+}
+
+form a,
+p{
+    text-decoration: none;
+    display: flex;  
+    font-size: 0.8em;
+    margin: 1vh;
+}
+
+form a{
+    align-self: flex-end;
+}
+
+p{
+    align-self: flex-start;
+    padding-left: 5vh;
+}
+
+button{
+    margin-top: 2vw;
+    padding: 2vh;
+    border: none;
+    width: 100%;
+    align-self: center;
+    border-radius: 10px;
+    background-color: #A3D9B1;
+    color: #f2f2f2;
+    font-size: 2vh;
+    cursor: pointer;
+}
+
+.lado-logo{
+    display: flex;
+    justify-content: center;
+    width: 60%;
+    align-items: center;
+}
+
+.lado-logo img{
+    height: 100%;
+}

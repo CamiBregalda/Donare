@@ -1,0 +1,107 @@
+.container{
+    display: flex;
+    flex-direction: row;
+    height: 100vh;
+}
+
+.lado-cadastro{
+    background-color: #7DBFA8;
+    display: flex;
+    flex-direction: column;   
+    justify-content: center;
+    align-items: center;
+    padding: 3vw;
+    width: 70%;
+}
+
+form{
+    padding: 4vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.nome-cpf {
+    display: flex;
+    gap: 4vw;
+}
+
+.nome-cpf div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.endereco div{
+    gap: 1vh;
+    display: flex;
+}
+.endereco{
+    display: flex;
+    flex-direction: column;
+    gap: 2vh;
+}
+#cep{
+    flex: 1;
+}
+#bairro{
+    flex: 2;
+}
+
+label{
+  margin-top: 2vh;
+  font-size: 1rem;
+  padding-left: 1vw;
+}
+
+input,
+input:focus,
+input:hover,
+input:active,
+input:valid,
+input:invalid  {
+    background-color: #f2f2f2 !important;
+}
+
+input{
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 1.5vh;
+}
+
+.input-error {
+  border: 2px solid red;
+}
+
+.label-error {
+  color: red;
+  font-weight: bold;
+}
+
+input:focus {
+  outline: 2px solid #308567;
+}
+
+button{
+    margin-top: 3vw;
+    padding: 2vh;
+    border: none;
+    width: 60%;
+    align-self: center;
+    border-radius: 10px;
+    background-color: #A3D9B1;
+    color: #f2f2f2;
+    font-size: 2vh;
+    cursor: pointer;
+}
+
+.lado-logo{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+img{
+    width: 30vw;
+}
