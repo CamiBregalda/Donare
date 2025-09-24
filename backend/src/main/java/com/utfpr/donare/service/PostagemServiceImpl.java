@@ -10,6 +10,7 @@ import com.utfpr.donare.domain.Campanha;
 import com.utfpr.donare.domain.Postagem;
 import com.utfpr.donare.repository.CampanhaRepository;
 import com.utfpr.donare.repository.PostagemRepository;
+import com.utfpr.donare.service.interfaces.PostagemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,7 @@ public class PostagemServiceImpl implements PostagemService {
 
     @Override
     @Transactional
-    public PostagemResponseDTO criarPostagem(Long idCampanha, PostagemRequestDTO postagemRequestDTO, MultipartFile midia, String organizadorEmail) {
+    public PostagemResponseDTO savePostagem(Long idCampanha, PostagemRequestDTO postagemRequestDTO, MultipartFile midia, String organizadorEmail) {
         Campanha campanha = campanhaRepository.findById(idCampanha)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o id: " + idCampanha));
         Postagem postagem = postagemMapper.requestDtoToEntity(postagemRequestDTO);
@@ -72,7 +73,7 @@ public class PostagemServiceImpl implements PostagemService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<PostagemResponseDTO> listarPostagensPorCampanha(Long idCampanha) {
+    public List<PostagemResponseDTO> listPostsByCampaign(Long idCampanha) {
         if (!campanhaRepository.existsById(idCampanha)) {
             throw new ResourceNotFoundException("Campanha não encontrada com o id: " + idCampanha);
         }
@@ -84,17 +85,15 @@ public class PostagemServiceImpl implements PostagemService {
 
     @Override
     @Transactional(readOnly = true)
-    public PostagemResponseDTO buscarPostagemPorId(Long idPostagem) {
-        Postagem postagem = postagemRepository.findById(idPostagem)
-                .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
+    public PostagemResponseDTO findPostById(Long idPostagem) {
+        Postagem postagem = findPostagemById(idPostagem);
         return postagemMapper.entityToResponseDto(postagem);
     }
 
     @Override
     @Transactional
-    public PostagemResponseDTO editarPostagem(Long idPostagem, PostagemRequestDTO postagemRequestDTO, MultipartFile midia, String organizadorEmail) {
-        Postagem postagem = postagemRepository.findById(idPostagem)
-                .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
+    public PostagemResponseDTO updatePostagem(Long idPostagem, PostagemRequestDTO postagemRequestDTO, MultipartFile midia, String organizadorEmail) {
+        Postagem postagem = findPostagemById(idPostagem);
 
         if (!postagem.getOrganizadorEmail().equals(organizadorEmail)) {
             throw new RuntimeException("Apenas o organizador pode editar a postagem");
@@ -119,9 +118,8 @@ public class PostagemServiceImpl implements PostagemService {
 
     @Override
     @Transactional
-    public void deletarPostagem(Long idPostagem, String organizadorEmail) {
-        Postagem postagem = postagemRepository.findById(idPostagem)
-                .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
+    public void deletePostagem(Long idPostagem, String organizadorEmail) {
+        Postagem postagem = findPostagemById(idPostagem);
         if (!postagem.getOrganizadorEmail().equals(organizadorEmail)) {
             throw new RuntimeException("Apenas o organizador pode deletar a postagem");
         }
@@ -130,17 +128,20 @@ public class PostagemServiceImpl implements PostagemService {
 
     @Override
     @Transactional(readOnly = true)
-    public byte[] obterMidiaPostagem(Long idPostagem) {
-        Postagem postagem = postagemRepository.findById(idPostagem)
-                .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
+    public byte[] getMediaPost(Long idPostagem) {
+        Postagem postagem = findPostagemById(idPostagem);
         return postagem.getMidia();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public String obterMidiaContentType(Long idPostagem) {
-        Postagem postagem = postagemRepository.findById(idPostagem)
-                .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + idPostagem));
+    public String getMediaContentType(Long idPostagem) {
+        Postagem postagem = findPostagemById(idPostagem);
         return postagem.getMidiaContentType();
+    }
+
+    private Postagem findPostagemById(Long id) {
+        return postagemRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Postagem não encontrada com o id: " + id));
     }
 }

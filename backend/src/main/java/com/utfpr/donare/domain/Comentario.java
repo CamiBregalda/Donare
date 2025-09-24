@@ -1,5 +1,6 @@
 package com.utfpr.donare.domain;
 
+import com.utfpr.donare.dto.ComentarioRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -44,5 +45,11 @@ public class Comentario {
 
     @OneToMany(mappedBy = "comentarioPai", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comentario> respostas = new ArrayList<>();
+
+    public Comentario(ComentarioRequestDTO comentarioRequestDTO, Campanha campanha, User user) {
+        this.conteudo = comentarioRequestDTO.getConteudo();
+        this.campanha = campanha;
+        this.user = user;
+    }
 
 }

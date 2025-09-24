@@ -1,6 +1,9 @@
 package com.utfpr.donare.domain;
 import java.time.LocalDateTime;
 import java.util.Objects;
+
+import com.utfpr.donare.dto.CampanhaRequestDTO;
+import com.utfpr.donare.dto.NecessidadeRequestDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -39,6 +42,21 @@ public class Necessidade {
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime dataCriacao;
+
+    public Necessidade(NecessidadeRequestDTO necessidadeRequestDTO, Campanha campanha) {
+        this.nome = necessidadeRequestDTO.getNome();
+        this.unidadeMedida = necessidadeRequestDTO.getUnidadeMedida();
+        this.quantidadeNecessaria = necessidadeRequestDTO.getQuantidadeNecessaria();
+        this.quantidadeRecebida = necessidadeRequestDTO.getQuantidadeRecebida();
+        this.campanha = campanha;
+    }
+
+    public void updateNecessidade(NecessidadeRequestDTO necessidadeRequestDTO) {
+        this.setNome(necessidadeRequestDTO.getNome());
+        this.setUnidadeMedida(necessidadeRequestDTO.getUnidadeMedida());
+        this.setQuantidadeNecessaria(necessidadeRequestDTO.getQuantidadeNecessaria());
+        this.setQuantidadeRecebida(necessidadeRequestDTO.getQuantidadeRecebida());
+    }
 
     @Override
     public boolean equals(Object o) {

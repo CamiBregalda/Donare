@@ -2,7 +2,7 @@ package com.utfpr.donare.controller;
 
 import com.utfpr.donare.dto.PostagemRequestDTO;
 import com.utfpr.donare.dto.PostagemResponseDTO;
-import com.utfpr.donare.service.PostagemService;
+import com.utfpr.donare.service.interfaces.PostagemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -16,9 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 //cors
-   import org.springframework.context.annotation.Bean;
-   import org.springframework.web.servlet.config.annotation.CorsRegistry;
-   import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @RestController
@@ -40,19 +37,19 @@ public class PostagemController {
             @RequestPart(value = "midia", required = false) MultipartFile midia) {
 
         String organizadorEmail = obterMockOrganizadorEmail();
-        PostagemResponseDTO novaPostagem = postagemService.criarPostagem(idCampanha, postagemRequestDTO, midia, organizadorEmail);
+        PostagemResponseDTO novaPostagem = postagemService.savePostagem(idCampanha, postagemRequestDTO, midia, organizadorEmail);
         return new ResponseEntity<>(novaPostagem, HttpStatus.CREATED);
     }
 
     @GetMapping("/campanhas/{idCampanha}")
     public ResponseEntity<List<PostagemResponseDTO>> findAllByCampaign(@PathVariable Long idCampanha) {
-        List<PostagemResponseDTO> postagens = postagemService.listarPostagensPorCampanha(idCampanha);
+        List<PostagemResponseDTO> postagens = postagemService.listPostsByCampaign(idCampanha);
         return ResponseEntity.ok(postagens);
     }
 
     @GetMapping("/{idPostagem}")
     public ResponseEntity<PostagemResponseDTO> findById(@PathVariable Long idPostagem)  {
-        PostagemResponseDTO postagem = postagemService.buscarPostagemPorId(idPostagem);
+        PostagemResponseDTO postagem = postagemService.findPostById(idPostagem);
         return ResponseEntity.ok(postagem);
     }
 
@@ -63,21 +60,21 @@ public class PostagemController {
             @RequestPart(value = "midia", required = false) MultipartFile midia) {
 
         String organizadorEmail = obterMockOrganizadorEmail();
-        PostagemResponseDTO postagemAtualizada = postagemService.editarPostagem(idPostagem, postagemRequestDTO, midia, organizadorEmail);
+        PostagemResponseDTO postagemAtualizada = postagemService.updatePostagem(idPostagem, postagemRequestDTO, midia, organizadorEmail);
         return ResponseEntity.ok(postagemAtualizada);
     }
 
     @DeleteMapping("/{idPostagem}")
     public ResponseEntity<Void> delete(@PathVariable Long idPostagem) {
         String organizadorEmail = obterMockOrganizadorEmail();
-        postagemService.deletarPostagem(idPostagem, organizadorEmail);
+        postagemService.deletePostagem(idPostagem, organizadorEmail);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{idPostagem}/midia")
     public ResponseEntity<byte[]> getMedia(@PathVariable Long idPostagem) {
-        byte[] midiaBytes = postagemService.obterMidiaPostagem(idPostagem);
-        String contentType = postagemService.obterMidiaContentType(idPostagem);
+        byte[] midiaBytes = postagemService.getMediaPost(idPostagem);
+        String contentType = postagemService.getMediaContentType(idPostagem);
 
         if (midiaBytes == null || midiaBytes.length == 0) {
             return ResponseEntity.notFound().build();

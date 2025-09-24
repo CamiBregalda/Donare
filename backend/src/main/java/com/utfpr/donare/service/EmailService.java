@@ -33,7 +33,7 @@ public class EmailService {
             helper.setSubject(template.subject());
             helper.setText(template.body(), true);
 
-            mailSender.send(message);
+            //mailSender.send(message);
         } catch (Exception e) {
             throw new RuntimeException("Erro ao enviar e-mail: " + e.getMessage(), e);
         }

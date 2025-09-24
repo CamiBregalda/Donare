@@ -70,9 +70,9 @@ public class ComentarioController {
                             schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping("/campanhas/{idCampanha}/comentarios")
-    public ResponseEntity<List<ComentarioResponseDTO>> listarComentariosPorCampanha( @PathVariable Long idCampanha) {
+    public ResponseEntity<List<ComentarioResponseDTO>> listCommentsByCampaign( @PathVariable Long idCampanha) {
 
-        List<ComentarioResponseDTO> comentarios = comentarioService.listarComentariosPorCampanha(idCampanha);
+        List<ComentarioResponseDTO> comentarios = comentarioService.listCommentsByCampaign(idCampanha);
         return ResponseEntity.ok(comentarios);
     }
 
@@ -81,7 +81,7 @@ public class ComentarioController {
     @GetMapping("/campanhas/{idCampanha}/comentarios/{idComentario}")
     public ResponseEntity<ComentarioResponseDTO> buscarComentarioPorId(@PathVariable Long idCampanha, @PathVariable Long idComentario) {
 
-        ComentarioResponseDTO comentario = comentarioService.buscarComentarioPorId(idCampanha, idComentario);
+        ComentarioResponseDTO comentario = comentarioService.findComentarioPorId(idCampanha, idComentario);
         return ResponseEntity.ok(comentario);
     }
 

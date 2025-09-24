@@ -74,16 +74,16 @@ public class NecessidadeController {
     @GetMapping("/campanhas/{idCampanha}/necessidades")
     public ResponseEntity<List<NecessidadeResponseDTO>> listarNecessidadesPorCampanha(@PathVariable Long idCampanha) {
 
-        List<NecessidadeResponseDTO> necessidades = necessidadeService.listarNecessidadesPorCampanha(idCampanha);
+        List<NecessidadeResponseDTO> necessidades = necessidadeService.listNeedsByCampaign(idCampanha);
         return ResponseEntity.ok(necessidades);
     }
 
     // buscar necessidade por id --------------------------------------------------
 
     @GetMapping("/campanhas/{idCampanha}/necessidades/{idNecessidade}")
-    public ResponseEntity<NecessidadeResponseDTO> buscarNecessidadePorId(@PathVariable Long idCampanha, @PathVariable Long idNecessidade) {
+    public ResponseEntity<NecessidadeResponseDTO> findNecessidadeById(@PathVariable Long idCampanha, @PathVariable Long idNecessidade) {
 
-        NecessidadeResponseDTO necessidade = necessidadeService.buscarNecessidadePorId(idCampanha, idNecessidade);
+        NecessidadeResponseDTO necessidade = necessidadeService.findNecessidadeById(idCampanha, idNecessidade);
         return ResponseEntity.ok(necessidade);
     }
 
