@@ -3,6 +3,90 @@ import { fetchData } from "./lib/auth.js";
 
 let todasCampanhas = [];
 
+async function renderizaCampanhas() {
+    try {
+        const usuario = await fetchData();
+
+        if (!usuario) {
+            console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
+            return;
+        }
+
+        const cidadeUsuario = usuario?.idEndereco?.cidade;
+
+        const token = localStorage.getItem('token');
+        const response = await fetch('http://localhost:8080/campanhas', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error(`Erro HTTP! Status: ${response.status}`);
+        }
+
+        todasCampanhas = await response.json();
+
+        console.log("Todas campanhas recebidas:", todasCampanhas);
+
+        const hoje = new Date();
+        const campanhasAtivas = todasCampanhas.filter(c => {
+            const inicio = new Date(c.dtInicio);
+            const fim = new Date(c.dt_fim);
+            return inicio <= hoje && fim >= hoje;
+        });
+
+        console.log('Dados da API (todasCampanhas) Ativas:', campanhasAtivas);
+
+        let campanhasProximasFiltradas = [];
+        if (cidadeUsuario) {
+            campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
+                const cidadeCampanha = campanha.endereco?.cidade;
+                return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
+            });
+            console.log('Campanhas próximas encontradas:', campanhasProximasFiltradas);
+        } else {
+            console.warn('Cidade do usuário não definida. A lista de campanhas próximas não pode ser filtrada.');
+        }
+
+        atualizarListaCampanhasProximas(campanhasProximasFiltradas);
+
+        await atualizarListaCampanhasSeguidas();
+
+        main.innerHTML = '';
+        const categoriasCampanhas = campanhasAtivas.reduce((acc, campanha) => {
+            const categoria = campanha.categoriaCampanha || 'Outros';
+            if (!acc[categoria]) {
+                acc[categoria] = [];
+            }
+            acc[categoria].push(campanha);
+            return acc;
+        }, {});
+
+        Object.keys(categoriasCampanhas).forEach(nomeCategoria => {
+            const section = document.createElement('section');
+            section.className = 'categoria';
+            const titulo = document.createElement('h3');
+            titulo.textContent = nomeCategoria;
+            const container = document.createElement('div');
+            container.className = 'container-campanha';
+            categoriasCampanhas[nomeCategoria].forEach(campanha => {
+                container.appendChild(criarCardCampanha(campanha));
+            });
+            section.appendChild(titulo);
+            section.appendChild(container);
+            main.appendChild(section);
+        });
+
+    } catch (error) {
+        console.error('Erro ao renderizar campanhas:', error);
+        main.innerHTML = '<p>Não foi possível carregar as campanhas.</p>';
+        campanhasSeguidasLista.innerHTML = '<li>Erro ao carregar</li>';
+        campanhasProximasLista.innerHTML = '<li>Erro ao carregar</li>';
+    }
+}
+
 const main = document.querySelector('main');
 const campanhasSeguidasLista = document.getElementById('campanhas-seguidas');
 const campanhasProximasLista = document.getElementById('campanhas-proximas');
@@ -150,90 +234,6 @@ async function seguirCampanha(idCampanha) {
     } catch (error) {
         console.error('Erro na rede ou ao seguir campanha:', error);
         alert('Ocorreu um erro ao tentar seguir a campanha. Tente novamente.');
-    }
-}
-
-async function renderizaCampanhas() {
-    try {
-        const usuario = await fetchData();
-
-        if (!usuario) {
-            console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
-            return;
-        }
-
-        const cidadeUsuario = usuario?.idEndereco?.cidade;
-
-        const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:8080/campanhas', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error(`Erro HTTP! Status: ${response.status}`);
-        }
-
-        todasCampanhas = await response.json();
-
-        console.log("Todas campanhas recebidas:", todasCampanhas);
-
-        const hoje = new Date();
-        const campanhasAtivas = todasCampanhas.filter(c => {
-            const inicio = new Date(c.dtInicio);
-            const fim = new Date(c.dt_fim);
-            return inicio <= hoje && fim >= hoje;
-        });
-
-        console.log('Dados da API (todasCampanhas) Ativas:', campanhasAtivas);
-
-        let campanhasProximasFiltradas = [];
-        if (cidadeUsuario) {
-            campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
-                const cidadeCampanha = campanha.endereco?.cidade;
-                return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
-            });
-            console.log('Campanhas próximas encontradas:', campanhasProximasFiltradas);
-        } else {
-            console.warn('Cidade do usuário não definida. A lista de campanhas próximas não pode ser filtrada.');
-        }
-
-        atualizarListaCampanhasProximas(campanhasProximasFiltradas);
-
-        await atualizarListaCampanhasSeguidas();
-
-        main.innerHTML = '';
-        const categoriasCampanhas = campanhasAtivas.reduce((acc, campanha) => {
-            const categoria = campanha.categoriaCampanha || 'Outros';
-            if (!acc[categoria]) {
-                acc[categoria] = [];
-            }
-            acc[categoria].push(campanha);
-            return acc;
-        }, {});
-
-        Object.keys(categoriasCampanhas).forEach(nomeCategoria => {
-            const section = document.createElement('section');
-            section.className = 'categoria';
-            const titulo = document.createElement('h3');
-            titulo.textContent = nomeCategoria;
-            const container = document.createElement('div');
-            container.className = 'container-campanha';
-            categoriasCampanhas[nomeCategoria].forEach(campanha => {
-                container.appendChild(criarCardCampanha(campanha));
-            });
-            section.appendChild(titulo);
-            section.appendChild(container);
-            main.appendChild(section);
-        });
-
-    } catch (error) {
-        console.error('Erro ao renderizar campanhas:', error);
-        main.innerHTML = '<p>Não foi possível carregar as campanhas.</p>';
-        campanhasSeguidasLista.innerHTML = '<li>Erro ao carregar</li>';
-        campanhasProximasLista.innerHTML = '<li>Erro ao carregar</li>';
     }
 }
 

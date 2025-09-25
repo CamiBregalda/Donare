@@ -14,9 +14,6 @@ let comments = [];
 
 
 const token = localStorage.getItem('token');
-function authHeadersForm() {
-    return { 'Authorization': `Bearer ${token}` };
-}
 
 function formatDateBr(dateStr) {
     if (!dateStr) return '';

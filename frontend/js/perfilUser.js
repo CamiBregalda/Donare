@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchParticipatedCampaigns();
   fetchFollowedCampaigns();
 
-  document.getElementById('editProfileBtn').onclick        = abrirModal;
+  document.getElementById('editProfileBtn').onclick         = abrirModal;
   document.getElementById('closeModal').onclick             = fecharModal;
   document.getElementById('cancelModal').onclick            = fecharModal;
   document.getElementById('manageCampaignsBtn').onclick     = () => window.location.href = 'inicioAdm.html';
