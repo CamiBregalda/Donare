@@ -44,15 +44,10 @@ form.addEventListener('submit', async function (e) {
 
         localStorage.setItem('usuario', JSON.stringify(userData));
         
-        console.log("Dados do usuário recebidos:", userData);
-        console.log("Valor de userData.tipoUsuario:", userData.tipoUsuario);
-        console.log("Tipo de dado de userData.tipoUsuario:", typeof userData.tipoUsuario);
 
         if (userData && userData.tipoUsuario == 2) {
-            console.log("Usuário tipo 2. Redirecionando para a tela de administração.");
             window.location.href = '../pages/inicioAdm.html'; 
         } else {
-            console.log("Usuário tipo padrão. Redirecionando para a tela inicial.");
             window.location.href = '../pages/inicio.html';
         }
 

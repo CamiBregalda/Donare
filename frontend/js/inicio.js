@@ -1,20 +1,30 @@
 import { jwtDecode } from "./lib/jwt-decode.js";
 import { fetchData } from "./lib/auth.js";
 
+function authHeadersForm(token) {
+    return { 'Authorization': `Bearer ${token}` };
+}
+
 let todasCampanhas = [];
+let main;
+let campanhasSeguidasLista;
+let campanhasProximasLista;
 
 async function renderizaCampanhas() {
+    if (!main) {
+        console.error('[renderizaCampanhas] main inexistente, abortando');
+        return;
+    }
     try {
         const usuario = await fetchData();
-
         if (!usuario) {
-            console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
+            console.warn('[renderizaCampanhas] usuário não autenticado');
             return;
         }
 
         const cidadeUsuario = usuario?.idEndereco?.cidade;
+        const token = (localStorage.getItem('token') || '').trim();
 
-        const token = localStorage.getItem('token');
         const response = await fetch('http://localhost:8080/campanhas', {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -28,8 +38,6 @@ async function renderizaCampanhas() {
 
         todasCampanhas = await response.json();
 
-        console.log("Todas campanhas recebidas:", todasCampanhas);
-
         const hoje = new Date();
         const campanhasAtivas = todasCampanhas.filter(c => {
             const inicio = new Date(c.dtInicio);
@@ -37,30 +45,21 @@ async function renderizaCampanhas() {
             return inicio <= hoje && fim >= hoje;
         });
 
-        console.log('Dados da API (todasCampanhas) Ativas:', campanhasAtivas);
-
         let campanhasProximasFiltradas = [];
         if (cidadeUsuario) {
             campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
                 const cidadeCampanha = campanha.endereco?.cidade;
                 return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
             });
-            console.log('Campanhas próximas encontradas:', campanhasProximasFiltradas);
-        } else {
-            console.warn('Cidade do usuário não definida. A lista de campanhas próximas não pode ser filtrada.');
         }
 
         atualizarListaCampanhasProximas(campanhasProximasFiltradas);
-
         await atualizarListaCampanhasSeguidas();
 
         main.innerHTML = '';
         const categoriasCampanhas = campanhasAtivas.reduce((acc, campanha) => {
             const categoria = campanha.categoriaCampanha || 'Outros';
-            if (!acc[categoria]) {
-                acc[categoria] = [];
-            }
-            acc[categoria].push(campanha);
+            (acc[categoria] = acc[categoria] || []).push(campanha);
             return acc;
         }, {});
 
@@ -80,36 +79,26 @@ async function renderizaCampanhas() {
         });
 
     } catch (error) {
-        console.error('Erro ao renderizar campanhas:', error);
-        main.innerHTML = '<p>Não foi possível carregar as campanhas.</p>';
-        campanhasSeguidasLista.innerHTML = '<li>Erro ao carregar</li>';
-        campanhasProximasLista.innerHTML = '<li>Erro ao carregar</li>';
+        console.error('[renderizaCampanhas] erro:', error);
+        if (main) main.innerHTML = '<p>Não foi possível carregar as campanhas.</p>';
+        if (campanhasSeguidasLista) campanhasSeguidasLista.innerHTML = '<li>Erro ao carregar</li>';
+        if (campanhasProximasLista) campanhasProximasLista.innerHTML = '<li>Erro ao carregar</li>';
     }
 }
 
-const main = document.querySelector('main');
-const campanhasSeguidasLista = document.getElementById('campanhas-seguidas');
-const campanhasProximasLista = document.getElementById('campanhas-proximas');
-
 async function carregarImagem(campanhaId, imgElement) {
-    const token = localStorage.getItem('token');
+    const token = (localStorage.getItem('token') || '').trim();
     try {
         const response = await fetch(`http://localhost:8080/campanhas/${campanhaId}/imagem`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            headers: { Authorization: `Bearer ${token}` }
         });
         if (response.ok) {
             const blob = await response.blob();
             imgElement.src = URL.createObjectURL(blob);
-        } else if (response.status === 404) {
-            imgElement.src = '../assets/LogoDonareBranca.png'
         } else {
-            console.warn(`Erro ao carregar imagem da campanha ${campanhaId}: ${response.status}`);
             imgElement.src = '../assets/LogoDonareBranca.png';
         }
-    } catch (error) {
-        console.error(`Erro de rede ao carregar imagem da campanha ${campanhaId}:`, error);
+    } catch {
         imgElement.src = '../assets/LogoDonareBranca.png';
     }
 }
@@ -130,122 +119,104 @@ function criarCardCampanha(campanha) {
         </div>
         <div class="infos">
             <h3>${campanha.titulo}</h3>
-            <p>${campanha.descricao}</p>
+            <p>${campanha.descricao || ''}</p>
             <div class="acao">    
                 <button class="seguir" data-id="${campanha.id}">Seguir</button>
             </div>
         </div>`;
-
     const imgElement = card.querySelector('img');
     carregarImagem(campanha.id, imgElement);
-
     card.addEventListener('click', (event) => {
         if (!event.target.closest('.seguir')) {
             window.location.href = `../pages/ComentariosDetalhes.html?id=${campanha.id}`;
         }
-    })
+    });
     return card;
 }
 
 async function atualizarListaCampanhasSeguidas() {
+    if (!campanhasSeguidasLista) return;
     campanhasSeguidasLista.innerHTML = '';
-
-    const token = localStorage.getItem('token');
+    const token = (localStorage.getItem('token') || '').trim();
     const usuario = await fetchData();
-
     if (!token || !usuario) {
-        campanhasSeguidasLista.innerHTML = '<li>Erro ao carregar (Usuário não autenticado)</li>';
+        campanhasSeguidasLista.innerHTML = '<li>Usuário não autenticado</li>';
         return;
     }
-
-    console.log('ID do Usuário para a requisição:', usuario.id);
     try {
-
         const response = await fetch(`http://localhost:8080/usuarios/${usuario.id}/campanhas-seguidas`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+            headers: { Authorization: `Bearer ${token}` }
         });
-
-        if (!response.ok) {
-            throw new Error(`Erro ao buscar campanhas seguidas: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(response.status);
         const campanhasSeguidas = await response.json();
-
-        if (campanhasSeguidas.length > 0) {
-            campanhasSeguidas.forEach(campanha => {
-                campanhasSeguidasLista.appendChild(criarItemListaLateral(campanha));
-            });
+        if (Array.isArray(campanhasSeguidas) && campanhasSeguidas.length) {
+            campanhasSeguidas.forEach(c => campanhasSeguidasLista.appendChild(criarItemListaLateral(c)));
         } else {
-            campanhasSeguidasLista.innerHTML = '<li>Nenhuma campanha seguida no momento.</li>';
+            campanhasSeguidasLista.innerHTML = '<li>Nenhuma campanha seguida.</li>';
         }
-    } catch {
-
+    } catch (e) {
+        campanhasSeguidasLista.innerHTML = '<li>Erro ao carregar.</li>';
     }
 }
 
 function atualizarListaCampanhasProximas(campanhasProximas) {
+    if (!campanhasProximasLista) return;
     campanhasProximasLista.innerHTML = '';
-    if (campanhasProximas.length > 0) {
-        campanhasProximas.forEach(campanha => {
-            campanhasProximasLista.appendChild(criarItemListaLateral(campanha));
-        });
+    if (Array.isArray(campanhasProximas) && campanhasProximas.length) {
+        campanhasProximas.forEach(c => campanhasProximasLista.appendChild(criarItemListaLateral(c)));
     } else {
-        campanhasProximasLista.innerHTML = '<li>Nenhuma campanha próxima no momento.</li>';
+        campanhasProximasLista.innerHTML = '<li>Nenhuma campanha próxima.</li>';
     }
 }
 
 async function seguirCampanha(idCampanha) {
-    const token = localStorage.getItem('token');
+    const token = (localStorage.getItem('token') || '').trim();
     const usuario = await fetchData();
-
-    console.log('Dados do usuário:', usuario);
-    console.log('ID do usuário:', usuario?.id);
-    console.log('ID da campanha a ser seguida:', idCampanha);
-
     if (!token || !usuario) {
-        alert('Você precisa estar logado para seguir uma campanha')
+        alert('Você precisa estar logado.');
         return;
     }
-
     try {
         const response = await fetch(`http://localhost:8080/usuarios/${usuario.id}/seguir-campanha/${idCampanha}`, {
             method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            }
-        })
-
+            headers: { Authorization: `Bearer ${token}` }
+        });
         if (response.ok) {
-            alert('Campanha seguida com sucesso!');
             await atualizarListaCampanhasSeguidas();
+            alert('Agora você segue esta campanha.');
         } else {
-            const errorResponse = await response.json().catch(() => ({ message: 'Erro desconhecido' }));
-
-            if (response.status === 400 && errorResponse.message === "Usuário já segue esta campanha.") {
-                alert('Você já está seguindo esta campanha.');
+            const errorResp = await response.json().catch(() => ({}));
+            if (response.status === 400 && errorResp.message === 'Usuário já segue esta campanha.') {
+                alert('Você já segue esta campanha.');
             } else {
-                alert(`Erro ao seguir a campanha: ${errorResponse.message || 'Ocorreu um erro.'}`);
-                console.error('Erro na requisição para seguir campanha:', response.status, errorResponse);
+                alert('Erro ao seguir campanha.');
             }
         }
-    } catch (error) {
-        console.error('Erro na rede ou ao seguir campanha:', error);
-        alert('Ocorreu um erro ao tentar seguir a campanha. Tente novamente.');
+    } catch (e) {
+        alert('Falha na requisição.');
     }
 }
 
-main.addEventListener('click', (event) => {
+function onMainClick(event) {
     const btnSeguir = event.target.closest('.seguir');
     if (btnSeguir) {
         event.preventDefault();
         const campanhaId = parseInt(btnSeguir.dataset.id, 10);
         seguirCampanha(campanhaId);
     }
-});
+}
 
+// Inicialização segura
 document.addEventListener('DOMContentLoaded', () => {
+    main = document.querySelector('main');
+    campanhasSeguidasLista = document.getElementById('campanhas-seguidas');
+    campanhasProximasLista = document.getElementById('campanhas-proximas');
+
+    if (!main) {
+        console.error('Elemento <main> não encontrado. Verifique o HTML.');
+        return;
+    }
+
+    main.addEventListener('click', onMainClick);
     renderizaCampanhas();
 });

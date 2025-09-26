@@ -62,7 +62,6 @@ async function fetchInstitutionDetails(idUsuario, token) {
         });
         if (!response.ok) throw new Error('Erro ao buscar dados da instituição.');
         const data = await response.json()
-        console.log('Dados da instituição:', data);
 
         document.getElementById('institutionName').textContent = data.nome || '';
         let localizacao = '';

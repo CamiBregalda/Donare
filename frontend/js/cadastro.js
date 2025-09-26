@@ -84,8 +84,6 @@ document.querySelector('form').addEventListener('submit', function (e) {
         password: senha
     };
 
-    console.log(novoUsuario);
-
     const formData = new FormData();
     formData.append('user', new Blob(
         [JSON.stringify(novoUsuario)],
@@ -122,7 +120,6 @@ document.querySelector('form').addEventListener('submit', function (e) {
 
             alert('Usuário cadastrado com sucesso!');
             window.location.replace('../pages/login.html');
-            console.log(data);
         })
         .catch(err => {
             alert(err.message || 'Erro no cadastro de usuário.');

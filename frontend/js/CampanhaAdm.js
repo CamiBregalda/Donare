@@ -45,8 +45,6 @@ async function loadCampaignData() {
             if (endereco.complemento) enderecoStr += `, ${endereco.complemento}`;
             enderecoStr += ` - ${endereco.bairro}, ${endereco.cidade} - ${endereco.estado}`;
         }
-        console.log(campData);
-        console.log(enderecoStr);
         document.querySelector('.campaign-name-header').textContent = campData.titulo || '';
         document.getElementById('campaignStartDate').textContent = formatDateBr(campData.dtInicio);
         document.getElementById('campaignEndDate').textContent = formatDateBr(campData.dt_fim);

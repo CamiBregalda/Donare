@@ -19,7 +19,6 @@
 		try {
 			const fragment = await fetch('../pages/header.html').then(r => r.text());
 			placeholder.innerHTML = fragment;
-			console.log("Header carregado com sucesso.");
 		} catch (error) {
 			console.error("Erro ao carregar o header.html:", error);
 			return;
@@ -65,7 +64,6 @@
 				e.stopPropagation();
 				if (dropdown) {
 					dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
-					console.log('Avatar clicado');
 				}
 			});
 
@@ -76,7 +74,6 @@
 
 				if (!clickedInsideAvatar && !clickedInsideDropdown) {
 					dropdown.style.display = 'none';
-					console.log('Clique fora. Dropdown fechado.');
 				}
 			});
 
@@ -110,7 +107,6 @@
 
 
 		} else {
-			console.log("Usuário não logado ou sem ID. O avatar e o menu de perfil não serão configurados.");
 			if (avatar) avatar.style.display = 'none';
 		}
 	}
