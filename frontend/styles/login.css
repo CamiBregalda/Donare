@@ -1,10 +1,10 @@
-.container{
+.container {
     display: flex;
     flex-direction: row;
     height: 100vh;
 }
 
-.lado-form{
+.lado-form {
     background-color: #7DBFA8;
     display: flex;
     flex-direction: column;
@@ -14,7 +14,7 @@
     overflow-x: auto;
 }
 
-form{
+form {
     padding: 2vh;
     margin-top: 5vw;
     width: 90%;
@@ -22,14 +22,14 @@ form{
     flex-direction: column;
 }
 
-label{
+label {
     margin-top: 4vh;
     font-size: 1rem;
     margin-bottom: 1vh;
     padding-left: 1vw;
 }
 
-input{
+input {
     width: 100%;
     border: none;
     border-radius: 10px;
@@ -37,30 +37,32 @@ input{
     background-color: #f2f2f2;
 }
 
+h2,
+label,
 form a,
 p a,
-p{
+p {
     color: #f2f2f2;
 }
 
 form a,
-p{
+p {
     text-decoration: none;
-    display: flex;  
+    display: flex;
     font-size: 0.8em;
     margin: 1vh;
 }
 
-form a{
+form a {
     align-self: flex-end;
 }
 
-p{
+p {
     align-self: flex-start;
     padding-left: 5vh;
 }
 
-button{
+button {
     margin-top: 2vw;
     padding: 2vh;
     border: none;
@@ -68,18 +70,116 @@ button{
     align-self: center;
     border-radius: 10px;
     background-color: #A3D9B1;
-    color: #f2f2f2;
+    color: #ffff;
     font-size: 2vh;
     cursor: pointer;
 }
 
-.lado-logo{
+.lado-logo {
     display: flex;
     justify-content: center;
     width: 60%;
     align-items: center;
 }
 
-.lado-logo img{
+.lado-logo img {
     height: 100%;
+}
+
+@media (max-width: 1024px) {
+    .lado-form {
+        padding-top: 65px;
+        width: 50%;
+    }
+
+    h2 {
+        font-size: 6vh;
+    }
+
+    form {
+        width: 100%;
+    }
+
+    .lado-logo {
+        width: 50%;
+    }
+
+    .lado-logo img {
+        height: 80%;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+    }
+
+    h2,
+    label,
+    form a,
+    p a,
+    p {
+        color: #7DBFA8;
+    }
+
+    .lado-logo {
+        justify-content: center;
+        margin-top: 30px;
+    }
+
+    .lado-logo img {
+        max-width: 180px;
+        height: auto;
+    }
+
+    .lado-form {
+        background-color: #ffff;
+        width: 100%;
+        padding: 10px;
+    }
+
+    form {
+        width: 90%;
+    }
+
+    label {
+        font-weight: 600;
+    }
+
+    input {
+        background-color: #ffff;
+        border: solid #7DBFA8 2px;
+    }
+
+    button {
+        font-size: 1rem;
+        padding: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .lado-logo img {
+        margin-top: 4vh;
+        max-width: 170px;
+        height: auto;
+    }
+
+    h2 {
+        font-size: 2rem;
+    }
+
+    label {
+        font-size: 0.9rem;
+    }
+
+    input {
+        padding: 10px;
+    }
+
+    button {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
 }
