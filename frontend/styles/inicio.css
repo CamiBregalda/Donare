@@ -114,3 +114,48 @@ main {
     color: #f2f2f2;
     cursor: pointer;
 }
+
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column; /* aside em cima, main embaixo */
+    }
+
+    aside {
+        width: 100%; /* ocupa toda a largura */
+        height: auto; /* deixa crescer conforme o conteúdo */
+        position: relative; /* tira o sticky */
+        top: 0;
+        order: 1; /* aside aparece antes */
+    }
+
+    main {
+        order: 2;
+        max-width: 100%;
+    }
+
+    /* Ajuste das fontes e cards para telas menores */
+    h2 {
+        font-size: 5vw;
+    }
+
+    .infos h3 {
+        font-size: 4vw;
+    }
+
+    .infos p {
+        font-size: 3.5vw;
+    }
+
+    .card {
+        width: 80vw; /* cards mais estreitos */
+    }
+
+    .imagem {
+        height: 20vh;
+    }
+
+    .seguir {
+        padding: 1vh 4vh; /* botão menor */
+        font-size: 3.5vw;
+    }
+}

@@ -29,3 +29,7 @@ h2{
 ::placeholder{
     color: #7DBFA8;
 }
+
+button{
+    cursor: pointer;
+}
