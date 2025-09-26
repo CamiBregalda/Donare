@@ -1,8 +1,11 @@
-import { jwtDecode } from "./lib/jwt-decode.js";
 import { fetchData } from "./lib/auth.js";
 
-function authHeadersForm(token) {
-    return { 'Authorization': `Bearer ${token}` };
+const API_BASE = 'http://localhost:8080';
+function authHeaders(isJson = true) {
+    const token = localStorage.getItem('token') || '';
+    const response = { Authorization: `Bearer ${token}` };
+    if (isJson) response['Content-Type'] = 'application/json';
+    return response;
 }
 
 let todasCampanhas = [];
@@ -25,11 +28,8 @@ async function renderizaCampanhas() {
         const cidadeUsuario = usuario?.idEndereco?.cidade;
         const token = (localStorage.getItem('token') || '').trim();
 
-        const response = await fetch('http://localhost:8080/campanhas', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-            }
+        const response = await fetch(`${API_BASE}/campanhas`, {
+            headers: authHeaders(false)
         });
 
         if (!response.ok) {
@@ -63,16 +63,19 @@ async function renderizaCampanhas() {
             return acc;
         }, {});
 
-        Object.keys(categoriasCampanhas).forEach(nomeCategoria => {
+        Object.keys(categoriasCampanhas).forEach(async nomeCategoria => {
             const section = document.createElement('section');
             section.className = 'categoria';
             const titulo = document.createElement('h3');
             titulo.textContent = nomeCategoria;
             const container = document.createElement('div');
             container.className = 'container-campanha';
-            categoriasCampanhas[nomeCategoria].forEach(campanha => {
-                container.appendChild(criarCardCampanha(campanha));
-            });
+
+            for (const campanha of categoriasCampanhas[nomeCategoria]) {
+                const card = await criarCardCampanha(campanha);
+                container.appendChild(card);
+            }
+
             section.appendChild(titulo);
             section.appendChild(container);
             main.appendChild(section);
@@ -109,7 +112,7 @@ function criarItemListaLateral(campanha) {
     return li;
 }
 
-function criarCardCampanha(campanha) {
+async function criarCardCampanha(campanha) {
     const card = document.createElement('div');
     card.className = 'card';
     card.dataset.id = campanha.id;
@@ -126,12 +129,78 @@ function criarCardCampanha(campanha) {
         </div>`;
     const imgElement = card.querySelector('img');
     carregarImagem(campanha.id, imgElement);
+
+    // Verifica se o usuário já segue a campanha
+    const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
+    let isSeguindo = false;
+    try {
+        const resp = await fetch(`${API_BASE}/campanhas/${campanha.id}`, {
+            headers: authHeaders(false)
+        });
+        if (resp.ok) {
+            const campData = await resp.json();
+            if (campData && Array.isArray(campData.usuariosQueSeguem)) {
+                isSeguindo = campData.usuariosQueSeguem.some(u => u.id == usuario.id);
+            }
+        }
+    } catch { }
+
+    const btnSeguir = card.querySelector('.seguir');
+    atualizarBotaoSeguir(btnSeguir, isSeguindo);
+
+    btnSeguir.addEventListener('click', async (event) => {
+        event.stopPropagation();
+        if (!usuario || !usuario.id) {
+            alert('Você precisa estar logado.');
+            window.location.href = 'login.html';
+            return;
+        }
+        if (!isSeguindo) {
+            // Seguir campanha
+            try {
+                const response = await fetch(`${API_BASE}/usuarios/${usuario.id}/seguir-campanha/${campanha.id}`, {
+                    method: 'POST',
+                    headers: authHeaders(false)
+                });
+                if (response.ok) {
+                    isSeguindo = true;
+                    atualizarBotaoSeguir(btnSeguir, true);
+                } else {
+                    alert('Erro ao seguir campanha.');
+                }
+            } catch {
+                alert('Falha ao seguir campanha.');
+            }
+        } else {
+            // Parar de seguir campanha
+            try {
+                const response = await fetch(`${API_BASE}/usuarios/${usuario.id}/parar-de-seguir-campanha/${campanha.id}`, {
+                    method: 'DELETE',
+                    headers: authHeaders(false)
+                });
+                if (response.ok) {
+                    isSeguindo = false;
+                    atualizarBotaoSeguir(btnSeguir, false);
+                } else {
+                    alert('Erro ao parar de seguir.');
+                }
+            } catch {
+                alert('Falha ao parar de seguir.');
+            }
+        }
+    });
+
     card.addEventListener('click', (event) => {
         if (!event.target.closest('.seguir')) {
             window.location.href = `../pages/ComentariosDetalhes.html?id=${campanha.id}`;
         }
     });
     return card;
+}
+
+function atualizarBotaoSeguir(btn, seguindo) {
+    btn.textContent = seguindo ? 'Seguindo' : 'Seguir';
+    btn.classList.toggle('seguindo', seguindo);
 }
 
 async function atualizarListaCampanhasSeguidas() {

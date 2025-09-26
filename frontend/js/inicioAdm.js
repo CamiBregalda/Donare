@@ -2,6 +2,14 @@ const API_CONFIG = {
     baseURL: 'http://localhost:8080'
 };
 
+
+	function authHeaders(isJson = true) {
+		const token = localStorage.getItem('token') || '';
+		const response = { Authorization: `Bearer ${token}` };
+		if (isJson) response['Content-Type'] = 'application/json';
+		return response;
+	}
+
 function verificarAutenticacao() {
     const token = localStorage.getItem('token');
     
@@ -62,10 +70,6 @@ class APIService {
             formData.append('imagemCapa', arquivo);
         }
         
-        console.log('Enviando form-data com application/json...');
-        console.log('Dados da campanha:', JSON.stringify(dados, null, 2));
-        console.log('Arquivo:', arquivo ? arquivo.name : 'Nenhum');
-        
         const token = localStorage.getItem('token') || '';
         const response = await fetch(`${API_CONFIG.baseURL}/campanhas`, {
             method: 'POST',
@@ -74,8 +78,6 @@ class APIService {
             },
             body: formData
         });
-        
-        console.log('Response status:', response.status);
         
         if (!response.ok) throw new Error('Erro ao criar campanha');
         return await response.json();
@@ -180,11 +182,9 @@ class GerenciadorCampanhas {
         }
 
         try {
-            console.log('Tentando carregar campanhas da API...');
             const campanhas = await APIService.getCampanhas();
 
             const emailUsuarioAtual = obterEmailDoToken();
-            console.log('Email do usuário atual:', emailUsuarioAtual);
             
             const campanhasFiltradas = campanhas.filter(c => {
                 return c.organizador === emailUsuarioAtual;
@@ -218,8 +218,7 @@ class GerenciadorCampanhas {
                     categoria: c.categoriaCampanha || '',
                     descricao: c.descricao || ''
                 };
-            }));
-            console.log('Campanhas carregadas da API:', this.campanhas);
+            }))
         } catch (error) {
             console.log('Erro ao conectar com a API:', error.message);
             alert('Erro ao conectar com o servidor. Tente novamente mais tarde.');
@@ -239,9 +238,6 @@ class GerenciadorCampanhas {
         return fim < hoje ? 'expirada' : 'ativa';
     }
 
-    salvarCampanhas() {
-        console.log('Campanhas salvas:', this.campanhas);
-    }
 
     renderizarCampanhas() {
         const ativas = this.campanhas.filter(c => c.status === 'ativa');
@@ -632,9 +628,6 @@ async function salvarCampanha() {
     if (!validarDados(dados)) return;
 
     try {
-
-        console.log('ENVIANDO - dataInicio:', dados.dataInicio);
-        console.log('ENVIANDO - dataFinal:', dados.dataFinal);
         const dadosAPI = {
             titulo: dados.nome,
             descricao: dados.descricao,
@@ -646,8 +639,6 @@ async function salvarCampanha() {
             status: "ativa"
         };
         
-        console.log('ENVIANDO - dtInicio formatado:', dadosAPI.dtInicio);
-        console.log('ENVIANDO - dt_fim formatado:', dadosAPI.dt_fim);
         const arquivo = obterArquivoImagem();
         const novaCampanha = await APIService.criarCampanha(dadosAPI, arquivo);
         
@@ -743,10 +734,7 @@ async function salvarEdicaoCampanha(id) {
 async function excluirCampanha(id) {
     if (confirm('Tem certeza que deseja excluir esta campanha? Esta ação não pode ser desfeita.')) {
         try {
-            console.log('Tentando excluir na API...');
-            await APIService.deletarCampanha(id);
-            console.log('Campanha excluída da API');
-            
+            await APIService.deletarCampanha(id);         
             await gerenciadorCampanhas.inicializar();
             fecharModal();
             

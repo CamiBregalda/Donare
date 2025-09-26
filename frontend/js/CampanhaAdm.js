@@ -1,5 +1,18 @@
 import { fetchData } from "./lib/auth.js";
-
+const API_BASE = 'http://localhost:8080';
+function authHeaders(isJson = true) {
+	const response = { Authorization: `Bearer ${token}` };
+	if (isJson) response['Content-Type'] = 'application/json';
+	return response;
+}
+const usuario  = JSON.parse(localStorage.getItem('usuario') || '{}');
+const userId   = usuario.id;
+const token = localStorage.getItem('token') || '';
+if (!token || !userId) {
+  alert('Usuário não autenticado.');
+  window.location.href = 'login.html';
+  throw new Error('Não autenticado');
+}
 
 function getIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -7,12 +20,7 @@ function getIdFromUrl() {
 }
 const idCampanha = getIdFromUrl();
 
-const token = localStorage.getItem('token');
-function authHeadersForm() {
-    return { 'Authorization': `Bearer ${token}` };
-}
 
-//formatação da data apenas
 function formatDateBr(dateStr) {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -31,10 +39,8 @@ async function loadCampaignData() {
             alert("Você não está autenticado! Faça login novamente.");
             window.location.href = "Login.html";
         }
-        const campResponse = await fetch(`http://localhost:8080/campanhas/${idCampanha}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const campResponse = await fetch(`${API_BASE}/campanhas/${idCampanha}`, {
+            headers: authHeaders(false)
         });
         if (!campResponse.ok) throw new Error('Erro ao buscar dados da campanha');
         const campData = await campResponse.json();
@@ -52,10 +58,8 @@ async function loadCampaignData() {
         document.getElementById('campaignCategory').textContent = campData.categoriaCampanha || '';
         document.getElementById('campaignDescriptionText').textContent = campData.descricao || '';
 
-        const imgResp = await fetch(`http://localhost:8080/campanhas/${idCampanha}/imagem`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const imgResp = await fetch(`${API_BASE}/campanhas/${idCampanha}/imagem`, {
+            headers: authHeaders(false)
         });
         if (imgResp.ok) {
             const blob = await imgResp.blob();
@@ -67,10 +71,8 @@ async function loadCampaignData() {
             }
         }
 
-        const response = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/necessidades`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const response = await fetch(`${API_BASE}/necessidade/campanhas/${idCampanha}/necessidades`, {
+            headers: authHeaders(false)
         });
         if (!response.ok) throw new Error('Erro ao buscar necessidades');
         const necessidades = await response.json();
@@ -144,7 +146,7 @@ window.onclick = (e) => {
 
 async function updateNecessidade(idNecessidade, novaQtd, necessidade) {
     try {
-        const response = await fetch(`http://localhost:8080/necessidade/necessidades/${idNecessidade}`, {
+        const response = await fetch(`${API_BASE}/necessidade/necessidades/${idNecessidade}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -161,6 +163,7 @@ async function updateNecessidade(idNecessidade, novaQtd, necessidade) {
         await loadCampaignData();
     } catch (err) {
         alert('Erro ao atualizar necessidade!');
+        console.error(err);
     }
 }
 
@@ -214,10 +217,8 @@ async function loadPosts() {
     const postList = document.querySelector('.post-list');
     postList.innerHTML = '<p>Carregando...</p>';
     try {
-        const resp = await fetch(`http://localhost:8080/postagens/campanhas/${idCampanha}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const resp = await fetch(`${API_BASE}/postagens/campanhas/${idCampanha}`, {
+            headers: authHeaders(false)
         });
         if (!resp.ok) throw new Error('Erro ao buscar postagens');
         const posts = await resp.json();
@@ -243,7 +244,7 @@ async function loadPosts() {
 
             card.querySelector('.btn-delete').onclick = async () => {
                 if (confirm('Deseja realmente excluir esta postagem?')) {
-                    await fetch(`http://localhost:8080/postagens/${post.id}`, { method: 'DELETE' });
+                    await fetch(`${API_BASE}/postagens/${post.id}`, { headers: authHeaders(false), method: 'DELETE' });
                     loadPosts();
                 }
             };
@@ -274,14 +275,14 @@ formPost.onsubmit = async function (e) {
     if (file) body.append('midia', file);
 
     if (editingPost) {
-        url = `http://localhost:8080/postagens/${editingPost.id}`;
+        url = `${API_BASE}/postagens/${editingPost.id}`;
         method = 'PUT';
         headers = {
             'Content-Type': 'multipart/form-data',
             Authorization: `Bearer ${token}`
         };
     } else {
-        url = `http://localhost:8080/postagens/campanhas/${idCampanha}`;
+        url = `${API_BASE}/postagens/campanhas/${idCampanha}`;
         method = 'POST';
         headers = {
             Authorization: `Bearer ${token}`
@@ -291,7 +292,7 @@ formPost.onsubmit = async function (e) {
     try {
         await fetch(url, {
             method,
-            headers: { Authorization: `Bearer ${token}` },
+            headers: authHeaders(false),
             body
         });
         closePostModal();

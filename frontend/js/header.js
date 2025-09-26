@@ -1,4 +1,3 @@
-(function () {
 	const API_BASE = 'http://localhost:8080';
 
 	function authHeaders(isJson = true) {
@@ -111,4 +110,3 @@
 		}
 	}
 	document.addEventListener('DOMContentLoaded', loadGlobalHeader);
-})();

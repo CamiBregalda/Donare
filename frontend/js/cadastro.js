@@ -90,7 +90,7 @@ document.querySelector('form').addEventListener('submit', function (e) {
         { type: "application/json" }
     ));
 
-    fetch('http://localhost:8080/usuarios', {
+    fetch(`${API_BASE}/usuarios`, {
         method: 'POST',
         headers: { 'Accept': 'application/json' },
         body: formData

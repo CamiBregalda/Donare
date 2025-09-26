@@ -1,18 +1,16 @@
-const API_BASE = 'http://localhost:8080';
-const token    = localStorage.getItem('token') || '';
+function authHeaders(isJson = true) {
+	const response = { Authorization: `Bearer ${token}` };
+	if (isJson) response['Content-Type'] = 'application/json';
+	return response;
+}
 const usuario  = JSON.parse(localStorage.getItem('usuario') || '{}');
 const userId   = usuario.id;
 
+const token = localStorage.getItem('token') || '';
 if (!token || !userId) {
   alert('Usuário não autenticado.');
   window.location.href = 'login.html';
   throw new Error('Não autenticado');
-}
-
-function authHeaders(json = true) {
-  const headers = { Authorization: `Bearer ${token}` };
-  if (json) headers['Content-Type'] = 'application/json';
-  return headers;
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -29,7 +27,6 @@ document.addEventListener('DOMContentLoaded', () => {
     await confirmUpdate();
   });
 
-  // handlers do novo modal de alterar senha
   document.getElementById('btnChangePassword').addEventListener('click', abrirModalChangePassword);
   document.getElementById('closeChangePasswordModal').addEventListener('click', fecharModalChangePassword);
   document.getElementById('changePasswordForm').addEventListener('submit', async e => {
