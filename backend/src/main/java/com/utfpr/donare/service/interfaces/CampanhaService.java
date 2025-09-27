@@ -2,7 +2,7 @@ package com.utfpr.donare.service.interfaces;
 
 import com.utfpr.donare.dto.CampanhaRequestDTO;
 import com.utfpr.donare.dto.CampanhaResponseDTO;
-import com.utfpr.donare.dto.VoluntarioResponseDTO;
+import com.utfpr.donare.dto.UserResponseDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -24,5 +24,5 @@ public interface CampanhaService {
 
     String getCoverImageContentType(Long id);
 
-    List<VoluntarioResponseDTO> listVolunteersByCampaign(Long id);
+    List<UserResponseDTO> listVolunteersByCampaign(Long id);
 }

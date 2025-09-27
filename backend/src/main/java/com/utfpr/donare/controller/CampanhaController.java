@@ -103,8 +103,8 @@ public class CampanhaController {
     }
 
     @GetMapping("/{id}/voluntarios")
-    public ResponseEntity<List<VoluntarioResponseDTO>> listVolunteersByCampaign(@PathVariable Long id) {
-        List<VoluntarioResponseDTO> voluntarios = campanhaService.listVolunteersByCampaign(id);
+    public ResponseEntity<List<UserResponseDTO>> listVolunteersByCampaign(@PathVariable Long id) {
+        List<UserResponseDTO> voluntarios = campanhaService.listVolunteersByCampaign(id);
         return ResponseEntity.ok(voluntarios);
     }
 
