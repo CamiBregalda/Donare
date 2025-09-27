@@ -1,5 +1,12 @@
 import { fetchData } from "./lib/auth.js";
+const API_BASE = 'http://localhost:8080';
 
+function authHeaders(isJson = true) {
+    const token = localStorage.getItem('token') || '';
+    const headers = { Authorization: `Bearer ${token}` };
+    if (isJson) headers['Content-Type'] = 'application/json';
+    return headers;
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
     function getEmailFromUrl() {
@@ -7,24 +14,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         return params.get('organizador');
     }
     const organizadorEmail = getEmailFromUrl();
-    const token = localStorage.getItem('token');
     if (!organizadorEmail) {
         console.error("Email do organizador não informado.");
-
+        return;
     }
+
     // Busca o id do usuário pelo email
     let idUsuario = null;
     try {
         const usuario = await fetchData();
         if (!usuario) {
-            console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
             alert("Você não está autenticado! Faça login novamente.");
             window.location.href = "Login.html";
+            return;
         }
-        const resp = await fetch(`http://localhost:8080/usuarios/email/${encodeURIComponent(organizadorEmail)}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const resp = await fetch(`${API_BASE}/usuarios/email/${encodeURIComponent(organizadorEmail)}`, {
+            headers: authHeaders(false)
         });
         if (!resp.ok) throw new Error('Erro ao buscar usuário pelo email');
         const userData = await resp.json();
@@ -33,8 +38,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.error("Erro ao buscar id do organizador:", e);
         return;
     }
-    fetchInstitutionDetails(idUsuario, token);
-    fetchInstitutionCampaigns(idUsuario, token);
+    await fetchInstitutionDetails(idUsuario);
+    await fetchInstitutionCampaigns(idUsuario);
 
     document.querySelector('.back-button').addEventListener('click', function (e) {
         e.preventDefault();
@@ -42,26 +47,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 });
 
-
-
-
-
-
-async function fetchInstitutionDetails(idUsuario, token) {
+async function fetchInstitutionDetails(idUsuario) {
     try {
         const usuario = await fetchData();
         if (!usuario) {
-            console.error("Não foi possível obter os dados do usuário. A renderização será interrompida.");
             alert("Você não está autenticado! Faça login novamente.");
             window.location.href = "Login.html";
+            return;
         }
-        const response = await fetch(`http://localhost:8080/usuarios/${idUsuario}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const response = await fetch(`${API_BASE}/usuarios/${idUsuario}`, {
+            headers: authHeaders(false)
         });
         if (!response.ok) throw new Error('Erro ao buscar dados da instituição.');
-        const data = await response.json()
+        const data = await response.json();
 
         document.getElementById('institutionName').textContent = data.nome || '';
         let localizacao = '';
@@ -79,26 +77,19 @@ async function fetchInstitutionDetails(idUsuario, token) {
     }
 }
 
-
-
-
-async function fetchInstitutionCampaigns(idUsuario, token) {
+async function fetchInstitutionCampaigns(idUsuario) {
     try {
         // Busca o usuário para pegar o email
-        const userResponse = await fetch(`http://localhost:8080/usuarios/${idUsuario}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const userResponse = await fetch(`${API_BASE}/usuarios/${idUsuario}`, {
+            headers: authHeaders(false)
         });
         if (!userResponse.ok) throw new Error('Erro ao buscar dados da instituição.');
         const userData = await userResponse.json();
         const userEmail = userData.email;
 
         // Busca campanhas filtrando pelo email do usuário (organizador)
-        const response = await fetch(`http://localhost:8080/campanhas?usuario=${encodeURIComponent(userEmail)}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const response = await fetch(`${API_BASE}/campanhas?usuario=${encodeURIComponent(userEmail)}`, {
+            headers: authHeaders(false)
         });
         if (!response.ok) throw new Error('Network response was not ok for campaigns.');
         const campaigns = await response.json();
@@ -112,65 +103,55 @@ async function fetchInstitutionCampaigns(idUsuario, token) {
         }
 
         campaigns.forEach(async campaign => {
-
             // Busca a imagem da campanha
             let imgSrc = 'https://via.placeholder.com/300x200?text=Campanha';
             try {
-                const imgResp = await fetch(`http://localhost:8080/campanhas/${campaign.id}/imagem`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
+                const imgResp = await fetch(`${API_BASE}/campanhas/${campaign.id}/imagem`, {
+                    headers: authHeaders(false)
                 });
                 if (imgResp.ok) {
                     const blob = await imgResp.blob();
                     imgSrc = URL.createObjectURL(blob);
                 }
-            } catch (e) {
-                
-            }
+            } catch (e) {}
 
             const card = document.createElement('div');
             card.className = 'campaign-card';
             card.innerHTML = `
-        <div class="campaign-card-image-container">
-            <img src="${imgSrc}" alt="${campaign.titulo}">
-            <span class="campaign-card-title-on-image">${campaign.titulo}</span>
-        </div>
-        <div class="campaign-card-body">
-            <p class="campaign-card-description">${campaign.descricao || ''}</p>
-            <div class="campaign-card-actions">
-                <button class="icon-button" aria-label="Curtir"><i class="fas fa-heart"></i></button>
-                <button class="icon-button" aria-label="Comentar"><i class="fas fa-comment"></i></button>
-                <button class="btn-follow-campaign" data-campaign-id="${campaign.id}">${campaign.seguindo ? 'Seguindo' : 'Seguir'}</button>
-            </div>
-        </div>
-    `;
+                <div class="campaign-card-image-container">
+                    <img src="${imgSrc}" alt="${campaign.titulo}">
+                    <span class="campaign-card-title-on-image">${campaign.titulo}</span>
+                </div>
+                <div class="campaign-card-body">
+                    <p class="campaign-card-description">${campaign.descricao || ''}</p>
+                    <div class="campaign-card-actions">
+                        <button class="icon-button" aria-label="Curtir"><i class="fas fa-heart"></i></button>
+                        <button class="icon-button" aria-label="Comentar"><i class="fas fa-comment"></i></button>
+                        <button class="btn-follow-campaign" data-campaign-id="${campaign.id}">Seguir</button>
+                    </div>
+                </div>
+            `;
             card.style.cursor = "pointer";
             card.addEventListener('click', (e) => {
-                // Só redireciona se NÃO for o botão de seguir
                 if (e.target.classList.contains('btn-follow-campaign')) return;
                 window.location.href = `ComentariosDetalhes.html?id=${campaign.id}`;
             });
 
             const followBtn = card.querySelector('.btn-follow-campaign');
-
-            // Verifica se já está seguindo (opcional, depende do backend)
             let isFollowing = false;
             const usuarioLogado = JSON.parse(localStorage.getItem('usuario'));
             if (usuarioLogado && usuarioLogado.id) {
                 try {
-                    const campResp = await fetch(`http://localhost:8080/campanhas/${campaign.id}`, {
-                        headers: { Authorization: `Bearer ${token}` }
+                    const campResp = await fetch(`${API_BASE}/campanhas/${campaign.id}`, {
+                        headers: authHeaders(false)
                     });
                     if (campResp.ok) {
                         const campData = await campResp.json();
                         if (campData && Array.isArray(campData.usuariosQueSeguem)) {
-                            isFollowing = campData.usuariosQueSeguem.some(u => u.id === usuarioLogado.id);
+                            isFollowing = campData.usuariosQueSeguem.some(u => u.id == usuarioLogado.id);
                         }
                     }
-                } catch (e) {
-                    
-                }
+                } catch (e) {}
             }
             updateFollowButton(followBtn, isFollowing);
 
@@ -182,15 +163,11 @@ async function fetchInstitutionCampaigns(idUsuario, token) {
                     return;
                 }
                 const userId = usuarioLogado.id;
-
                 if (!isFollowing) {
-                    // Seguir campanha
                     try {
-                        const resp = await fetch(`http://localhost:8080/usuarios/${userId}/seguir-campanha/${campaign.id}`, {
+                        const resp = await fetch(`${API_BASE}/usuarios/${userId}/seguir-campanha/${campaign.id}`, {
                             method: 'POST',
-                            headers: {
-                                Authorization: `Bearer ${token}`
-                            }
+                            headers: authHeaders(false)
                         });
                         if (resp.ok) {
                             isFollowing = true;
@@ -202,13 +179,10 @@ async function fetchInstitutionCampaigns(idUsuario, token) {
                         alert('Erro ao seguir campanha.');
                     }
                 } else {
-                    // Parar de seguir
                     try {
-                        const resp = await fetch(`http://localhost:8080/usuarios/${userId}/parar-de-seguir-campanha/${campaign.id}`, {
+                        const resp = await fetch(`${API_BASE}/usuarios/${userId}/parar-de-seguir-campanha/${campaign.id}`, {
                             method: 'DELETE',
-                            headers: {
-                                Authorization: `Bearer ${token}`
-                            }
+                            headers: authHeaders(false)
                         });
                         if (resp.ok) {
                             isFollowing = false;

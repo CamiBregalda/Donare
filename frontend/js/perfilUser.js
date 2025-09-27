@@ -1,13 +1,17 @@
-const API_BASE = 'http://localhost:8080';
-const token    = localStorage.getItem('token') || '';
+function authHeaders(isJson = true) {
+	const response = { Authorization: `Bearer ${token}` };
+	if (isJson) response['Content-Type'] = 'application/json';
+	return response;
+}
 const usuario  = JSON.parse(localStorage.getItem('usuario') || '{}');
 const userId   = usuario.id;
-
+const token = localStorage.getItem('token') || '';
 if (!token || !userId) {
   alert('Usuário não autenticado.');
   window.location.href = 'login.html';
   throw new Error('Não autenticado');
 }
+
 
 function authHeaders(json = true) {
   const headers = { Authorization: `Bearer ${token}` };
@@ -110,6 +114,10 @@ async function fetchFollowedCampaigns() {
         <h4>${camp.titulo}</h4>
         <p>${startDate}${endDate ? ' – ' + endDate : ''}</p>
       `;
+      li.style.cursor = 'pointer';
+      li.addEventListener('click', () => {
+        window.location.href = `../pages/ComentariosDetalhes.html?id=${camp.id}`;
+      });
       ul.appendChild(li);
     });
   } catch (err) {

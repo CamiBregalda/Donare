@@ -1,6 +1,19 @@
-import { fetchData } from "./lib/auth.js";
+import { fetchData } from './lib/auth.js';
+const API_BASE = 'http://localhost:8080';
+function authHeaders(isJson = true) {
+	const response = { Authorization: `Bearer ${token}` };
+	if (isJson) response['Content-Type'] = 'application/json';
+	return response;
+}
+const usuario  = JSON.parse(localStorage.getItem('usuario') || '{}');
+const userId   = usuario.id;
 
-
+const token = localStorage.getItem('token') || '';
+if (!token || !userId) {
+  alert('Usuário não autenticado.');
+  window.location.href = 'login.html';
+  throw new Error('Não autenticado');
+}
 
 function getIdFromUrl() {
     const params = new URLSearchParams(window.location.search);
@@ -11,10 +24,6 @@ const idCampanha = campanhaId;
 
 let comments = [];
 
-
-
-const token = localStorage.getItem('token');
-
 function formatDateBr(dateStr) {
     if (!dateStr) return '';
     const d = new Date(dateStr);
@@ -24,7 +33,7 @@ function formatDateBr(dateStr) {
     const ano = d.getFullYear();
     return `${dia}/${mes}/${ano}`;
 }
-// Carrega dados da campanha, necessidades e postagens
+
 async function loadCampaignData() {
     try {
 
@@ -64,7 +73,7 @@ async function loadCampaignData() {
         });
         const imgPlaceholder = document.querySelector('.campaign-image-placeholder');
         if (imgPlaceholder) {
-            imgPlaceholder.innerHTML = ''; // Limpa tudo antes de adicionar
+            imgPlaceholder.innerHTML = '';
             if (imgResp.ok) {
                 const blob = await imgResp.blob();
                 const imgUrl = URL.createObjectURL(blob);
@@ -76,7 +85,6 @@ async function loadCampaignData() {
                 imgEl.src = imgUrl;
                 imgPlaceholder.appendChild(imgEl);
             }
-            // Adiciona o campo do organizador
             if (campData.organizador) {
                 const orgDiv = document.createElement('div');
                 orgDiv.className = 'organizador-info';
@@ -91,11 +99,8 @@ async function loadCampaignData() {
 
         document.getElementById('campaignDescriptionText').textContent = campData.descricao || '';
 
-        // Busca necessidades da campanha e renderiza barras de progresso
-        const necessidadesResponse = await fetch(`http://localhost:8080/necessidade/campanhas/${idCampanha}/necessidades`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const necessidadesResponse = await fetch(`${API_BASE}/necessidade/campanhas/${idCampanha}/necessidades`, {
+            headers: authHeaders(false)
         });
         if (!necessidadesResponse.ok) throw new Error('Erro ao buscar necessidades');
         const necessidades = await necessidadesResponse.json();
@@ -125,7 +130,6 @@ async function loadCampaignData() {
         } else {
             itemsUl.innerHTML = '<li>Nenhuma necessidade cadastrada.</li>';
         }
-        // Busca postagens da campanha
         await loadCampaignPosts();
 
     } catch (err) {
@@ -134,14 +138,11 @@ async function loadCampaignData() {
     }
 }
 
-//Busca postgagens da campanha e rederiza na tela
 async function loadCampaignPosts() {
 
     try {
-        const postsResponse = await fetch(`http://localhost:8080/postagens/campanhas/${idCampanha}`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const postsResponse = await fetch(`${API_BASE}/postagens/campanhas/${idCampanha}`, {
+            headers: authHeaders(false)
         });
         if (!postsResponse.ok) throw new Error('Erro ao buscar postagens');
         const posts = await postsResponse.json();
@@ -152,20 +153,17 @@ async function loadCampaignPosts() {
 
         if (Array.isArray(posts) && posts.length > 0) {
             for (const post of posts) {
-                let imgUrl = '../img/icone.png'; // Placeholder para imagem
-                // Busca a imagem da postagem, se existir
+                let imgUrl = '../img/icone.png';
                 try {
-                    const imgResp = await fetch(`http://localhost:8080/postagens/${post.id}/midia`, {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
+                    const imgResp = await fetch(`${API_BASE}/postagens/${post.id}/midia`, {
+                        headers: authHeaders(false)
                     });
                     if (imgResp.ok) {
                         const blob = await imgResp.blob();
                         imgUrl = URL.createObjectURL(blob);
                     }
                 } catch (e) {
-                    // Se der erro, mantém o placeholder
+                    
                 }
 
                 const postDiv = document.createElement('div');
@@ -188,8 +186,6 @@ async function loadCampaignPosts() {
     }
 }
 
-
-
 async function fetchComments() {
     try {
         const usuario = await fetchData();
@@ -199,10 +195,8 @@ async function fetchComments() {
             window.location.href = "Login.html";
         }
 
-        const response = await fetch(`http://localhost:8080/comentario/campanhas/${idCampanha}/comentarios`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
+        const response = await fetch(`${API_BASE}/comentario/campanhas/${idCampanha}/comentarios`, {
+            headers: authHeaders(false)
         });
         if (!response.ok) throw new Error('Erro ao buscar comentários');
         const data = await response.json();
@@ -214,7 +208,6 @@ async function fetchComments() {
     }
 }
 
-// Monta árvore de comentários a partir de lista plana
 function buildCommentsTree(commentsList) {
     const map = {};
     const roots = [];
@@ -231,7 +224,6 @@ function buildCommentsTree(commentsList) {
     return roots;
 }
 
-// Envia novo comentário ou resposta
 async function sendComment(conteudo, idComentarioPai = null) {
     const usuario = await fetchData();
 
@@ -247,7 +239,7 @@ async function sendComment(conteudo, idComentarioPai = null) {
         userEmail: usuario.email,
         idComentarioPai
     };
-    const response = await fetch(`http://localhost:8080/comentario/campanhas/${campanhaId}/comentarios`, {
+    const response = await fetch(`${API_BASE}/comentario/campanhas/${campanhaId}/comentarios`, {
         method: 'POST',
         headers: {
             Authorization: `Bearer ${token}`,
@@ -262,7 +254,6 @@ async function sendComment(conteudo, idComentarioPai = null) {
     await fetchComments();
 }
 
-// Exclui comentário (apenas autor)
 async function deleteComment(idComentario) {
     const usuario = JSON.parse(localStorage.getItem('usuario'));
     if (!usuario) {
@@ -275,7 +266,7 @@ async function deleteComment(idComentario) {
         userEmail: usuario.email,
         idComentarioPai: null
     };
-    const response = await fetch(`http://localhost:8080/comentario/comentarios/${idComentario}`, {
+    const response = await fetch(`${API_BASE}/comentario/comentarios/${idComentario}`, {
         method: 'DELETE',
         headers: {
             Authorization: `Bearer ${token}`,
@@ -290,7 +281,6 @@ async function deleteComment(idComentario) {
     await fetchComments();
 }
 
-
 function renderComment(comment, parentElement) {
     const commentItem = document.createElement('div');
     commentItem.classList.add('comment-item');
@@ -299,8 +289,8 @@ function renderComment(comment, parentElement) {
     avatar.classList.add('comment-user-avatar');
 
     if (comment.userResponseDTO && comment.userResponseDTO.id) {
-        fetch(`http://localhost:8080/usuarios/${comment.userResponseDTO.id}`, {
-            headers: { Authorization: `Bearer ${token}` }
+        fetch(`${API_BASE}/usuarios/${comment.userResponseDTO.id}`, {
+            headers: authHeaders(false) 
         })
             .then(r => r.ok ? r.json() : null)
             .then(data => {
@@ -315,7 +305,6 @@ function renderComment(comment, parentElement) {
                     avatar.innerHTML = '';
                     avatar.appendChild(img);
                 } else {
-                    // Sempre mostra a imagem padrão se não houver userResponseDTO ou id
                     const img = document.createElement('img');
                     img.src = '../img/user.png';
                     img.alt = "Avatar";
@@ -328,7 +317,6 @@ function renderComment(comment, parentElement) {
                 }
             });
     } else {
-        // Sempre mostra a imagem padrão se não houver userResponseDTO ou id
         const img = document.createElement('img');
         img.src = '../img/user.png';
         img.alt = "Avatar";
@@ -368,15 +356,18 @@ function renderComment(comment, parentElement) {
         <button type="submit">Enviar</button>
     `;
     replyForm.onsubmit = async function (e) {
-        e.preventDefault();
-        const input = replyForm.querySelector('.reply-input');
-        const replyText = input.value.trim();
-        if (replyText) {
-            await sendComment(replyText, comment.id);
-        }
+    e.preventDefault();
+    const input = replyForm.querySelector('.reply-input');
+    const replyBtn = replyForm.querySelector('button[type="submit"]');
+    const replyText = input.value.trim();
+    if (replyText) {
+        replyBtn.disabled = true;
+        await sendComment(replyText, comment.id);
         input.value = '';
+        replyBtn.disabled = false; 
         replyForm.style.display = "none";
-    };
+    }
+};
 
     commentContent.appendChild(userNameDiv);
     commentContent.appendChild(commentTextDiv);
@@ -429,16 +420,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const addCommentForm = document.getElementById('addCommentForm');
     const newCommentInput = document.getElementById('newCommentInput');
+    const submitBtn = addCommentForm.querySelector('button[type="submit"]');
+
     addCommentForm.addEventListener('submit', async function (event) {
         event.preventDefault();
         const commentText = newCommentInput.value.trim();
         if (commentText) {
+            submitBtn.disabled = true;
             await sendComment(commentText, null);
             newCommentInput.value = '';
+            submitBtn.disabled = false; 
         }
     });
-
-    // Botão de seguir campanha //AJUSTAR A URL
 
     const followBtn = document.querySelector('.btn-follow');
     if (followBtn) {
@@ -449,11 +442,10 @@ document.addEventListener('DOMContentLoaded', function () {
             followBtn.dataset.following = following ? "true" : "false";
         }
 
-        // Checa se o usuário já está seguindo a campanha
         const usuario = JSON.parse(localStorage.getItem('usuario'));
         if (usuario && usuario.id) {
-            fetch(`http://localhost:8080/campanhas/${idCampanha}`, {
-                headers: { Authorization: `Bearer ${token}` }
+            fetch(`${API_BASE}/campanhas/${idCampanha}`, {
+                headers: authHeaders(false) 
             })
                 .then(resp => resp.ok ? resp.json() : null)
                 .then(campData => {
@@ -464,9 +456,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 });
         }
 
-
         followBtn.addEventListener('click', async function () {
-            // Pega o usuário autenticado do localStorage
             const usuario = JSON.parse(localStorage.getItem('usuario'));
             if (!usuario || !usuario.id) {
                 alert("Você não está autenticado! Faça login novamente.");
@@ -478,11 +468,9 @@ document.addEventListener('DOMContentLoaded', function () {
             if (!isFollowing) {
                 // Seguir campanha
                 try {
-                    const resp = await fetch(`http://localhost:8080/usuarios/${idUsuario}/seguir-campanha/${idCampanha}`, {
+                    const resp = await fetch(`${API_BASE}/usuarios/${idUsuario}/seguir-campanha/${idCampanha}`, {
                         method: 'POST',
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
+                        headers: authHeaders(false) 
                     });
                     if (resp.ok) {
                         isFollowing = true;
@@ -497,11 +485,9 @@ document.addEventListener('DOMContentLoaded', function () {
                 }
             } else {
                 try {
-                    const resp = await fetch(`http://localhost:8080/usuarios/${idUsuario}/parar-de-seguir-campanha/${idCampanha}`, {
+                    const resp = await fetch(`${API_BASE}/usuarios/${idUsuario}/parar-de-seguir-campanha/${idCampanha}`, {
                         method: 'DELETE',
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        }
+                        headers: authHeaders(false) 
                     });
                     if (resp.ok) {
                         isFollowing = false;
@@ -514,70 +500,6 @@ document.addEventListener('DOMContentLoaded', function () {
                     alert('Erro ao parar de seguir.');
                     console.error(err);
                 }
-            }
-        });
-    }
-
-    // Botão de voluntariado //AJUSTAR A URL
-    const volunteerBtn = document.querySelector('.btn-volunteer');
-    if (volunteerBtn) {
-        let isVoluntariado = false;
-
-        function updateVolunteerButton(voluntariado) {
-            volunteerBtn.textContent = voluntariado ? 'Voluntariar-se' : 'Voluntario!';
-            volunteerBtn.disabled = voluntariado; // Opcional: desabilita o botão se já for voluntário
-        }
-
-        // Checa se o usuário já é voluntário nesta campanha
-        const usuarioLogado = JSON.parse(localStorage.getItem('usuario'));
-        if (usuarioLogado && usuarioLogado.id) {
-            fetch(`http://localhost:8080/campanhas/${idCampanha}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
-                .then(resp => resp.ok ? resp.json() : null)
-                .then(campData => {
-                    // Ajuste o nome do campo conforme o backend: voluntario ou voluntarios
-                    if (campData && Array.isArray(campData.voluntarios)) {
-                        isVoluntariado = campData.voluntarios.some(u => u.id === usuarioLogado.id);
-                        updateVolunteerButton(isVoluntariado);
-                    }
-                });
-        }
-
-        volunteerBtn.addEventListener('click', async (e) => {
-            e.stopPropagation();
-            if (!usuarioLogado || !usuarioLogado.id) {
-                alert("Você não está autenticado! Faça login novamente.");
-                window.location.href = "Login.html";
-                return;
-            }
-            if (isVoluntariado) return; // Já voluntariado, não faz nada
-
-            const userId = usuarioLogado.id;
-            try {
-                const resp = await fetch(`http://localhost:8080/participacao/participacoes`, {
-                    method: 'POST',
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        campanhaId: Number(idCampanha),
-                        userId: Number(userId)
-                    })
-                });
-                if (resp.ok) {
-                    isVoluntariado = true;
-                    updateVolunteerButton(true);
-                    alert('Você se voluntariou com sucesso!');
-                } else {
-                    const errorText = await resp.text();
-                    alert('Voce ja é Voluntario nesta campanha');
-
-                }
-            } catch (err) {
-                alert('Erro inesperado ao voluntariar-se.');
-                console.error('Erro inesperado ao voluntariar-se:', err);
             }
         });
     }

@@ -1,5 +1,11 @@
-import { jwtDecode } from "./lib/jwt-decode.js";
-import { fetchData } from "./lib/auth.js";
+const API_BASE = 'http://localhost:8080';
+
+function authHeaders(isJson = true) {
+    const token = localStorage.getItem('token') || '';
+    const headers = { Authorization: `Bearer ${token}` };
+    if (isJson) headers['Content-Type'] = 'application/json';
+    return headers;
+}
 
 const form = document.querySelector('#form');
 const btnSubmit = form.querySelector('button[type="submit"]');
@@ -18,7 +24,8 @@ form.addEventListener('submit', async function (e) {
     };
 
     try {
-        const response = await fetch('http://localhost:8080/usuarios/authenticate', {
+        // Autenticação
+        const response = await fetch(`${API_BASE}/usuarios/authenticate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(credenciais)
@@ -32,8 +39,9 @@ form.addEventListener('submit', async function (e) {
         const token = await response.text();
         localStorage.setItem('token', token);
 
-        const userDataResponse = await fetch(`http://localhost:8080/usuarios/email/${email}`, {
-            headers: { 'Authorization': `Bearer ${token}` }
+        // Busca dados do usuário autenticado
+        const userDataResponse = await fetch(`${API_BASE}/usuarios/email/${email}`, {
+            headers: authHeaders(false)
         });
 
         if (!userDataResponse.ok) {
@@ -41,9 +49,7 @@ form.addEventListener('submit', async function (e) {
         }
 
         const userData = await userDataResponse.json();
-
         localStorage.setItem('usuario', JSON.stringify(userData));
-        
 
         if (userData && userData.tipoUsuario == 2) {
             window.location.href = '../pages/inicioAdm.html'; 
