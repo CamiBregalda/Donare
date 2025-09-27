@@ -93,7 +93,7 @@ public class ParticipacaoService {
 
     public List<CampanhaResponseDTO> findCampanhasParticipadasByIdUsuario(Long idUsuario) {
 
-        return participacaoRepository.findByCampanhaId(idUsuario).stream()
+        return participacaoRepository.findByUserId(idUsuario).stream()
                 .map(participacao -> campanhaMapper.entityToResponseDto(participacao.getCampanha()))
                 .collect(Collectors.toList());
     }

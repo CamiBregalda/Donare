@@ -3,13 +3,13 @@ package com.utfpr.donare.service;
 import com.utfpr.donare.domain.Campanha;
 import com.utfpr.donare.domain.EmailType;
 import com.utfpr.donare.domain.Endereco;
-import com.utfpr.donare.dto.CampanhaRequestDTO;
-import com.utfpr.donare.dto.CampanhaResponseDTO;
-import com.utfpr.donare.dto.EmailRequestDTO;
-import com.utfpr.donare.dto.VoluntarioResponseDTO;
+import com.utfpr.donare.domain.User;
+import com.utfpr.donare.dto.*;
 import com.utfpr.donare.exception.ResourceNotFoundException;
 import com.utfpr.donare.mapper.CampanhaMapper;
+import com.utfpr.donare.mapper.UserMapper;
 import com.utfpr.donare.repository.CampanhaRepository;
+import com.utfpr.donare.repository.ParticipacaoRepository;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -32,8 +32,10 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CampanhaServiceImpl implements CampanhaService {
 
+    private final ParticipacaoRepository participacaoRepository;
     private final CampanhaRepository campanhaRepository;
     private final CampanhaMapper campanhaMapper;
+    private final UserMapper userMapper;
     private final EmailService emailService;
 
     @Override
@@ -56,6 +58,8 @@ public class CampanhaServiceImpl implements CampanhaService {
         endereco.setCampanha(campanha);
 
         campanha.setAtivo(true);
+
+      //campanha.setId(134L); //coloquei
 
         Campanha campanhaSalva = campanhaRepository.save(campanha);
 
@@ -213,9 +217,14 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<VoluntarioResponseDTO> listarVoluntariosPorCampanha(Long id) {
+    public List<UserResponseDTO> listarVoluntariosPorCampanha(Long id) {
         Campanha campanha = campanhaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
-        return new ArrayList<>();
+
+
+        return participacaoRepository.findByCampanhaId(id).stream()
+                .map(participacao -> userMapper.toUserResponseDTO(participacao.getUser()))
+                .collect(Collectors.toList());
+
     }
 }

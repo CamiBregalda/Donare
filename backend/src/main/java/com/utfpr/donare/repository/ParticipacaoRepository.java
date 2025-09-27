@@ -11,4 +11,6 @@ import java.util.List;
 @Repository
 public interface ParticipacaoRepository extends JpaRepository<Participacao, Long> {
     List<Participacao> findByCampanhaId(Long campanhaId);
+
+    List<Participacao> findByUserId(Long userId);
 }

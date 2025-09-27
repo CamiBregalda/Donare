@@ -174,6 +174,84 @@ public class UserService implements UserDetailsService {
         user.setNome(dto.getNome());
     }
 
+    private void verifyCpfFormatAndThrowException(Long id, UserRequestDTO dto, User user){
+
+            String cpf = dto.getCpfOuCnpj().replace(".", "").replace("-", "");
+
+            if (cpf == null) {
+                throw new BadRequestException("CPF não pode ser nulo.");
+            }
+
+            if (cpf.length() != 11) {
+                throw new BadRequestException("O CPF " + dto.getCpfOuCnpj() + "está incorreto.");
+            }
+
+            int[] multiplicadores1 = {10, 9, 8, 7, 6, 5, 4, 3, 2};
+            int[] multiplicadores2 = {11, 10, 9, 8, 7, 6, 5, 4, 3, 2};
+
+            int soma = 0;
+            for (int i = 0; i < 9; i++) {
+                soma += Integer.parseInt(cpf.substring(i, i + 1)) * multiplicadores1[i];
+            }
+            int resto = soma % 11;
+            int digito1 = resto < 2 ? 0 : 11 - resto;
+
+            soma = 0;
+            for (int i = 0; i < 10; i++) {
+                soma += Integer.parseInt(cpf.substring(i, i + 1)) * multiplicadores2[i];
+            }
+            resto = soma % 11;
+            int digito2 = resto < 2 ? 0 : 11 - resto;
+
+            if(digito1 == Integer.parseInt(cpf.substring(9, 10)) && digito2 == Integer.parseInt(cpf.substring(10))){
+                user.setCpfOuCnpj(dto.getCpfOuCnpj());
+            }
+            else {
+                throw new BadRequestException("O CPF " + dto.getCpfOuCnpj() + "está no formato inválido.");
+            }
+    }
+
+    private void verifyCnpjFormatAndThrowException(Long id, UserRequestDTO dto, User user) {
+        String cnpj = dto.getCpfOuCnpj();
+
+        if (cnpj == null) {
+            throw new BadRequestException("CNPJ não pode ser nulo.");
+        }
+
+        cnpj = cnpj.replaceAll("[^0-9]", "");
+
+        if (cnpj.length() != 14 || cnpj.chars().distinct().count() == 1) {
+            throw new BadRequestException("O CNPJ " + dto.getCpfOuCnpj() + " está incorreto.");
+        }
+
+        int[] multiplicadores1 = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+        int[] multiplicadores2 = {6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
+
+
+        int soma = 0;
+        for (int i = 0; i < 12; i++) {
+            soma += Character.getNumericValue(cnpj.charAt(i)) * multiplicadores1[i];
+        }
+        int resto = soma % 11;
+        int digito1 = resto < 2 ? 0 : 11 - resto;
+
+
+        soma = 0;
+        for (int i = 0; i < 13; i++) {
+            soma += Character.getNumericValue(cnpj.charAt(i)) * multiplicadores2[i];
+        }
+        resto = soma % 11;
+        int digito2 = resto < 2 ? 0 : 11 - resto;
+
+        if (digito1 == Character.getNumericValue(cnpj.charAt(12)) &&
+                digito2 == Character.getNumericValue(cnpj.charAt(13))) {
+            user.setCpfOuCnpj(dto.getCpfOuCnpj());
+        } else {
+            throw new BadRequestException("O CNPJ " + dto.getCpfOuCnpj() + " está incorreto.");
+        }
+    }
+
+
     private void verifyEmailInUseAndThowException(Long id, UserRequestDTO dto) {
 
         if (userRepository.findByEmail(dto.getEmail()).isPresent()
@@ -182,6 +260,21 @@ public class UserService implements UserDetailsService {
         }
 
     }
+
+    private void verifyEmailFormatAndThrowException(Long id, UserRequestDTO dto, User user) {
+        String email = dto.getEmail();
+
+        if (email == null || email.trim().isEmpty()) {
+            throw new BadRequestException("E-mail não pode ser nulo ou vazio.");
+        }
+
+        if (!email.contains("@") || !email.contains(".")) {
+            throw new BadRequestException("O e-mail " + email + " está no formato inválido.");
+        }
+
+        user.setEmail(email);
+    }
+
 
     public UserResponseDTO findById(Long id) {
 
