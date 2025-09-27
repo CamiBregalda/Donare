@@ -35,7 +35,6 @@ export async function fetchData() {
 
         const userData = await response.json();
         localStorage.setItem("usuario", JSON.stringify(userData));
-        console.log("Dados do usuário:", userData);
         return userData;
 
     } catch (err) {
