@@ -56,7 +56,7 @@ public class ParticipacaoController {
     @GetMapping("/campanhas/{idCampanha}/participacoes")
     public ResponseEntity<List<ParticipacaoResponseDTO>> listarParticipacoesPorCampanha(@PathVariable Long idCampanha) {
 
-        List<ParticipacaoResponseDTO> participacoes = participacaoService.listarParticipacoesPorCampanha(idCampanha);
+        List<ParticipacaoResponseDTO> participacoes = participacaoService.findParticipacoesByCampanha(idCampanha);
         return ResponseEntity.ok(participacoes);
     }
 
@@ -64,7 +64,7 @@ public class ParticipacaoController {
     @GetMapping("/campanhas/{idCampanha}/participacoes/{idParticipacao}")
     public ResponseEntity<ParticipacaoResponseDTO> buscarParticipacaoPorId(@PathVariable Long idCampanha, @PathVariable Long idParticipacao) {
 
-        ParticipacaoResponseDTO participacao = participacaoService.buscarParticipacaoPorId(idCampanha, idParticipacao);
+        ParticipacaoResponseDTO participacao = participacaoService.findParticipacaoPorId(idCampanha, idParticipacao);
         return ResponseEntity.ok(participacao);
     }
 

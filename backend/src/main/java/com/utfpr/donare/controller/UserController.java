@@ -51,7 +51,7 @@ public class UserController {
             @Valid @RequestPart("user") UserRequestDTO userRequestDTO,
             @RequestPart(value = "midia", required = false) MultipartFile midia) {
 
-        return new ResponseEntity<>(userService.save(userRequestDTO, midia), HttpStatus.CREATED);
+        return new ResponseEntity<>(userService.saveUsuario(userRequestDTO, midia), HttpStatus.CREATED);
     }
 
 
@@ -112,7 +112,7 @@ public class UserController {
             @Valid @RequestPart("user") UserRequestDTO userRequestDTO,
             @RequestPart(value = "midia", required = false) MultipartFile midia) {
 
-        UserResponseDTO updatedUser = userService.update(id, userRequestDTO, midia);
+        UserResponseDTO updatedUser = userService.updateUsuario(id, userRequestDTO, midia);
 
         return new ResponseEntity<>(updatedUser, HttpStatus.OK);
     }
@@ -162,7 +162,7 @@ public class UserController {
             @Parameter(description = "ID do usuário a ser deletado.", required = true, example = "1")
             @PathVariable Long id) {
 
-        userService.delete(id);
+        userService.deleteUsuario(id);
 
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
@@ -172,7 +172,7 @@ public class UserController {
             @Parameter(description = "ID do usuário a ser encontra.", required = true, example = "1")
             @PathVariable Long id) {
 
-        return new ResponseEntity<>(userService.findById(id), HttpStatus.OK);
+        return new ResponseEntity<>(userService.findUsuarioById(id), HttpStatus.OK);
     }
 
     @GetMapping(path = "email/{email}")

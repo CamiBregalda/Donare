@@ -1,14 +1,16 @@
 package com.utfpr.donare.domain;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "endereco")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @ToString(onlyExplicitlyIncluded = true)
 public class Endereco {
 
@@ -40,5 +42,9 @@ public class Endereco {
 
     public String getEnderecoString() {
         return logradouro + " número " + numero + ", " + complemento + ", " + bairro + ", " + cidade + ", " + estado + ", " + cep;
+    }
+
+    public void updateUser(User user) {
+        this.user = user;
     }
 }

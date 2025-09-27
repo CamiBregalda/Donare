@@ -17,7 +17,6 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class Participacao {
 
     @Id
@@ -36,4 +35,8 @@ public class Participacao {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    public Participacao(Campanha campanha, User user) {
+        this.campanha = campanha;
+        this.user = user;
+    }
 }

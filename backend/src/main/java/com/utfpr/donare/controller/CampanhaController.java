@@ -3,7 +3,7 @@ package com.utfpr.donare.controller;
 import com.utfpr.donare.domain.enums.CategoriaEnum;
 import com.utfpr.donare.domain.enums.TipoCertificadoEnum;
 import com.utfpr.donare.dto.*;
-import com.utfpr.donare.service.CampanhaService;
+import com.utfpr.donare.service.interfaces.CampanhaService;
 import com.utfpr.donare.service.QRCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
@@ -34,7 +34,7 @@ public class CampanhaController {
             @RequestPart(value = "imagemCapa", required = false) MultipartFile imagemCapa) {
 
         String organizadorEmail = getOrganizadorEmail();
-        CampanhaResponseDTO novaCampanha = campanhaService.criarCampanha(campanhaRequestDTO, imagemCapa, organizadorEmail);
+        CampanhaResponseDTO novaCampanha = campanhaService.saveCampanha(campanhaRequestDTO, imagemCapa, organizadorEmail);
         return new ResponseEntity<>(novaCampanha, HttpStatus.CREATED);
     }
 
@@ -47,7 +47,7 @@ public class CampanhaController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "dtInicio") String sort) {
 
-        List<CampanhaResponseDTO> campanhas = campanhaService.listarHistoricoCampanhas(tipo, localidade, usuario, page, size, sort);
+        List<CampanhaResponseDTO> campanhas = campanhaService.ListCampaignHistory(tipo, localidade, usuario, page, size, sort);
         return ResponseEntity.ok(campanhas);
     }
 
@@ -60,19 +60,19 @@ public class CampanhaController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "dtInicio") String sort) {
 
-        List<CampanhaResponseDTO> campanhas = campanhaService.listarCampanhas(tipo, localidade, usuario, page, size, sort);
+        List<CampanhaResponseDTO> campanhas = campanhaService.findCampanhas(tipo, localidade, usuario, page, size, sort);
         return ResponseEntity.ok(campanhas);
     }
     @GetMapping("/{id}")
     public ResponseEntity<CampanhaResponseDTO> findById(@PathVariable Long id) {
-        CampanhaResponseDTO campanha = campanhaService.buscarCampanhaPorId(id);
+        CampanhaResponseDTO campanha = campanhaService.findCampanhaPorId(id);
         return ResponseEntity.ok(campanha);
     }
 
     @GetMapping("/{id}/imagem")
     public ResponseEntity<byte[]> getImagemCapa(@PathVariable Long id) {
-        byte[] imagemBytes = campanhaService.obterImagemCapa(id);
-        String contentType = campanhaService.obterImagemCapaContentType(id);
+        byte[] imagemBytes = campanhaService.getCoverImage(id);
+        String contentType = campanhaService.getCoverImageContentType(id);
 
         if (imagemBytes == null || imagemBytes.length == 0) {
             return ResponseEntity.notFound().build();
@@ -91,20 +91,20 @@ public class CampanhaController {
             @RequestPart(value = "imagemCapa", required = false) MultipartFile imagemCapa) {
 
         String organizadorEmail = getOrganizadorEmail();
-        CampanhaResponseDTO campanhaAtualizada = campanhaService.atualizarCampanha(id, campanhaRequestDTO, imagemCapa, organizadorEmail);
+        CampanhaResponseDTO campanhaAtualizada = campanhaService.updateCampanha(id, campanhaRequestDTO, imagemCapa, organizadorEmail);
         return ResponseEntity.ok(campanhaAtualizada);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         String organizadorEmail = getOrganizadorEmail();
-        campanhaService.deletarCampanha(id, organizadorEmail);
+        campanhaService.deleteCampanha(id, organizadorEmail);
         return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/voluntarios")
     public ResponseEntity<List<VoluntarioResponseDTO>> listVolunteersByCampaign(@PathVariable Long id) {
-        List<VoluntarioResponseDTO> voluntarios = campanhaService.listarVoluntariosPorCampanha(id);
+        List<VoluntarioResponseDTO> voluntarios = campanhaService.listVolunteersByCampaign(id);
         return ResponseEntity.ok(voluntarios);
     }
 
@@ -128,7 +128,7 @@ public class CampanhaController {
 
     @GetMapping("/{id}/qrcode")
     public ResponseEntity<byte[]> getQRCode(@PathVariable Long id) {
-        CampanhaResponseDTO campanha = campanhaService.buscarCampanhaPorId(id);
+        CampanhaResponseDTO campanha = campanhaService.findCampanhaPorId(id);
 
         String data = "https://donare.com/campanha/" + id;
         byte[] qrCodeImage;

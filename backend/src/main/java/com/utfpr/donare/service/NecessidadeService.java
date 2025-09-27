@@ -27,23 +27,17 @@ public class NecessidadeService{
 
     @Transactional
     public NecessidadeResponseDTO saveNecessidade(Long idCampanha, NecessidadeRequestDTO necessidadeRequestDTO) {
-
         Campanha campanha = campanhaRepository.findById(idCampanha)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o id: " + idCampanha));
 
-        Necessidade necessidade = new Necessidade();
-        necessidade.setNome(necessidadeRequestDTO.getNome());
-        necessidade.setUnidadeMedida(necessidadeRequestDTO.getUnidadeMedida());
-        necessidade.setQuantidadeNecessaria(necessidadeRequestDTO.getQuantidadeNecessaria());
-        necessidade.setQuantidadeRecebida(necessidadeRequestDTO.getQuantidadeRecebida());
-        necessidade.setCampanha(campanha);
+        Necessidade necessidade = new Necessidade(necessidadeRequestDTO, campanha);
 
         Necessidade necessidadeSalva = necessidadeRepository.save(necessidade);
         return converterParaResponseDTO(necessidadeSalva);
     }
 
 
-    public List<NecessidadeResponseDTO> listarNecessidadesPorCampanha(Long idCampanha) {
+    public List<NecessidadeResponseDTO> listNeedsByCampaign(Long idCampanha) {
         if (!campanhaRepository.existsById(idCampanha)) {
             throw new ResourceNotFoundException("Campanha não encontrada com o id: " + idCampanha);
         }
@@ -52,9 +46,8 @@ public class NecessidadeService{
     }
 
 
-    public NecessidadeResponseDTO buscarNecessidadePorId(Long idCampanha, Long idNecessidade) {
-        Necessidade necessidade = necessidadeRepository.findById(idNecessidade)
-                .orElseThrow(() -> new ResourceNotFoundException("Necessidade não encontrada com o id: " + idNecessidade));
+    public NecessidadeResponseDTO findNecessidadeById(Long idCampanha, Long idNecessidade) {
+        Necessidade necessidade = findNecessidadeById(idNecessidade);
 
         if (!necessidade.getCampanha().getId().equals(idCampanha)) {
             throw new ResourceNotFoundException("Necessidae com id " + idNecessidade + " não pertence à campanha com id " + idCampanha);
@@ -64,12 +57,9 @@ public class NecessidadeService{
 
     @Transactional
     public NecessidadeResponseDTO updateNecessidade(Long idNecessidade, NecessidadeRequestDTO necessidadeRequestDTO) {
-        Necessidade necessidade = necessidadeRepository.findById(idNecessidade)
-                .orElseThrow(() -> new ResourceNotFoundException("Necessidade não encontrada com o id: " + idNecessidade));
-        necessidade.setNome(necessidadeRequestDTO.getNome());
-        necessidade.setUnidadeMedida(necessidadeRequestDTO.getUnidadeMedida());
-        necessidade.setQuantidadeNecessaria(necessidadeRequestDTO.getQuantidadeNecessaria());
-        necessidade.setQuantidadeRecebida(necessidadeRequestDTO.getQuantidadeRecebida());
+        Necessidade necessidade = findNecessidadeById(idNecessidade);
+
+        necessidade.updateNecessidade(necessidadeRequestDTO);
 
         Necessidade necessidadeAtualizada = necessidadeRepository.save(necessidade);
         return converterParaResponseDTO(necessidadeAtualizada);
@@ -77,9 +67,13 @@ public class NecessidadeService{
 
     @Transactional
     public void deleteNecessidade(Long idNecessidade) {
-        Necessidade necessidade = necessidadeRepository.findById(idNecessidade)
-                .orElseThrow(() -> new ResourceNotFoundException("Necessidade não encontrada com o id: " + idNecessidade));
+        Necessidade necessidade = findNecessidadeById(idNecessidade);
         necessidadeRepository.delete(necessidade);
+    }
+
+    private Necessidade findNecessidadeById(Long idNecessidade) {
+        return necessidadeRepository.findById(idNecessidade)
+                .orElseThrow(() -> new ResourceNotFoundException("Necessidade não encontrada com o id: " + idNecessidade));
     }
 
     private NecessidadeResponseDTO converterParaResponseDTO(Necessidade necessidade) {

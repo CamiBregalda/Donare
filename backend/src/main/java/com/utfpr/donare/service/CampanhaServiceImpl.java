@@ -10,6 +10,7 @@ import com.utfpr.donare.dto.VoluntarioResponseDTO;
 import com.utfpr.donare.exception.ResourceNotFoundException;
 import com.utfpr.donare.mapper.CampanhaMapper;
 import com.utfpr.donare.repository.CampanhaRepository;
+import com.utfpr.donare.service.interfaces.CampanhaService;
 import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -38,7 +39,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional
-    public CampanhaResponseDTO criarCampanha(CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail) {
+    public CampanhaResponseDTO saveCampanha(CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail) {
         Campanha campanha = campanhaMapper.requestDtoToEntity(campanhaRequestDTO);
         campanha.setOrganizador(organizadorEmail);
 
@@ -83,7 +84,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CampanhaResponseDTO> listarHistoricoCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort) {
+    public List<CampanhaResponseDTO> ListCampaignHistory(String tipo, String localidade, String usuario, int page, int size, String sort) {
         Sort.Direction direction = Sort.Direction.DESC;
         String property = "dtInicio";
         if (sort != null && !sort.isEmpty()) {
@@ -105,7 +106,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CampanhaResponseDTO> listarCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort) {
+    public List<CampanhaResponseDTO> findCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort) {
         Sort.Direction direction = Sort.Direction.DESC;
         String property = "dtInicio";
         if (sort != null && !sort.isEmpty()) {
@@ -134,7 +135,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
-    public CampanhaResponseDTO buscarCampanhaPorId(Long id) {
+    public CampanhaResponseDTO findCampanhaPorId(Long id) {
         Campanha campanha = campanhaRepository.findByIdAndAtivoTrue(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
 
@@ -143,9 +144,8 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional
-    public CampanhaResponseDTO atualizarCampanha(Long id, CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail) {
-        Campanha campanha = campanhaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
+    public CampanhaResponseDTO updateCampanha(Long id, CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail) {
+        Campanha campanha = findCampanhaById(id);
 
         if (!campanha.getOrganizador().equals(organizadorEmail)) {
             throw new RuntimeException("Apenas o organizador pode atualizar a campanha");
@@ -186,9 +186,8 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional
-    public void deletarCampanha(Long id, String organizadorEmail) {
-        Campanha campanha = campanhaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
+    public void deleteCampanha(Long id, String organizadorEmail) {
+        Campanha campanha = findCampanhaById(id);
         if (!campanha.getOrganizador().equals(organizadorEmail)) {
             throw new RuntimeException("Apenas o organizador pode deletar a campanha");
         }
@@ -197,25 +196,32 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
-    public byte[] obterImagemCapa(Long id) {
-        Campanha campanha = campanhaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
+    public byte[] getCoverImage(Long id) {
+        Campanha campanha = findCampanhaById(id);
         return campanha.getImagemCapa();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public String obterImagemCapaContentType(Long id) {
-        Campanha campanha = campanhaRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
+    public String getCoverImageContentType(Long id) {
+        Campanha campanha = findCampanhaById(id);
         return campanha.getImagemCapaContentType();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<VoluntarioResponseDTO> listarVoluntariosPorCampanha(Long id) {
-        Campanha campanha = campanhaRepository.findById(id)
+    public List<VoluntarioResponseDTO> listVolunteersByCampaign(Long id) {
+        Campanha campanha = findCampanhaById(id);
+
+        List<VoluntarioResponseDTO> voluntarios = campanha.getVoluntarios().stream()
+                .map(VoluntarioResponseDTO::new)
+                .toList();
+
+        return voluntarios;
+    }
+
+    private Campanha findCampanhaById(Long id) {
+        return campanhaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
-        return new ArrayList<>();
     }
 }
