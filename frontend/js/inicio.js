@@ -109,6 +109,10 @@ async function carregarImagem(campanhaId, imgElement) {
 function criarItemListaLateral(campanha) {
     const li = document.createElement('li');
     li.textContent = campanha.titulo;
+    li.style.cursor = 'pointer';
+    li.addEventListener('click', () => {
+        window.location.href = `../pages/ComentariosDetalhes.html?id=${campanha.id}`;
+    });
     return li;
 }
 

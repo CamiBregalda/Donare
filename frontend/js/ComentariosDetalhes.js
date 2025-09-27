@@ -356,15 +356,18 @@ function renderComment(comment, parentElement) {
         <button type="submit">Enviar</button>
     `;
     replyForm.onsubmit = async function (e) {
-        e.preventDefault();
-        const input = replyForm.querySelector('.reply-input');
-        const replyText = input.value.trim();
-        if (replyText) {
-            await sendComment(replyText, comment.id);
-        }
+    e.preventDefault();
+    const input = replyForm.querySelector('.reply-input');
+    const replyBtn = replyForm.querySelector('button[type="submit"]');
+    const replyText = input.value.trim();
+    if (replyText) {
+        replyBtn.disabled = true;
+        await sendComment(replyText, comment.id);
         input.value = '';
+        replyBtn.disabled = false; 
         replyForm.style.display = "none";
-    };
+    }
+};
 
     commentContent.appendChild(userNameDiv);
     commentContent.appendChild(commentTextDiv);
@@ -417,12 +420,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     const addCommentForm = document.getElementById('addCommentForm');
     const newCommentInput = document.getElementById('newCommentInput');
+    const submitBtn = addCommentForm.querySelector('button[type="submit"]');
+
     addCommentForm.addEventListener('submit', async function (event) {
         event.preventDefault();
         const commentText = newCommentInput.value.trim();
         if (commentText) {
+            submitBtn.disabled = true;
             await sendComment(commentText, null);
             newCommentInput.value = '';
+            submitBtn.disabled = false; 
         }
     });
 
@@ -450,7 +457,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         followBtn.addEventListener('click', async function () {
-            // Pega o usuário autenticado do localStorage
             const usuario = JSON.parse(localStorage.getItem('usuario'));
             if (!usuario || !usuario.id) {
                 alert("Você não está autenticado! Faça login novamente.");

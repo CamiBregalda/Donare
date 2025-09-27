@@ -114,6 +114,10 @@ async function fetchFollowedCampaigns() {
         <h4>${camp.titulo}</h4>
         <p>${startDate}${endDate ? ' – ' + endDate : ''}</p>
       `;
+      li.style.cursor = 'pointer';
+      li.addEventListener('click', () => {
+        window.location.href = `../pages/ComentariosDetalhes.html?id=${camp.id}`;
+      });
       ul.appendChild(li);
     });
   } catch (err) {
