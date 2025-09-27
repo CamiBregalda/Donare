@@ -38,17 +38,14 @@ public class ParticipacaoService {
         User user = userRepository.findById(participacaoRequestDTO.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario não encontrada com o id: " + participacaoRequestDTO.getUserId()));
 
-        Participacao participacao = Participacao.builder()
-                .campanha(campanha)
-                .user(user)
-                .build();
+        Participacao participacao = new Participacao(campanha, user);
 
         participacaoRepository.save(participacao);
 
-        return  converterParaResponseDTO(participacao);
+        return new ParticipacaoResponseDTO(participacao);
     }
 
-    public List<ParticipacaoResponseDTO> listarParticipacoesPorCampanha(Long idCampanha) {
+    public List<ParticipacaoResponseDTO> findParticipacoesByCampanha(Long idCampanha) {
         if (!campanhaRepository.existsById(idCampanha)) {
             throw new ResourceNotFoundException("Campanha não encontrada com o id: " + idCampanha);
         }
@@ -56,17 +53,17 @@ public class ParticipacaoService {
         List<Participacao> participacoes = participacaoRepository.findByCampanhaId(idCampanha);
 
         return participacoes.stream()
-                .map(this::converterParaResponseDTO).collect(Collectors.toList());
+                .map(ParticipacaoResponseDTO::new).collect(Collectors.toList());
     }
 
-    public ParticipacaoResponseDTO buscarParticipacaoPorId(Long idCampanha, Long idParticipacao) {
+    public ParticipacaoResponseDTO findParticipacaoPorId(Long idCampanha, Long idParticipacao) {
         Participacao participacao = participacaoRepository.findById(idParticipacao)
                 .orElseThrow(() -> new ResourceNotFoundException("Participacao não encontrada com o id: " + idParticipacao));
 
         if (!participacao.getCampanha().getId().equals(idCampanha)) {
             throw new ResourceNotFoundException("Participacao com id " + idParticipacao + " não pertence à campanha com id " + idCampanha);
         }
-        return converterParaResponseDTO(participacao);
+        return new ParticipacaoResponseDTO(participacao);
     }
 
     @Transactional
@@ -96,20 +93,6 @@ public class ParticipacaoService {
         return participacaoRepository.findByUserId(idUsuario).stream()
                 .map(participacao -> campanhaMapper.entityToResponseDto(participacao.getCampanha()))
                 .collect(Collectors.toList());
-    }
-
-    private ParticipacaoResponseDTO converterParaResponseDTO(Participacao participacao) {
-        Campanha campanha = participacao.getCampanha();
-        User user = participacao.getUser();
-
-        return new ParticipacaoResponseDTO(
-                participacao.getId(),
-                campanha.getId(),
-                campanha.getTitulo(),
-                user.getId(),
-                user.getNome(),
-                participacao.getDataHoraParticipacao()
-        );
     }
 
 }

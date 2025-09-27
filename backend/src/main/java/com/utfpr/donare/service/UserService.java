@@ -19,8 +19,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +38,7 @@ public class UserService implements UserDetailsService {
     private final EmailService emailService;
 
     @Transactional
-    public  UserResponseDTO save(UserRequestDTO dto, MultipartFile midia) {
-
+    public  UserResponseDTO saveUsuario(UserRequestDTO dto, MultipartFile midia) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
             throw new BadRequestException("O e-mail '" + dto.getEmail() + "' já está em uso.");
         }
@@ -51,20 +48,10 @@ public class UserService implements UserDetailsService {
         }
 
         Endereco endereco = enderecoMapper.toEndereco(dto.getEndereco());
+        User user = new User(dto, passwordEncoder.encode(dto.getPassword()), endereco, TipoUsuario.valueOfCodigo(dto.getTipoUsuario()));
 
-        User user = User.builder()
-                .nome(dto.getNome())
-                .email(dto.getEmail())
-                .cpfOuCnpj(dto.getCpfOuCnpj())
-                .password(passwordEncoder.encode(dto.getPassword()))
-                .idEndereco(endereco)
-                .ativo(true)
-                .tipoUsuario(TipoUsuario.valueOfCodigo(dto.getTipoUsuario()))
-                .build();
-
-        endereco.setUser(user);
-
-        setUserMidia(midia, user);
+        endereco.updateUser(user);
+        user.updateUserMidia(midia);
 
         userRepository.save(user);
 
@@ -76,29 +63,9 @@ public class UserService implements UserDetailsService {
         return userMapper.toUserResponseDTO(user);
     }
 
-    private static void setUserMidia(MultipartFile midia, User user) {
-
-        if (midia != null && !midia.isEmpty()) {
-
-            try {
-
-                byte[] midiaBytes = midia.getBytes();
-                String contentType = midia.getContentType();
-
-                user.setMidia(midiaBytes);
-                user.setMidiaContentType(contentType);
-            } catch (IOException e) {
-
-                throw new RuntimeException("Erro ao processar arquivo de mídia do usuário", e);
-            }
-        }
-    }
-
     @Transactional
-    public void delete(Long id) {
-
+    public void deleteUsuario(Long id) {
         if (!userRepository.existsById(id)) {
-
             throw new ResourceNotFoundException("Usuário com ID " + id + " não encontrado para exclusão.");
         }
 
@@ -106,17 +73,13 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public UserResponseDTO update(Long id, UserRequestDTO dto, MultipartFile midia) {
-
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
+    public UserResponseDTO updateUsuario(Long id, UserRequestDTO dto, MultipartFile midia) {
+        User user = findUserById(id);
 
         verifyEmailInUseAndThowException(id, dto);
         verifyCpfCnpjInUseAndThrowException(id, dto, user);
 
-        user.setNome(dto.getNome());
-        user.setEmail(dto.getEmail());
-        user.setCpfOuCnpj(dto.getCpfOuCnpj());
-        user.setTipoUsuario(dto.getTipoUsuario() == 1 ? TipoUsuario.PESSOA_FISICA : TipoUsuario.PESSOA_JURIDICA);
+        user.update(dto);
 
         Endereco endereco = user.getIdEndereco();
 
@@ -132,7 +95,7 @@ public class UserService implements UserDetailsService {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
         }
 
-        setUserMidia(midia, user);
+        user.updateUserMidia(midia);
 
         if (dto.getPassword() != null && !dto.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(dto.getPassword()));
@@ -145,11 +108,7 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public UserResponseDTO updatePassword(Long id, UserPasswordRequestDTO dto) {
-
-        User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com o ID: " + id));
-
-        System.out.println(user.getPassword());
-        System.out.println(dto.getOldPassword());
+        User user = findUserById(id);
 
         if (dto.getOldPassword() != null && !dto.getOldPassword().isBlank() && dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
 
@@ -253,7 +212,6 @@ public class UserService implements UserDetailsService {
 
 
     private void verifyEmailInUseAndThowException(Long id, UserRequestDTO dto) {
-
         if (userRepository.findByEmail(dto.getEmail()).isPresent()
                 && !userRepository.findByEmail(dto.getEmail()).get().getId().equals(id)) {
             throw new BadRequestException("O e-mail '" + dto.getEmail() + "' já está em uso por outro usuário.");
@@ -275,9 +233,7 @@ public class UserService implements UserDetailsService {
         user.setEmail(email);
     }
 
-
-    public UserResponseDTO findById(Long id) {
-
+    public UserResponseDTO findUsuarioById(Long id) {
         return userRepository.findById(id)
                 .map(userMapper::toUserResponseDTO)
                 .orElseThrow(() -> new ResourceNotFoundException("Id de usuário não encontrado. ID de busca: " + id));
@@ -301,14 +257,11 @@ public class UserService implements UserDetailsService {
     }
 
     public User findByEmail(String email) {
-
         return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com e-mail: " + email));
     }
 
     public UserResponseDTO findUserResponseDtoByEmail(String email) {
-
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com e-mail: " + email));
-
         return userMapper.toUserResponseDTO(user);
     }
 
