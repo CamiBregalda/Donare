@@ -5,6 +5,13 @@ import com.utfpr.donare.domain.enums.TipoCertificadoEnum;
 import com.utfpr.donare.dto.*;
 import com.utfpr.donare.service.interfaces.CampanhaService;
 import com.utfpr.donare.service.QRCodeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -84,11 +91,54 @@ public class CampanhaController {
         return new ResponseEntity<>(imagemBytes, headers, HttpStatus.OK);
     }
 
+    @Operation(summary = "Atualiza uma campanha existente.", description = "Atualiza as informações de uma campanha específico pelo seu ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Campanha atualizado com sucesso (sem conteúdo de resposta)."),
+
+            @ApiResponse(responseCode = "400", description = "Requisição inválida (ex: dados incompletos).",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))),
+
+            @ApiResponse(responseCode = "404", description = "Campanha não encontrado para o ID informado.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class))),
+
+            @ApiResponse(responseCode = "500", description = "Erro interno do servidor.",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CampanhaResponseDTO> update(
             @PathVariable Long id,
-            @RequestPart("campanha") CampanhaRequestDTO campanhaRequestDTO,
-            @RequestPart(value = "imagemCapa", required = false) MultipartFile imagemCapa) {
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    content = @Content(
+                            mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            examples = @ExampleObject(
+                                    value = """
+                    {
+                      "titulo": "Campanha de Doação de Cachorro!!",
+                      "descricao": "Venha adotar seu melhor amigo!.",
+                      "categoriaCampanha": "Solidariedade",
+                      "endereco": {
+                        "logradouro": "Rua das Flores",
+                        "complemento": "Apto 18",
+                        "bairro": "Centro",
+                        "numero": "100",
+                        "cidade": "Curitiba",
+                        "estado": "PR",
+                        "cep": "85660000"
+                      },
+                      "status": "ATIVA",
+                      "tipoCertificado": "DIGITAL",
+                      "dtInicio": "2025-09-28T21:51:14",
+                      "dt_fim": "2025-12-28T21:51:14"
+                    }
+                    """
+                            )
+                    )
+            )
+            @Valid @RequestPart("campanha") CampanhaRequestDTO campanhaRequestDTO,
+            @Valid @RequestPart(value = "imagemCapa", required = false) MultipartFile imagemCapa) {
 
         String organizadorEmail = getOrganizadorEmail();
         CampanhaResponseDTO campanhaAtualizada = campanhaService.updateCampanha(id, campanhaRequestDTO, imagemCapa, organizadorEmail);
@@ -141,6 +191,16 @@ public class CampanhaController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.IMAGE_PNG);
         return new ResponseEntity<>(qrCodeImage, headers, HttpStatus.OK);
+    }
+
+    @GetMapping("/proximas")
+    public ResponseEntity<List<CampanhaDistanciaResponseDTO>> listarProximas(
+            @RequestParam double lat,
+            @RequestParam double lon,
+            @RequestParam String estado) {
+
+        List<CampanhaDistanciaResponseDTO> proximas = campanhaService.buscarCampanhasProximas(lat, lon, estado);
+        return ResponseEntity.ok(proximas);
     }
 
     private String getOrganizadorEmail() {

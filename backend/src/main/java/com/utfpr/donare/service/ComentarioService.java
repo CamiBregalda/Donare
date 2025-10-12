@@ -4,6 +4,7 @@ import com.utfpr.donare.domain.Campanha;
 import com.utfpr.donare.domain.Comentario;
 import com.utfpr.donare.domain.EmailType;
 import com.utfpr.donare.domain.User;
+import com.utfpr.donare.dto.ComentarioDeleteRequestDTO;
 import com.utfpr.donare.dto.ComentarioRequestDTO;
 import com.utfpr.donare.dto.ComentarioResponseDTO;
 import com.utfpr.donare.dto.EmailRequestDTO;
@@ -114,14 +115,14 @@ public class ComentarioService {
     }
 
     @Transactional
-    public void deleteComentario(Long idComentario, ComentarioRequestDTO comentarioRequestDTO) {
+    public void deleteComentario(Long idComentario, ComentarioDeleteRequestDTO comentarioDeleteRequestDTO) {
         Comentario comentario = findComentarioById(idComentario);
 
-        if(comentario.getUser().getEmail().equals(comentarioRequestDTO.getUserEmail())){
+        if(comentario.getUser().getEmail().equals(comentarioDeleteRequestDTO.getUserEmail())){
             comentarioRepository.delete(comentario);
         }
         else {
-            throw new ResourceNotFoundException("Usuário com e-mail inválido para excluir esse comentário" + comentarioRequestDTO.getUserEmail());
+            throw new ResourceNotFoundException("Usuário com e-mail inválido para excluir esse comentário " + comentarioDeleteRequestDTO.getUserEmail());
         }
     }
 
