@@ -24,7 +24,6 @@ form.addEventListener('submit', async function (e) {
     };
 
     try {
-        // Autenticação
         const response = await fetch(`${API_BASE}/usuarios/authenticate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -39,7 +38,6 @@ form.addEventListener('submit', async function (e) {
         const token = await response.text();
         localStorage.setItem('token', token);
 
-        // Busca dados do usuário autenticado
         const userDataResponse = await fetch(`${API_BASE}/usuarios/email/${email}`, {
             headers: authHeaders(false)
         });
@@ -64,3 +62,55 @@ form.addEventListener('submit', async function (e) {
         btnSubmit.disabled = false;
     }
 });
+
+function decodeJWT(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+        atob(base64)
+            .split('')
+            .map(function (c) {
+              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join('')
+    );
+    return JSON.parse(jsonPayload);
+}
+
+window.handleCredentialResponse = async function (response) {
+    
+     console.log("Encoded JWT ID token: " + response.credential);
+
+        const responsePayload = decodeJWT(response.credential);
+
+        console.log("Decoded JWT ID token fields:");
+        console.log("  Full Name: " + responsePayload.name);
+        console.log("  Given Name: " + responsePayload.given_name);
+        console.log("  Family Name: " + responsePayload.family_name);
+        console.log("  Unique ID: " + responsePayload.sub);
+        console.log("  Profile image URL: " + responsePayload.picture);
+        console.log("  Email: " + responsePayload.email);
+    
+    /*try {
+        const userData = decodeJWT(response.credential);    
+        console.log('Login Google:', userData);
+
+        const res = await fetch(`${API_BASE}/usuarios/google-auth`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token: response.credential })
+        });
+
+        if (!res.ok) throw new Error('Falha ao autenticar com Google');
+
+        const backendToken = await res.text();
+        localStorage.setItem('token', backendToken);
+        localStorage.setItem('usuario', JSON.stringify(userData));
+
+        window.location.href = '../pages/inicio.html';
+    } catch (error) {
+        console.error('Erro no login com Google:', error);
+        alert('Falha ao entrar com Google.');
+    }*/
+
+};
