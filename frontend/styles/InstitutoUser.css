@@ -1,7 +1,7 @@
 body {
     background-color: #C8ECD1;
     /* Lighter green for the page background */
-    font-family: "Montserrat", sans-serif;
+    font-family: "Raleway", sans-serif;
     color: #333;
     margin: 0;
 }
@@ -190,7 +190,6 @@ body {
     bottom: 10px;
     left: 10px;
     background-color: rgba(125, 191, 168, 0.8);
-    /* Semi-transparent green */
     color: white;
     padding: 5px 10px;
     border-radius: 5px;
@@ -233,7 +232,6 @@ body {
     font-size: 0.9em;
 }
 
-/* Responsive adjustments */
 @media (max-width: 992px) {
     .institution-profile-container {
         flex-direction: column;
@@ -241,7 +239,6 @@ body {
 
     .campaigns-section {
         max-height: none;
-        /* Remove max height on smaller screens if stacked */
         overflow-y: visible;
     }
 }
@@ -303,7 +300,6 @@ body {
 
     .campaign-card-actions .btn-follow-campaign {
         flex-basis: 100%;
-        /* Make follow button full width in card on small screens */
         text-align: center;
     }
 }

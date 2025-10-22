@@ -262,7 +262,7 @@ async function deleteComment(idComentario) {
         return;
     }
     const body = {
-        conteudo: "string",
+        conteudo: "string", //ajustar com o gabriel
         userEmail: usuario.email,
         idComentarioPai: null
     };
