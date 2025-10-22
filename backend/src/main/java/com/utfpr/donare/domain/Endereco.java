@@ -32,6 +32,9 @@ public class Endereco {
 
     private String cep;
 
+    private Double latitude;
+    private Double longitude;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true)
     private User user;
