@@ -1,6 +1,5 @@
 body {
     background-color: #C8ECD1;
-    /* Lighter green for the page background */
     font-family: "Raleway", sans-serif;
     color: #333;
     margin: 0;
@@ -12,16 +11,12 @@ body {
 
 .institution-profile-container {
     display: flex;
-    /* max-width: 1200px; */
-    /* Previous fixed max-width */
     max-width: 90%;
-    /* Make it use 90% of the parent's width */
     margin: 0 auto;
 }
 
 .institution-details-section {
     flex: 2;
-    /* Takes more space */
     padding: 25px;
     border-radius: 10px;
 }
@@ -85,30 +80,20 @@ body {
 .institution-image-and-info-wrapper {
     display: flex;
     gap: 40px;
-    /* Adjust gap as needed */
     margin-bottom: 25px;
-    /* Space before the description */
 }
 
 .institution-image {
     flex: 1;
-    /* Adjust flex ratio as needed, e.g., flex: 0 0 60%; */
     max-width: 50%;
-    /* Or a fixed width, ensure it fits with info */
     height: auto;
-    /* Maintain aspect ratio */
     max-height: 350px;
-    /* Adjust as per your design */
     object-fit: cover;
     border-radius: 8px;
-    /* margin-bottom: 25px; */
-    /* Removed as margin is now on wrapper */
 }
 
 .institution-info {
     flex: 1;
-    /* Adjust flex ratio as needed, e.g., flex: 1; */
-    /* Add any specific styling for the info block if needed */
 }
 
 .institution-info h3,
@@ -134,7 +119,6 @@ body {
     display: flex;
     flex-direction: column;
     max-height: 80vh;
-    /* overflow-y: auto; removido daqui */
 }
 
 .campaigns-section h2 {
@@ -144,7 +128,6 @@ body {
     margin-bottom: 20px;
     font-weight: bold;
     flex-shrink: 0;
-    /* Não encolhe */
 }
 
 .campaigns-grid {
@@ -157,7 +140,6 @@ body {
     overflow-y: auto;
     flex: 1;
     min-height: 0;
-    /* Necessário para scroll funcionar em flex */
     max-height: 100%;
 }
 
@@ -175,7 +157,6 @@ body {
     position: relative;
     width: 100%;
     height: 180px;
-    /* Adjust as needed */
 }
 
 .campaign-card-image-container img {
