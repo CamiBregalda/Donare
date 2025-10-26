@@ -12,6 +12,7 @@ import com.utfpr.donare.mapper.UserMapper;
 import com.utfpr.donare.repository.CampanhaRepository;
 import com.utfpr.donare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,9 +20,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -254,6 +258,32 @@ public class UserService implements UserDetailsService {
         }
 
         return jwtTokenUtil.autenticar(user);
+    }
+
+    public String authenticateUserByGoogleEmail(AuthGoogleRequestDTO authGoogleRequestDTO){
+        //Busca o usuário pelo email e googleId
+        //Se houver correspondência, é chamada jwtTokenUtil.autenticar(user) e retornado o token de utilização para o usuário
+        //Se houver um registro desse email, mas nenhum googleId vinculado, será feito um update adicionando o googleId a essa conta e chamado jwtTokenUtil.autenticar(user) depois
+        //Se não houver nenhum registro do email, é lançado uma excessão 404 Not Found com a mensagem "GoogleId não está vinculado a nenhum usuário."
+
+        Optional<User> existingUser = userRepository.findByEmailAndGoogleId(authGoogleRequestDTO.getEmail(), authGoogleRequestDTO.getGoogleId());
+
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+            return jwtTokenUtil.autenticar(user);
+        }
+
+        Optional<User> userByEmail = userRepository.findByEmail(authGoogleRequestDTO.getEmail());
+
+        if (userByEmail.isPresent()) {
+            User user = userByEmail.get();
+            user.setGoogleId(authGoogleRequestDTO.getGoogleId());
+            userRepository.save(user);
+
+            return jwtTokenUtil.autenticar(user);
+        }
+
+        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado.");
     }
 
     public User findByEmail(String email) {

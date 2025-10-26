@@ -44,6 +44,8 @@ public class User implements UserDetails {
 
     private String password;
 
+    private String googleId;
+
     @Enumerated(EnumType.ORDINAL)
     private TipoUsuario tipoUsuario;
 
@@ -83,6 +85,7 @@ public class User implements UserDetails {
         this.idEndereco = endereco;
         this.tipoUsuario = tipoUsuario;
         this.ativo = true;
+        this.googleId = userRequestDTO.getGoogleId();
     }
 
     public void updateUserMidia(MultipartFile midia){
