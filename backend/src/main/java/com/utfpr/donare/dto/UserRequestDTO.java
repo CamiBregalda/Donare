@@ -49,6 +49,5 @@ public class UserRequestDTO {
     @Schema(description = "Google Id do usuário, deve ser único.",
             example = "12345678",
             requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    @Email(message = "Formato de e-mail inválido.")
     private String googleId;
 }

@@ -33,6 +33,9 @@ public class UserResponseDTO {
     @Schema(description = "Dados do endereço do usuário.")
     private EnderecoResponseDto idEndereco;
 
+    @Schema(description = "GoogleId relacionado ao e-mail do usuário.", example = "123456789")
+    private String googleId;
+
     @Schema(description = "Dados binários da mídia de perfil (imagem, por exemplo) em Base64.", type = "string", format = "byte")
     private byte[] midia;
 

@@ -58,7 +58,8 @@ public class UserService implements UserDetailsService {
         }
 
         Endereco endereco = enderecoMapper.toEndereco(dto.getEndereco());
-        User user = new User(dto, passwordEncoder.encode(dto.getPassword()), endereco, TipoUsuario.valueOfCodigo(dto.getTipoUsuario()));
+
+        User user = new User(dto, encodedPassword(dto.getPassword()), endereco, TipoUsuario.valueOfCodigo(dto.getTipoUsuario()));
 
         endereco.updateUser(user);
         user.updateUserMidia(midia);
@@ -133,6 +134,14 @@ public class UserService implements UserDetailsService {
         User updatedUser = userRepository.save(user);
 
         return userMapper.toUserResponseDTO(updatedUser);
+    }
+
+    private String encodedPassword(String password){
+        if (password != null && !password.isEmpty()) {
+            return passwordEncoder.encode(password);
+        }
+
+        return null;
     }
 
     private void verifyCpfCnpjInUseAndThrowException(Long id, UserRequestDTO dto, User user) {

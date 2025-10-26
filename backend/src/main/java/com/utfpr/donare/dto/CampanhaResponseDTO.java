@@ -57,7 +57,7 @@ public class CampanhaResponseDTO {
         if (user == null) {
             return null;
         }
-        return new UserResponseDTO(user.getId(), user.getNome(), user.getEmail(), user.getCpfOuCnpj(), user.getTipoUsuario().getCodigo(), user.isAtivo(), entityfromEnderecoResponseDto(user.getIdEndereco()), user.getMidia(), user.getMidiaContentType());
+        return new UserResponseDTO(user.getId(), user.getNome(), user.getEmail(), user.getCpfOuCnpj(), user.getTipoUsuario().getCodigo(), user.isAtivo(), entityfromEnderecoResponseDto(user.getIdEndereco()), user.getGoogleId(), user.getMidia(), user.getMidiaContentType());
     }
 
     private EnderecoResponseDto entityfromEnderecoResponseDto(Endereco endereco) {
