@@ -43,8 +43,7 @@ public class UserRequestDTO {
 
     @Schema(description = "Senha do usuário. Deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais.",
             example = "Senha@123",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "A senha é obrigatória.")
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String password;
 
     @Schema(description = "Google Id do usuário, deve ser único.",

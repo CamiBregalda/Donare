@@ -51,6 +51,12 @@ public class UserService implements UserDetailsService {
             throw new BadRequestException("O CPF/CNPJ '" + dto.getCpfOuCnpj() + "' já está cadastrado.");
         }
 
+        if (dto.getGoogleId() == null || dto.getGoogleId().isEmpty()){
+            if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
+                throw new BadRequestException("A senha é obrigatória quando não houver googleId.");
+            }
+        }
+
         Endereco endereco = enderecoMapper.toEndereco(dto.getEndereco());
         User user = new User(dto, passwordEncoder.encode(dto.getPassword()), endereco, TipoUsuario.valueOfCodigo(dto.getTipoUsuario()));
 
@@ -261,11 +267,6 @@ public class UserService implements UserDetailsService {
     }
 
     public String authenticateUserByGoogleEmail(AuthGoogleRequestDTO authGoogleRequestDTO){
-        //Busca o usuário pelo email e googleId
-        //Se houver correspondência, é chamada jwtTokenUtil.autenticar(user) e retornado o token de utilização para o usuário
-        //Se houver um registro desse email, mas nenhum googleId vinculado, será feito um update adicionando o googleId a essa conta e chamado jwtTokenUtil.autenticar(user) depois
-        //Se não houver nenhum registro do email, é lançado uma excessão 404 Not Found com a mensagem "GoogleId não está vinculado a nenhum usuário."
-
         Optional<User> existingUser = userRepository.findByEmailAndGoogleId(authGoogleRequestDTO.getEmail(), authGoogleRequestDTO.getGoogleId());
 
         if (existingUser.isPresent()) {
@@ -283,7 +284,7 @@ public class UserService implements UserDetailsService {
             return jwtTokenUtil.autenticar(user);
         }
 
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado.");
+        throw new ResourceNotFoundException("Usuário não encontrado.");
     }
 
     public User findByEmail(String email) {
