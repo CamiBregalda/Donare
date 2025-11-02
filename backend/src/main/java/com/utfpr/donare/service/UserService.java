@@ -57,11 +57,17 @@ public class UserService implements UserDetailsService {
             }
         }
 
-        Endereco endereco = enderecoMapper.toEndereco(dto.getEndereco());
+        Endereco endereco = null;
+
+        if(dto.getEndereco() != null) {
+            endereco = enderecoMapper.toEndereco(dto.getEndereco());
+        }
 
         User user = new User(dto, encodedPassword(dto.getPassword()), endereco, TipoUsuario.valueOfCodigo(dto.getTipoUsuario()));
 
-        endereco.updateUser(user);
+        if(dto.getEndereco() != null) {
+            endereco.updateUser(user);
+        }
         user.updateUserMidia(midia);
 
         userRepository.save(user);
