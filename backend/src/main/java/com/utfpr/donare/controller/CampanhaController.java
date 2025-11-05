@@ -196,10 +196,9 @@ public class CampanhaController {
     @GetMapping("/proximas")
     public ResponseEntity<List<CampanhaDistanciaResponseDTO>> listarProximas(
             @RequestParam double lat,
-            @RequestParam double lon,
-            @RequestParam String estado) {
+            @RequestParam double lon) {
 
-        List<CampanhaDistanciaResponseDTO> proximas = campanhaService.buscarCampanhasProximas(lat, lon, estado);
+        List<CampanhaDistanciaResponseDTO> proximas = campanhaService.buscarCampanhasProximas(lat, lon);
         return ResponseEntity.ok(proximas);
     }
 

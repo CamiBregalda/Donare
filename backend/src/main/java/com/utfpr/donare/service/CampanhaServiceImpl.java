@@ -234,8 +234,9 @@ public class CampanhaServiceImpl implements CampanhaService {
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
     }
 
-    public List<CampanhaDistanciaResponseDTO> buscarCampanhasProximas(double latUser, double lonUser, String estado) {
-        List<Campanha> campanhas = campanhaRepository.findAllByEstado(estado);
+    public List<CampanhaDistanciaResponseDTO> buscarCampanhasProximas(double latUser, double lonUser) {
+
+        List<Campanha> campanhas = campanhaRepository.findAll();
 
         return campanhas.stream()
                 .filter(c -> c.getEndereco() != null)

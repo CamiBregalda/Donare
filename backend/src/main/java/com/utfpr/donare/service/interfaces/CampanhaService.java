@@ -27,5 +27,5 @@ public interface CampanhaService {
 
     List<UserResponseDTO> listVolunteersByCampaign(Long id);
 
-    List<CampanhaDistanciaResponseDTO> buscarCampanhasProximas(double latUser, double lonUser, String estado);
+    List<CampanhaDistanciaResponseDTO> buscarCampanhasProximas(double latUser, double lonUser);
 }
