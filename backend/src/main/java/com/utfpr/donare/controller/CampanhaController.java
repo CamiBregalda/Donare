@@ -43,11 +43,12 @@ public class CampanhaController {
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String localidade,
             @RequestParam(required = false) String usuario,
+            @RequestParam(required = false) String titulo,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "dtInicio") String sort) {
 
-        List<CampanhaResponseDTO> campanhas = campanhaService.ListCampaignHistory(tipo, localidade, usuario, page, size, sort);
+        List<CampanhaResponseDTO> campanhas = campanhaService.ListCampaignHistory(tipo, localidade, usuario, titulo, page, size, sort);
         return ResponseEntity.ok(campanhas);
     }
 
@@ -56,13 +57,15 @@ public class CampanhaController {
             @RequestParam(required = false) String tipo,
             @RequestParam(required = false) String localidade,
             @RequestParam(required = false) String usuario,
+            @RequestParam(required = false) String titulo,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "dtInicio") String sort) {
 
-        List<CampanhaResponseDTO> campanhas = campanhaService.findCampanhas(tipo, localidade, usuario, page, size, sort);
+        List<CampanhaResponseDTO> campanhas = campanhaService.findCampanhas(tipo, localidade, usuario, titulo, page, size, sort);
         return ResponseEntity.ok(campanhas);
     }
+
     @GetMapping("/{id}")
     public ResponseEntity<CampanhaResponseDTO> findById(@PathVariable Long id) {
         CampanhaResponseDTO campanha = campanhaService.findCampanhaPorId(id);
