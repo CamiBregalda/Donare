@@ -1,4 +1,4 @@
-	const API_BASE = 'http://localhost:8080';
+const API_BASE = 'http://localhost:8080';
 
 	function authHeaders(isJson = true) {
 		const token = localStorage.getItem('token') || '';
@@ -46,6 +46,19 @@
 		const usuario = JSON.parse(localStorage.getItem('usuario'));
 		const userId = usuario.id;
 
+		// Expor função global e ouvir evento para atualização imediata do avatar no header
+		window.updateHeaderAvatar = (src) => {
+			if (avatar && src) avatar.src = src;
+		};
+		window.addEventListener('user-avatar-updated', (e) => {
+			const src = e?.detail?.src;
+			if (src) window.updateHeaderAvatar(src);
+		});
+		// Fallback: também ouve no document caso algum código dispare por lá
+		document.addEventListener('user-avatar-updated', (e) => {
+			const src = e?.detail?.src;
+			if (src) window.updateHeaderAvatar(src);
+		});
 
 		if (avatar && usuario.id) {
 			fetch(`${API_BASE}/usuarios/${usuario.id}`,
@@ -53,7 +66,8 @@
 				.then(r => r.ok ? r.json() : null)
 				.then(data => {
 					if (data && data.midia) {
-						avatar.src = `data:${data.midiaContentType};base64,${data.midia}`;
+						const src = `data:${data.midiaContentType};base64,${data.midia}`;
+						avatar.src = src;
 					}
 				})
 
@@ -78,7 +92,7 @@
 
 			const btnVerPerfil = dropdown?.querySelector('#ver-perfil');
 			const btnEditarPerfil = dropdown?.querySelector('#editar-perfil');
-			const btnLogout = dropdown?.querySelector('#logout');
+			let btnLogout = dropdown?.querySelector('#logout'); // <— era const, precisa ser let
 
 			btnVerPerfil?.addEventListener('click', () => {
 				const tipoUsuario = parseInt(usuario.tipoUsuario, 10);

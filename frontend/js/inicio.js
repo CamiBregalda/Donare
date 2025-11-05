@@ -7,7 +7,6 @@ function authHeaders(isJson = true) {
     if (isJson) response['Content-Type'] = 'application/json';
     return response;
 }
-
 let todasCampanhas = [];
 let main;
 let campanhasSeguidasLista;
@@ -26,15 +25,12 @@ async function renderizaCampanhas() {
         }
 
         const cidadeUsuario = usuario?.idEndereco?.cidade;
-        const token = (localStorage.getItem('token') || '').trim();
+        const estadoUsuario = usuario?.idEndereco?.estado || usuario?.endereco?.estado || '';
 
         const response = await fetch(`${API_BASE}/campanhas`, {
             headers: authHeaders(false)
         });
-
-        if (!response.ok) {
-            throw new Error(`Erro HTTP! Status: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Erro HTTP! Status: ${response.status}`);
 
         todasCampanhas = await response.json();
 
@@ -45,24 +41,13 @@ async function renderizaCampanhas() {
             return inicio <= hoje && fim >= hoje;
         });
 
-        let campanhasProximasFiltradas = [];
-        if (cidadeUsuario) {
-            campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
-                const cidadeCampanha = campanha.endereco?.cidade;
-                return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
-            });
-        }
-
-        atualizarListaCampanhasProximas(campanhasProximasFiltradas);
-        await atualizarListaCampanhasSeguidas();
-
+        // 1) Renderiza imediatamente as campanhas (não depende de geolocalização)
         main.innerHTML = '';
         const categoriasCampanhas = campanhasAtivas.reduce((acc, campanha) => {
             const categoria = campanha.categoriaCampanha || 'Outros';
             (acc[categoria] = acc[categoria] || []).push(campanha);
             return acc;
         }, {});
-
         Object.keys(categoriasCampanhas).forEach(async nomeCategoria => {
             const section = document.createElement('section');
             section.className = 'categoria';
@@ -70,15 +55,21 @@ async function renderizaCampanhas() {
             titulo.textContent = nomeCategoria;
             const container = document.createElement('div');
             container.className = 'container-campanha';
-
             for (const campanha of categoriasCampanhas[nomeCategoria]) {
                 const card = await criarCardCampanha(campanha);
                 container.appendChild(card);
             }
-
             section.appendChild(titulo);
             section.appendChild(container);
             main.appendChild(section);
+        });
+
+        // 2) Em paralelo, atualiza listas laterais (seguindo e proximidade)
+        atualizarListaCampanhasSeguidas();
+
+        carregaCampanhasProximas(usuario, campanhasAtivas, estadoUsuario, cidadeUsuario).catch(err => {
+            console.warn('[proximas] erro:', err);
+            atualizarListaCampanhasProximas([]);
         });
 
     } catch (error) {
@@ -87,6 +78,67 @@ async function renderizaCampanhas() {
         if (campanhasSeguidasLista) campanhasSeguidasLista.innerHTML = '<li>Erro ao carregar</li>';
         if (campanhasProximasLista) campanhasProximasLista.innerHTML = '<li>Erro ao carregar</li>';
     }
+}
+
+async function carregaCampanhasProximas(usuario, campanhasAtivas, estadoUsuario, cidadeUsuario) {
+    try {
+        const coords = await obterCoordenadasUsuario();
+
+        let campanhasProximasFiltradas = [];
+
+        if (coords) {
+            try {
+                const r = await fetch(
+                    `${API_BASE}/campanhas/proximas?lat=${encodeURIComponent(coords.latitude)}&lon=${encodeURIComponent(coords.longitude)}&estado=${encodeURIComponent(estadoUsuario || '')}`,
+                    {
+                        headers: { Authorization: `Bearer ${localStorage.getItem('token') || ''}` }
+                    }
+                );
+                if (r.ok) {
+                    campanhasProximasFiltradas = await r.json();
+                }
+            } catch (e) {
+                console.warn('[proximas] falha ao buscar por coordenadas:', e);
+            }
+        }
+
+        if ((!Array.isArray(campanhasProximasFiltradas) || campanhasProximasFiltradas.length === 0) && cidadeUsuario) {
+            campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
+                const cidadeCampanha = campanha.endereco?.cidade;
+                return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
+            });
+        }
+
+        atualizarListaCampanhasProximas(campanhasProximasFiltradas);
+    } catch (err) {
+        console.warn('[proximas] erro inesperado:', err);
+        if (cidadeUsuario) {
+            const porCidade = campanhasAtivas.filter(c => c.endereco?.cidade?.toLowerCase() === cidadeUsuario.toLowerCase());
+            atualizarListaCampanhasProximas(porCidade);
+        } else {
+            atualizarListaCampanhasProximas([]);
+        }
+    }
+}
+
+async function obterCoordenadasUsuario() {
+    if (!('geolocation' in navigator)) return null;
+
+    const options = { enableHighAccuracy: false, timeout: 8000, maximumAge: 60_000 };
+
+    return new Promise(resolve => {
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                const { latitude, longitude } = pos.coords;
+                resolve({ latitude, longitude });
+            },
+            err => {
+                console.warn('[geolocation] erro/negado:', err?.message);
+                resolve(null); 
+            },
+            options
+        );
+    });
 }
 
 async function carregarImagem(campanhaId, imgElement) {
@@ -160,7 +212,6 @@ async function criarCardCampanha(campanha) {
             return;
         }
         if (!isSeguindo) {
-            // Seguir campanha
             try {
                 const response = await fetch(`${API_BASE}/usuarios/${usuario.id}/seguir-campanha/${campanha.id}`, {
                     method: 'POST',
@@ -176,7 +227,6 @@ async function criarCardCampanha(campanha) {
                 alert('Falha ao seguir campanha.');
             }
         } else {
-            // Parar de seguir campanha
             try {
                 const response = await fetch(`${API_BASE}/usuarios/${usuario.id}/parar-de-seguir-campanha/${campanha.id}`, {
                     method: 'DELETE',
@@ -279,7 +329,6 @@ function onMainClick(event) {
     }
 }
 
-// Inicialização segura
 document.addEventListener('DOMContentLoaded', () => {
     main = document.querySelector('main');
     campanhasSeguidasLista = document.getElementById('campanhas-seguidas');

@@ -1,3 +1,5 @@
+const API_BASE = 'http://localhost:8080';
+
 document.querySelector('form').addEventListener('submit', function (e) {
     e.preventDefault();
 
