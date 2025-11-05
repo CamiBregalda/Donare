@@ -15,7 +15,7 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 20px;
-    padding: 40px 20px;
+    padding: 20px;
     max-width: 1600px;
     margin: 0 auto;
 }
@@ -23,9 +23,8 @@ body {
 .secao-painel {
     background: #fffffff2;
     border-radius: 20px;
-    padding: 30px;
+    padding: 20px;
     backdrop-filter: blur(10px);
-    min-width: 0;
     align-self: start;
 }
 
@@ -102,7 +101,7 @@ body {
 
 .imagem-campanha {
     width: 100%;
-    height: 150px;
+    height: 160px;
     background: linear-gradient(45deg, #8BC6A3, #A8D5BA);
     position: relative;
     overflow: hidden;
@@ -127,7 +126,7 @@ body {
 }
 
 .info-campanha {
-    padding: 20px;
+    padding: 15px;
     background: #8BC6A3;
     color: white;
 }
