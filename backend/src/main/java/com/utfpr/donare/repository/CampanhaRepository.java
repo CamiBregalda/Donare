@@ -20,5 +20,10 @@ public interface CampanhaRepository extends JpaRepository<Campanha, Long>, JpaSp
     List<Campanha> findAllByAtivoTrue();
 
     Optional<Campanha> findByIdAndAtivoTrue(Long id);
+
+
+    @Query("SELECT c FROM Campanha c JOIN c.endereco e WHERE e.estado = :estado")
+    List<Campanha> findAllByEstado(@Param("estado") String estado);
+
 }
 

@@ -1,8 +1,3 @@
-function authHeaders(isJson = true) {
-	const response = { Authorization: `Bearer ${token}` };
-	if (isJson) response['Content-Type'] = 'application/json';
-	return response;
-}
 const usuario  = JSON.parse(localStorage.getItem('usuario') || '{}');
 const userId   = usuario.id;
 const token = localStorage.getItem('token') || '';
@@ -11,7 +6,6 @@ if (!token || !userId) {
   window.location.href = 'login.html';
   throw new Error('Não autenticado');
 }
-
 
 function authHeaders(json = true) {
   const headers = { Authorization: `Bearer ${token}` };
@@ -51,8 +45,10 @@ async function fetchUserData() {
 
     if (data.midia) {
       const src = `data:${data.midiaContentType};base64,${data.midia}`;
-      document.getElementById('profileImg').src    = src;
-      document.getElementById('avatarIcon').src     = src;
+      document.getElementById('profileImg').src = src;
+      document.getElementById('avatarIcon').src = src;
+      // Atualiza o header após carregar do servidor
+      window.dispatchEvent(new CustomEvent('user-avatar-updated', { detail: { src } }));
     }
 
     document.getElementById('inputCpf').value         = data.cpfOuCnpj || '';
@@ -156,6 +152,7 @@ function previewProfileImage(e) {
   const url = URL.createObjectURL(file);
   document.getElementById('avatarIcon').src = url;
   document.getElementById('profileImg').src  = url;
+  window.dispatchEvent(new CustomEvent('user-avatar-updated', { detail: { src: url } }));
 }
 
 function updateUser() {
@@ -201,6 +198,13 @@ async function updateUserWithPassword() {
     }
     fecharModalConfirmSenha();
     fecharModal();
+
+    const avatar = document.getElementById('inputAvatar');
+    if (avatar.files.length) {
+      const url = URL.createObjectURL(avatar.files[0]);
+      window.dispatchEvent(new CustomEvent('user-avatar-updated', { detail: { src: url } }));
+    }
+
     fetchUserData();
   } catch (err) {
     console.error('Erro updateUserWithPassword:', err);

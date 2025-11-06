@@ -23,10 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,6 +35,7 @@ public class CampanhaServiceImpl implements CampanhaService {
     private final CampanhaMapper campanhaMapper;
     private final UserMapper userMapper;
     private final EmailService emailService;
+    private final GeocodingService geocodingService;
 
     @Override
     @Transactional
@@ -55,8 +53,17 @@ public class CampanhaServiceImpl implements CampanhaService {
                 throw new RuntimeException("Erro ao processar imagem de capa", e);
             }
         }
+
+        double[] coords = geocodingService.obterCoordenadas(
+                campanhaRequestDTO.getEndereco().getLogradouro(),
+                campanhaRequestDTO.getEndereco().getCidade(),
+                campanhaRequestDTO.getEndereco().getEstado()
+        );
+
         Endereco endereco = campanha.getEndereco();
         endereco.setCampanha(campanha);
+        endereco.setLatitude(coords[0]);
+        endereco.setLongitude(coords[1]);
 
         campanha.setAtivo(true);
 
@@ -227,5 +234,44 @@ public class CampanhaServiceImpl implements CampanhaService {
     private Campanha findCampanhaById(Long id) {
         return campanhaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campanha não encontrada com o ID: " + id));
+    }
+
+    public List<CampanhaDistanciaResponseDTO> buscarCampanhasProximas(double latUser, double lonUser) {
+
+        List<Campanha> campanhas = campanhaRepository.findAll();
+
+        return campanhas.stream()
+                .filter(c -> c.getEndereco() != null)
+                .filter(c -> {
+                    Double lat = c.getEndereco().getLatitude();
+                    Double lon = c.getEndereco().getLongitude();
+                    return lat != null && lon != null && lat != 0 && lon != 0;
+                })
+                .map(c -> {
+                    double dist = calcularDistancia(latUser, lonUser,
+                            c.getEndereco().getLatitude(),
+                            c.getEndereco().getLongitude());
+                    return new CampanhaDistanciaResponseDTO(c.getId(),
+                            c.getTitulo(),
+                            c.getDescricao(),
+                            c.getCategoriaCampanha(),
+                            c.getEndereco().getCidade(),
+                            c.getEndereco().getEstado(),
+                            dist);
+                })
+                .filter(dto -> dto.getDistancia() > 0 && dto.getDistancia() <= 800) // limite de 800km
+                .sorted(Comparator.comparingDouble(CampanhaDistanciaResponseDTO::getDistancia))
+                .toList();
+    }
+
+    private double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {
+        final int RAIO_TERRA_KM = 6371;
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLon = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return RAIO_TERRA_KM * c;
     }
 }

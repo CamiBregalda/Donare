@@ -113,6 +113,20 @@ async function loadGlobalHeader() {
 	const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
 	const userId = usuario.id;
 
+		// Expor função global e ouvir evento para atualização imediata do avatar no header
+		window.updateHeaderAvatar = (src) => {
+			if (avatar && src) avatar.src = src;
+		};
+		window.addEventListener('user-avatar-updated', (e) => {
+			const src = e?.detail?.src;
+			if (src) window.updateHeaderAvatar(src);
+		});
+		// Fallback: também ouve no document caso algum código dispare por lá
+		document.addEventListener('user-avatar-updated', (e) => {
+			const src = e?.detail?.src;
+			if (src) window.updateHeaderAvatar(src);
+		});
+
 	if (avatar && userId) {
 
 		try {
@@ -151,9 +165,9 @@ async function loadGlobalHeader() {
 			}
 		});
 
-		const btnVerPerfil = dropdown?.querySelector('#ver-perfil');
-		const btnEditarPerfil = dropdown?.querySelector('#editar-perfil');
-		const btnLogout = dropdown?.querySelector('#logout');
+			const btnVerPerfil = dropdown?.querySelector('#ver-perfil');
+			const btnEditarPerfil = dropdown?.querySelector('#editar-perfil');
+			let btnLogout = dropdown?.querySelector('#logout'); // <— era const, precisa ser let
 
 		btnVerPerfil?.addEventListener('click', () => {
 			const tipoUsuario = parseInt(usuario.tipoUsuario, 10);

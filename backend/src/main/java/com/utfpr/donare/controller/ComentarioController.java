@@ -1,5 +1,6 @@
 package com.utfpr.donare.controller;
 
+import com.utfpr.donare.dto.ComentarioDeleteRequestDTO;
 import com.utfpr.donare.dto.ComentarioRequestDTO;
 import com.utfpr.donare.dto.ComentarioResponseDTO;
 import com.utfpr.donare.dto.ErrorResponse;
@@ -125,9 +126,9 @@ public class ComentarioController {
                             schema = @Schema(implementation = ErrorResponse.class)))
     })
     @DeleteMapping("/comentarios/{idComentario}")
-    public ResponseEntity<Void> deleteComentario(@PathVariable Long idComentario, @Valid @RequestBody ComentarioRequestDTO comentarioRequestDTO) {
+    public ResponseEntity<Void> deleteComentario(@PathVariable Long idComentario, @Valid @RequestBody ComentarioDeleteRequestDTO comentarioDeleteRequestDTO) {
 
-        comentarioService.deleteComentario(idComentario, comentarioRequestDTO);
+        comentarioService.deleteComentario(idComentario, comentarioDeleteRequestDTO);
         return ResponseEntity.noContent().build();
     }
 }

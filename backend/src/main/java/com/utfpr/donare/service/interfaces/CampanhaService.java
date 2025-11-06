@@ -1,5 +1,6 @@
 package com.utfpr.donare.service.interfaces;
 
+import com.utfpr.donare.dto.CampanhaDistanciaResponseDTO;
 import com.utfpr.donare.dto.CampanhaRequestDTO;
 import com.utfpr.donare.dto.CampanhaResponseDTO;
 import com.utfpr.donare.dto.UserResponseDTO;
@@ -25,4 +26,6 @@ public interface CampanhaService {
     String getCoverImageContentType(Long id);
 
     List<UserResponseDTO> listVolunteersByCampaign(Long id);
+
+    List<CampanhaDistanciaResponseDTO> buscarCampanhasProximas(double latUser, double lonUser);
 }

@@ -51,6 +51,18 @@ public class UserService implements UserDetailsService {
             throw new BadRequestException("O CPF/CNPJ '" + dto.getCpfOuCnpj() + "' já está cadastrado.");
         }
 
+        if(dto.getCpfOuCnpj().length() == 11){
+            verifyCpfFormatAndThrowException(dto);
+        }
+        else if(dto.getCpfOuCnpj().length() == 14){
+            verifyCnpjFormatAndThrowException(dto);
+        }
+        else {
+            throw new BadRequestException("O CPF/CNPJ " + dto.getCpfOuCnpj() + "está com tamanho incorreto.");
+        }
+
+        verifyEmailFormatAndThrowException(dto);
+
         if (dto.getGoogleId() == null || dto.getGoogleId().isEmpty()){
             if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
                 throw new BadRequestException("A senha é obrigatória quando não houver googleId.");
@@ -95,6 +107,18 @@ public class UserService implements UserDetailsService {
 
         verifyEmailInUseAndThowException(id, dto);
         verifyCpfCnpjInUseAndThrowException(id, dto, user);
+
+        if(dto.getCpfOuCnpj().length() == 11){
+            verifyCpfFormatAndThrowException(dto);
+        }
+        else if(dto.getCpfOuCnpj().length() == 14){
+            verifyCnpjFormatAndThrowException(dto);
+        }
+        else {
+            throw new BadRequestException("O CPF/CNPJ " + dto.getCpfOuCnpj() + "está com tamanho incorreto.");
+        }
+
+        verifyEmailFormatAndThrowException(dto);
 
         user.update(dto);
 
@@ -158,7 +182,7 @@ public class UserService implements UserDetailsService {
         user.setNome(dto.getNome());
     }
 
-    private void verifyCpfFormatAndThrowException(Long id, UserRequestDTO dto, User user){
+    private void verifyCpfFormatAndThrowException(UserRequestDTO dto){
 
             String cpf = dto.getCpfOuCnpj().replace(".", "").replace("-", "");
 
@@ -167,7 +191,7 @@ public class UserService implements UserDetailsService {
             }
 
             if (cpf.length() != 11) {
-                throw new BadRequestException("O CPF " + dto.getCpfOuCnpj() + "está incorreto.");
+                throw new BadRequestException("O CPF " + dto.getCpfOuCnpj() + "está com tamanho incorreto.");
             }
 
             int[] multiplicadores1 = {10, 9, 8, 7, 6, 5, 4, 3, 2};
@@ -187,15 +211,13 @@ public class UserService implements UserDetailsService {
             resto = soma % 11;
             int digito2 = resto < 2 ? 0 : 11 - resto;
 
-            if(digito1 == Integer.parseInt(cpf.substring(9, 10)) && digito2 == Integer.parseInt(cpf.substring(10))){
-                user.setCpfOuCnpj(dto.getCpfOuCnpj());
+            if(!(digito1 == Integer.parseInt(cpf.substring(9, 10)) && digito2 == Integer.parseInt(cpf.substring(10)))){
+                throw new BadRequestException("O CPF " + dto.getCpfOuCnpj() + " está no formato inválido.");
             }
-            else {
-                throw new BadRequestException("O CPF " + dto.getCpfOuCnpj() + "está no formato inválido.");
-            }
+
     }
 
-    private void verifyCnpjFormatAndThrowException(Long id, UserRequestDTO dto, User user) {
+    private void verifyCnpjFormatAndThrowException(UserRequestDTO dto) {
         String cnpj = dto.getCpfOuCnpj();
 
         if (cnpj == null) {
@@ -205,7 +227,7 @@ public class UserService implements UserDetailsService {
         cnpj = cnpj.replaceAll("[^0-9]", "");
 
         if (cnpj.length() != 14 || cnpj.chars().distinct().count() == 1) {
-            throw new BadRequestException("O CNPJ " + dto.getCpfOuCnpj() + " está incorreto.");
+            throw new BadRequestException("O CNPJ " + dto.getCpfOuCnpj() + " está com tamanho incorreto.");
         }
 
         int[] multiplicadores1 = {5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2};
@@ -227,10 +249,8 @@ public class UserService implements UserDetailsService {
         resto = soma % 11;
         int digito2 = resto < 2 ? 0 : 11 - resto;
 
-        if (digito1 == Character.getNumericValue(cnpj.charAt(12)) &&
-                digito2 == Character.getNumericValue(cnpj.charAt(13))) {
-            user.setCpfOuCnpj(dto.getCpfOuCnpj());
-        } else {
+        if (!(digito1 == Character.getNumericValue(cnpj.charAt(12)) &&
+                digito2 == Character.getNumericValue(cnpj.charAt(13)))) {
             throw new BadRequestException("O CNPJ " + dto.getCpfOuCnpj() + " está incorreto.");
         }
     }
@@ -244,7 +264,7 @@ public class UserService implements UserDetailsService {
 
     }
 
-    private void verifyEmailFormatAndThrowException(Long id, UserRequestDTO dto, User user) {
+    private void verifyEmailFormatAndThrowException(UserRequestDTO dto) {
         String email = dto.getEmail();
 
         if (email == null || email.trim().isEmpty()) {
@@ -255,7 +275,6 @@ public class UserService implements UserDetailsService {
             throw new BadRequestException("O e-mail " + email + " está no formato inválido.");
         }
 
-        user.setEmail(email);
     }
 
     public UserResponseDTO findUsuarioById(Long id) {

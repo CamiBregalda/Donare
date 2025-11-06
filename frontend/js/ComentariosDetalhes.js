@@ -44,7 +44,7 @@ async function loadCampaignData() {
             window.location.href = "Login.html";
         }
         // Busca dados da campanha
-        const campResponse = await fetch(`http://localhost:8080/campanhas/${campanhaId}`, {
+        const campResponse = await fetch(`${API_BASE}/campanhas/${campanhaId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -64,9 +64,8 @@ async function loadCampaignData() {
         document.getElementById('campaignEndDate').textContent = formatDateBr(campData.dt_fim);
         document.getElementById('campaignLocation').textContent = enderecoStr || '';
         document.getElementById('campaignCategory').textContent = campData.categoriaCampanha || '';
-        document.getElementById('campaignCertificate').textContent = campData.tipoCertificado || '';
 
-        const imgResp = await fetch(`http://localhost:8080/campanhas/${idCampanha}/imagem`, {
+        const imgResp = await fetch(`${API_BASE}/campanhas/${idCampanha}/imagem`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
