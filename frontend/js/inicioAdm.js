@@ -123,13 +123,6 @@ class APIService {
         return await response.json();
     }
 
-    static async getCertificados() {
-        const response = await fetch(`${API_CONFIG.baseURL}/campanhas/certificados`, {
-            headers: authHeaders(false)
-        });
-        if (!response.ok) throw new Error('Erro ao carregar certificados');
-        return await response.json();
-    }
 }
 
 class APIServiceNecessidades {
@@ -214,7 +207,6 @@ class GerenciadorCampanhas {
                     urlImagem: c.imagemCapa,
                     status: this.determinarStatus(c.dt_fim),
                     necessidades: necessidades,
-                    certificados: c.tipoCertificado || '',
                     categoria: c.categoriaCampanha || '',
                     descricao: c.descricao || ''
                 };
@@ -509,7 +501,6 @@ function obterDadosFormulario() {
             cep: document.getElementById('cep').value.trim()
         },
         necessidades: obterNecessidadesJSON(),
-        certificados: document.getElementById('certificados').value,
         categoria: document.getElementById('categoriaCampanha').value,
         dataInicio: document.getElementById('dataInicio').value,
         dataFinal: document.getElementById('dataFinal').value,
@@ -568,7 +559,6 @@ function preencherFormulario(campanha) {
     document.getElementById('dataInicio').value = campanha.dataInicio || '';
     document.getElementById('dataFinal').value = campanha.dataFim || '';
     document.getElementById('descricaoCampanha').value = campanha.descricao || '';
-    document.getElementById('certificados').value = campanha.certificados || '';
     document.getElementById('categoriaCampanha').value = campanha.categoria || '';
     
     if (campanha.urlImagem) {
@@ -633,7 +623,6 @@ async function salvarCampanha() {
             descricao: dados.descricao,
             categoriaCampanha: dados.categoria,
             endereco: dados.endereco,
-            tipoCertificado: dados.certificados,
             dtInicio: new Date(dados.dataInicio + 'T00:00:00.000Z').toISOString(),
             dt_fim: new Date(dados.dataFinal + 'T00:00:00.000Z').toISOString(),
             status: "ativa"
@@ -677,7 +666,6 @@ async function salvarEdicaoCampanha(id) {
             descricao: dados.descricao,
             categoriaCampanha: dados.categoria,
             endereco: dados.endereco,
-            tipoCertificado: dados.certificados,
             dtInicio: new Date(dados.dataInicio + 'T00:00:00.000Z').toISOString(),
             dt_fim: new Date(dados.dataFinal + 'T00:00:00.000Z').toISOString(),
             status: "ativa"
@@ -751,9 +739,7 @@ function limparFormulario() {
         if (elemento) elemento.value = '';
     });
     
-    const selectCertificados = document.getElementById('certificados');
     const selectCategoria = document.getElementById('categoriaCampanha');
-    if (selectCertificados) selectCertificados.selectedIndex = 0;
     if (selectCategoria) selectCategoria.selectedIndex = 0;
     
     const uploadArea = document.querySelector('.upload-area');
@@ -802,9 +788,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     gerenciadorCampanhas = new GerenciadorCampanhas();
     configurarValidacoesDatas();   
-    carregarCategorias();
-    carregarCertificados();
-    
+    carregarCategorias();    
     
     const inputArquivo = document.getElementById('arquivoImagem');
     const uploadArea = document.querySelector('.upload-area');
@@ -842,21 +826,3 @@ async function carregarCategorias() {
     }
 }
 
-async function carregarCertificados() {
-    try {
-        const certificados = await APIService.getCertificados();
-        const selectCertificados = document.getElementById('certificados');
-        
-        selectCertificados.innerHTML = '<option value="">Selecione um certificado</option>';
-        
-        certificados.forEach(certificado => {
-            const option = document.createElement('option');
-            option.value = certificado;
-            option.textContent = certificado;
-            selectCertificados.appendChild(option);
-        });
-        
-    } catch (error) {
-        console.log('Erro ao carregar certificados:', error.message);
-    }
-}

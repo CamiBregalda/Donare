@@ -104,7 +104,7 @@ async function fetchInstitutionCampaigns(idUsuario) {
 
         campaigns.forEach(async campaign => {
             // Busca a imagem da campanha
-            let imgSrc = 'https://via.placeholder.com/300x200?text=Campanha';
+            //let imgSrc = 'https://via.placeholder.com/300x200?text=Campanha';
             try {
                 const imgResp = await fetch(`${API_BASE}/campanhas/${campaign.id}/imagem`, {
                     headers: authHeaders(false)
@@ -119,7 +119,7 @@ async function fetchInstitutionCampaigns(idUsuario) {
             card.className = 'campaign-card';
             card.innerHTML = `
                 <div class="campaign-card-image-container">
-                    <img src="${imgSrc}" alt="${campaign.titulo}">
+                    <img src="./img/LogoEscritaDonare.png" alt="${campaign.titulo}">
                     <span class="campaign-card-title-on-image">${campaign.titulo}</span>
                 </div>
                 <div class="campaign-card-body">

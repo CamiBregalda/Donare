@@ -25,7 +25,6 @@ async function renderizaCampanhas() {
         }
 
         const cidadeUsuario = usuario?.idEndereco?.cidade;
-        const estadoUsuario = usuario?.idEndereco?.estado || usuario?.endereco?.estado || '';
 
         const response = await fetch(`${API_BASE}/campanhas`, {
             headers: authHeaders(false)
@@ -67,7 +66,7 @@ async function renderizaCampanhas() {
         // 2) Em paralelo, atualiza listas laterais (seguindo e proximidade)
         atualizarListaCampanhasSeguidas();
 
-        carregaCampanhasProximas(usuario, campanhasAtivas, estadoUsuario, cidadeUsuario).catch(err => {
+        carregaCampanhasProximas(usuario, campanhasAtivas, cidadeUsuario).catch(err => {
             console.warn('[proximas] erro:', err);
             atualizarListaCampanhasProximas([]);
         });
@@ -80,7 +79,7 @@ async function renderizaCampanhas() {
     }
 }
 
-async function carregaCampanhasProximas(usuario, campanhasAtivas, estadoUsuario, cidadeUsuario) {
+async function carregaCampanhasProximas(usuario, campanhasAtivas, cidadeUsuario) {
     try {
         const coords = await obterCoordenadasUsuario();
 
@@ -89,7 +88,7 @@ async function carregaCampanhasProximas(usuario, campanhasAtivas, estadoUsuario,
         if (coords) {
             try {
                 const r = await fetch(
-                    `${API_BASE}/campanhas/proximas?lat=${encodeURIComponent(coords.latitude)}&lon=${encodeURIComponent(coords.longitude)}&estado=${encodeURIComponent(estadoUsuario || '')}`,
+                    `${API_BASE}/campanhas/proximas?lat=${encodeURIComponent(coords.latitude)}&lon=${encodeURIComponent(coords.longitude)}`,
                     {
                         headers: { Authorization: `Bearer ${localStorage.getItem('token') || ''}` }
                     }
@@ -100,13 +99,18 @@ async function carregaCampanhasProximas(usuario, campanhasAtivas, estadoUsuario,
             } catch (e) {
                 console.warn('[proximas] falha ao buscar por coordenadas:', e);
             }
-        }
+        } else {
 
-        if ((!Array.isArray(campanhasProximasFiltradas) || campanhasProximasFiltradas.length === 0) && cidadeUsuario) {
+            try {
+                if ((!Array.isArray(campanhasProximasFiltradas) || campanhasProximasFiltradas.length === 0) && cidadeUsuario) {
             campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
                 const cidadeCampanha = campanha.endereco?.cidade;
                 return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
             });
+        }
+            } catch (e) {
+                console.warn('[proximas] falha ao buscar todas as campanhas:', e);
+            }
         }
 
         atualizarListaCampanhasProximas(campanhasProximasFiltradas);
@@ -144,7 +148,7 @@ async function obterCoordenadasUsuario() {
 async function carregarImagem(campanhaId, imgElement) {
     const token = (localStorage.getItem('token') || '').trim();
     try {
-        const response = await fetch(`http://localhost:8080/campanhas/${campanhaId}/imagem`, {
+        const response = await fetch(`${API_BASE}/campanhas/${campanhaId}/imagem`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         if (response.ok) {
