@@ -13,51 +13,67 @@ let main;
 let campanhasSeguidasLista;
 let campanhasProximasLista;
 
-async function renderizaCampanhas() {
+
+export async function renderizaCampanhas(listaFiltrada = null) {
     if (!main) {
         console.error('[renderizaCampanhas] main inexistente, abortando');
         return;
     }
+
     try {
-        const usuario = await fetchData();
-        if (!usuario) {
-            console.warn('[renderizaCampanhas] usuário não autenticado');
+
+        let exibirCampanhas = [];
+
+        if (listaFiltrada && Array.isArray(listaFiltrada)) {
+            exibirCampanhas = listaFiltrada
+        } else {
+            const usuario = await fetchData();
+            if (!usuario) {
+                console.warn('[renderizaCampanhas] usuário não autenticado');
+                return;
+            }
+
+            const cidadeUsuario = usuario?.idEndereco?.cidade;
+
+            const response = await fetch(`${API_BASE}/campanhas`, {
+                headers: authHeaders(false)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Erro HTTP! Status: ${response.status}`);
+            }
+
+            todasCampanhas = await response.json();
+
+            const hoje = new Date();
+            const campanhasAtivas = todasCampanhas.filter(c => {
+                const inicio = new Date(c.dtInicio);
+                const fim = new Date(c.dt_fim);
+                return inicio <= hoje && fim >= hoje;
+            });
+
+            exibirCampanhas = campanhasAtivas;
+
+            let campanhasProximasFiltradas = [];
+            if (cidadeUsuario) {
+                campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
+                    const cidadeCampanha = campanha.endereco?.cidade;
+                    return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
+                });
+            }
+
+            atualizarListaCampanhasProximas(campanhasProximasFiltradas);
+            await atualizarListaCampanhasSeguidas();
+        }
+
+        main.innerHTML = '';
+
+        if (!exibirCampanhas.length) {
+            main.innerHTML = '<p>Nenhuma campanha encontrada.</p>';
             return;
         }
 
-        const cidadeUsuario = usuario?.idEndereco?.cidade;
-        const token = (localStorage.getItem('token') || '').trim();
-
-        const response = await fetch(`${API_BASE}/campanhas`, {
-            headers: authHeaders(false)
-        });
-
-        if (!response.ok) {
-            throw new Error(`Erro HTTP! Status: ${response.status}`);
-        }
-
-        todasCampanhas = await response.json();
-
-        const hoje = new Date();
-        const campanhasAtivas = todasCampanhas.filter(c => {
-            const inicio = new Date(c.dtInicio);
-            const fim = new Date(c.dt_fim);
-            return inicio <= hoje && fim >= hoje;
-        });
-
-        let campanhasProximasFiltradas = [];
-        if (cidadeUsuario) {
-            campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
-                const cidadeCampanha = campanha.endereco?.cidade;
-                return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
-            });
-        }
-
-        atualizarListaCampanhasProximas(campanhasProximasFiltradas);
-        await atualizarListaCampanhasSeguidas();
-
-        main.innerHTML = '';
-        const categoriasCampanhas = campanhasAtivas.reduce((acc, campanha) => {
+        const categoriasCampanhas = exibirCampanhas.reduce((acc, campanha) => {
             const categoria = campanha.categoriaCampanha || 'Outros';
             (acc[categoria] = acc[categoria] || []).push(campanha);
             return acc;
@@ -84,8 +100,6 @@ async function renderizaCampanhas() {
     } catch (error) {
         console.error('[renderizaCampanhas] erro:', error);
         if (main) main.innerHTML = '<p>Não foi possível carregar as campanhas.</p>';
-        if (campanhasSeguidasLista) campanhasSeguidasLista.innerHTML = '<li>Erro ao carregar</li>';
-        if (campanhasProximasLista) campanhasProximasLista.innerHTML = '<li>Erro ao carregar</li>';
     }
 }
 
@@ -281,6 +295,7 @@ function onMainClick(event) {
 
 // Inicialização segura
 document.addEventListener('DOMContentLoaded', () => {
+
     main = document.querySelector('main');
     campanhasSeguidasLista = document.getElementById('campanhas-seguidas');
     campanhasProximasLista = document.getElementById('campanhas-proximas');
@@ -293,3 +308,5 @@ document.addEventListener('DOMContentLoaded', () => {
     main.addEventListener('click', onMainClick);
     renderizaCampanhas();
 });
+
+window.renderizaCampanhas = renderizaCampanhas;
