@@ -77,40 +77,79 @@ function decodeJWT(token) {
     return JSON.parse(jsonPayload);
 }
 
-window.handleCredentialResponse = async function (response) {
-    
-     console.log("Encoded JWT ID token: " + response.credential);
+window.handleCredentialResponse = function (response) {
 
-        const responsePayload = decodeJWT(response.credential);
+    console.log("Entrou");
 
-        console.log("Decoded JWT ID token fields:");
-        console.log("  Full Name: " + responsePayload.name);
-        console.log("  Given Name: " + responsePayload.given_name);
-        console.log("  Family Name: " + responsePayload.family_name);
-        console.log("  Unique ID: " + responsePayload.sub);
-        console.log("  Profile image URL: " + responsePayload.picture);
-        console.log("  Email: " + responsePayload.email);
-    
-    /*try {
-        const userData = decodeJWT(response.credential);    
-        console.log('Login Google:', userData);
+    const googleToken = response.credential;
+    const responsePayload = decodeJWT(googleToken);
 
-        const res = await fetch(`${API_BASE}/usuarios/google-auth`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ token: response.credential })
+    if (!responsePayload) {
+        alert('Falha ao ler os dados de login do Google.');
+        return;
+    }
+
+    const emailGoogle = responsePayload.email;
+    const googleId = responsePayload.sub;
+
+    const dadosParaCadastro = {
+        nome: responsePayload.name,
+        email: emailGoogle,
+        googleId: googleId,
+    };
+    localStorage.setItem('cadastro_google_dados', JSON.stringify(dadosParaCadastro));
+
+    console.log("Decoded JWT ID token fields:");
+    console.log("  Full Name: " + responsePayload.name);
+    console.log("  Given Name: " + responsePayload.given_name);
+    console.log("  Family Name: " + responsePayload.family_name);
+    console.log("  Unique ID: " + responsePayload.sub);
+    console.log("  Profile image URL: " + responsePayload.picture);
+    console.log("  Email: " + responsePayload.email);
+
+    fetch(`${API_BASE}/usuarios/authenticate/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email: emailGoogle,
+            googleId: googleId
+        })
+    })
+        .then(res => {
+            if (res.status === 404) {
+                console.log('Usuário não encontrado. Redirecionando para cadastro complementar.');
+                window.location.href = '../pages/cadastroGoogle.html';
+                return null;
+            }
+
+            if (!res.ok) {
+                return res.json().then(errorData => {
+                    throw new Error(`Erro de autenticação com o Google. Status: ${res.status}`);
+                });
+            }
+
+            return res.text();
+        })
+        .then(token => {
+            if (!token) {
+                return;
+            }
+
+            localStorage.setItem('token', token);
+            localStorage.removeItem('cadastro_google_dados');
+
+            const userData = decodeJWT(token)
+
+            localStorage.setItem('usuario', JSON.stringify(userData));
+
+            if (userData && userData.tipoUsuario == 2) {
+                window.location.href = '../pages/inicioAdm.html';
+            } else {
+                window.location.href = '../pages/inicio.html';
+            }
+        })
+        .catch(error => {
+            console.error('Erro no login com Google:', error);
+            alert('Falha ao entrar com Google. Tente novamente.');
         });
-
-        if (!res.ok) throw new Error('Falha ao autenticar com Google');
-
-        const backendToken = await res.text();
-        localStorage.setItem('token', backendToken);
-        localStorage.setItem('usuario', JSON.stringify(userData));
-
-        window.location.href = '../pages/inicio.html';
-    } catch (error) {
-        console.error('Erro no login com Google:', error);
-        alert('Falha ao entrar com Google.');
-    }*/
-
 };
