@@ -24,7 +24,6 @@ form.addEventListener('submit', async function (e) {
     };
 
     try {
-        // Autenticação
         const response = await fetch(`${API_BASE}/usuarios/authenticate`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -39,7 +38,6 @@ form.addEventListener('submit', async function (e) {
         const token = await response.text();
         localStorage.setItem('token', token);
 
-        // Busca dados do usuário autenticado
         const userDataResponse = await fetch(`${API_BASE}/usuarios/email/${email}`, {
             headers: authHeaders(false)
         });
@@ -64,3 +62,94 @@ form.addEventListener('submit', async function (e) {
         btnSubmit.disabled = false;
     }
 });
+
+function decodeJWT(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+        atob(base64)
+            .split('')
+            .map(function (c) {
+              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join('')
+    );
+    return JSON.parse(jsonPayload);
+}
+
+window.handleCredentialResponse = function (response) {
+
+    console.log("Entrou");
+
+    const googleToken = response.credential;
+    const responsePayload = decodeJWT(googleToken);
+
+    if (!responsePayload) {
+        alert('Falha ao ler os dados de login do Google.');
+        return;
+    }
+
+    const emailGoogle = responsePayload.email;
+    const googleId = responsePayload.sub;
+
+    const dadosParaCadastro = {
+        nome: responsePayload.name,
+        email: emailGoogle,
+        googleId: googleId,
+    };
+    localStorage.setItem('cadastro_google_dados', JSON.stringify(dadosParaCadastro));
+
+    console.log("Decoded JWT ID token fields:");
+    console.log("  Full Name: " + responsePayload.name);
+    console.log("  Given Name: " + responsePayload.given_name);
+    console.log("  Family Name: " + responsePayload.family_name);
+    console.log("  Unique ID: " + responsePayload.sub);
+    console.log("  Profile image URL: " + responsePayload.picture);
+    console.log("  Email: " + responsePayload.email);
+
+    fetch(`${API_BASE}/usuarios/authenticate/google`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            email: emailGoogle,
+            googleId: googleId
+        })
+    })
+        .then(res => {
+            if (res.status === 404) {
+                console.log('Usuário não encontrado. Redirecionando para cadastro complementar.');
+                window.location.href = '../pages/cadastroGoogle.html';
+                return null;
+            }
+
+            if (!res.ok) {
+                return res.json().then(errorData => {
+                    throw new Error(`Erro de autenticação com o Google. Status: ${res.status}`);
+                });
+            }
+
+            return res.text();
+        })
+        .then(token => {
+            if (!token) {
+                return;
+            }
+
+            localStorage.setItem('token', token);
+            localStorage.removeItem('cadastro_google_dados');
+
+            const userData = decodeJWT(token)
+
+            localStorage.setItem('usuario', JSON.stringify(userData));
+
+            if (userData && userData.tipoUsuario == 2) {
+                window.location.href = '../pages/inicioAdm.html';
+            } else {
+                window.location.href = '../pages/inicio.html';
+            }
+        })
+        .catch(error => {
+            console.error('Erro no login com Google:', error);
+            alert('Falha ao entrar com Google. Tente novamente.');
+        });
+};

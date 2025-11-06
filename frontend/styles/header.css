@@ -1,155 +1,164 @@
 .navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #7DBFA8;
-  padding: 0.5rem 2rem;
-  height: 70px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	background: #7DBFA8;
+	padding: 0.5rem 2rem;
+	height: 70px;
 }
 
 .logo img {
-  cursor: pointer;
-  height: 150px;
-  object-fit: contain;
+	cursor: pointer;
+	height: 150px;
+	object-fit: contain;
 }
 
 .dropdown {
-  display: none;
-  position: absolute;
-  right: 1rem;
-  top: 4rem;
-  background-color: #f2f2f2;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 5px;
-  z-index: 10;
+	display: none;
+	position: absolute;
+	right: 1rem;
+	top: 4rem;
+	background-color: #f2f2f2;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	padding: 5px;
+	z-index: 10;
 }
 
 .dropdown.aberto {
-  display: block !important;
+	display: block !important;
 }
 
 .dropdown>button {
-  width: 100%;
-  border-radius: 8px;
+	width: 100%;
+	border-radius: 8px;
 }
 
 #ver-perfil {
-  cursor: pointer;
-  background: #f2f2f2;
-  border: none;
-  padding: 5px 10px;
+	cursor: pointer;
+	background: #f2f2f2;
+	border: none;
+	padding: 5px 10px;
 }
 
 #ver-perfil:hover {
-  background-color: #e0e0e0;
+	background-color: #e0e0e0;
 }
 
 #logout {
-  cursor: pointer;
-  background: #f2f2f2;
-  border: none;
-  padding: 5px 10px;
+	cursor: pointer;
+	background: #f2f2f2;
+	border: none;
+	padding: 5px 10px;
 }
 
 #logout:hover {
-  color: #f2f2f2;
-  background-color: rgb(196, 60, 60);
-}
-
-.search-container {
-  position: relative;
-  flex: 1;
-  max-width: 400px;
-  margin: 0 2rem;
-  align-items: center;
-}
-
-.search-icon {
-  position: absolute;
-  top: 50%;
-  left: 12px;
-  transform: translateY(-50%);
-  color: #4A6D7C;
-}
-
-.user-profile {
-  position: relative;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  cursor: pointer;
-  flex-shrink: 0;
+	color: #f2f2f2;
+	background-color: rgb(196, 60, 60);
 }
 
 .user-details h2 {
-  margin-left: -1%;
-}
-
-.user-avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
-}
-
-.search-container {
-  position: relative;
-  flex: 1;
-  max-width: 400px;
-  margin: 0 2rem;
-}
-
-.search-icon {
-  position: absolute;
-  top: 50%;
-  left: 12px;
-  transform: translateY(-50%);
-  color: #4A6D7C;
-}
-
-.search-bar {
-  width: 100%;
-  padding: 0.5rem 1rem 0.5rem 2.5rem;
-  border-radius: 20px;
-  border: none;
+	margin-left: -1%;
 }
 
 .user-profile {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  overflow: hidden;
-  cursor: pointer;
-  flex-shrink: 0;
+	width: 50px;
+	height: 50px;
+	border-radius: 50%;
+	overflow: hidden;
+	cursor: pointer;
+	flex-shrink: 0;
 }
 
 .user-avatar {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 50%;
-  transition: transform 0.3s ease;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border-radius: 50%;
+	transition: transform 0.3s ease;
 }
 
 .user-avatar:hover {
-  transform: scale(1.05);
+	transform: scale(1.05);
+}
+
+.search-bar {
+	display: none !important;
+	display: flex;
+	align-items: center;
+	width: 50%;
+}
+
+#search-input {
+	flex-grow: 1;
+	padding: 8px;
+	border: none;
+	border-radius: 5px 0 0 5px;
+	font-size: 1rem;
+}
+
+input:focus {
+	outline: 1px solid #308567;
+}
+
+#search-button {
+	padding: 9.2px 12px;
+	background-color: #A3D9B1;
+	color: white;
+	border: 1px solid #308567;
+	border-radius: 0 5px 5px 0;
+	cursor: pointer;
+}
+
+#search-button:hover {
+	background-color: #7DBFA8;
+}
+
+.pagina-inicial .search-bar {
+	display: flex !important;
 }
 
 @media (max-width: 768px) {
-  .logo img {
-    height: 120px;
-  }
+	.navbar {
+		padding: 0.5rem;
+	}
 
-  .user-profile {
-    width: 40px;
-    height: 40px;
-  }
+	.search-bar {
+		width: 60%;
+	}
+
+	.logo img {
+		height: 120px;
+	}
+
+	.user-profile {
+		width: 40px;
+		height: 40px;
+	}
 }
 
 @media (max-width: 480px) {
-  .logo img {
-    height: 100px;
-  }
+
+	.navbar {
+		padding: 0.2rem;
+	}
+
+	#search-input {
+		flex-grow: 1;
+		padding: 6px;
+		font-size: 0.75rem;
+	}
+
+	#search-button {
+		padding: 7px 8px;
+	}
+
+	.logo img {
+		height: 100px;
+	}
+
+	.user-profile {
+		width: 30px;
+		height: 30px;
+	}
 }

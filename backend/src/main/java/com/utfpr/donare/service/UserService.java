@@ -12,6 +12,7 @@ import com.utfpr.donare.mapper.UserMapper;
 import com.utfpr.donare.repository.CampanhaRepository;
 import com.utfpr.donare.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -19,9 +20,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,10 +63,23 @@ public class UserService implements UserDetailsService {
 
         verifyEmailFormatAndThrowException(dto);
 
-        Endereco endereco = enderecoMapper.toEndereco(dto.getEndereco());
-        User user = new User(dto, passwordEncoder.encode(dto.getPassword()), endereco, TipoUsuario.valueOfCodigo(dto.getTipoUsuario()));
+        if (dto.getGoogleId() == null || dto.getGoogleId().isEmpty()){
+            if (dto.getPassword() == null || dto.getPassword().isEmpty()) {
+                throw new BadRequestException("A senha é obrigatória quando não houver googleId.");
+            }
+        }
 
-        endereco.updateUser(user);
+        Endereco endereco = null;
+
+        if(dto.getEndereco() != null) {
+            endereco = enderecoMapper.toEndereco(dto.getEndereco());
+        }
+
+        User user = new User(dto, encodedPassword(dto.getPassword()), endereco, TipoUsuario.valueOfCodigo(dto.getTipoUsuario()));
+
+        if(dto.getEndereco() != null) {
+            endereco.updateUser(user);
+        }
         user.updateUserMidia(midia);
 
         userRepository.save(user);
@@ -147,6 +164,14 @@ public class UserService implements UserDetailsService {
         User updatedUser = userRepository.save(user);
 
         return userMapper.toUserResponseDTO(updatedUser);
+    }
+
+    private String encodedPassword(String password){
+        if (password != null && !password.isEmpty()) {
+            return passwordEncoder.encode(password);
+        }
+
+        return null;
     }
 
     private void verifyCpfCnpjInUseAndThrowException(Long id, UserRequestDTO dto, User user) {
@@ -273,6 +298,27 @@ public class UserService implements UserDetailsService {
         }
 
         return jwtTokenUtil.autenticar(user);
+    }
+
+    public String authenticateUserByGoogleEmail(AuthGoogleRequestDTO authGoogleRequestDTO){
+        Optional<User> existingUser = userRepository.findByEmailAndGoogleId(authGoogleRequestDTO.getEmail(), authGoogleRequestDTO.getGoogleId());
+
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+            return jwtTokenUtil.autenticar(user);
+        }
+
+        Optional<User> userByEmail = userRepository.findByEmail(authGoogleRequestDTO.getEmail());
+
+        if (userByEmail.isPresent()) {
+            User user = userByEmail.get();
+            user.setGoogleId(authGoogleRequestDTO.getGoogleId());
+            userRepository.save(user);
+
+            return jwtTokenUtil.autenticar(user);
+        }
+
+        throw new ResourceNotFoundException("Usuário não encontrado.");
     }
 
     public User findByEmail(String email) {

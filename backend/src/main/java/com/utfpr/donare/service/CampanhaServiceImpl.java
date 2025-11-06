@@ -73,7 +73,7 @@ public class CampanhaServiceImpl implements CampanhaService {
     }
 
     // Atualizar método de filtro para incluir usuário
-    private Specification<Campanha> criarFiltroCampanha(String tipo, String localidade, String usuario) {
+    private Specification<Campanha> criarFiltroCampanha(String tipo, String localidade, String usuario, String titulo) {
         return (root, query, criteriaBuilder) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -86,6 +86,9 @@ public class CampanhaServiceImpl implements CampanhaService {
             if (usuario != null && !usuario.isEmpty()) {
                 predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("organizador")), "%" + usuario.toLowerCase() + "%"));
             }
+            if (titulo != null && !titulo.isEmpty()) {
+                predicates.add(criteriaBuilder.like(criteriaBuilder.lower(root.get("titulo")), "%" + titulo.toLowerCase() + "%"));
+            }
 
             return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
         };
@@ -93,7 +96,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CampanhaResponseDTO> ListCampaignHistory(String tipo, String localidade, String usuario, int page, int size, String sort) {
+    public List<CampanhaResponseDTO> ListCampaignHistory(String tipo, String localidade, String usuario, String titulo, int page, int size, String sort) {
         Sort.Direction direction = Sort.Direction.DESC;
         String property = "dtInicio";
         if (sort != null && !sort.isEmpty()) {
@@ -105,7 +108,7 @@ public class CampanhaServiceImpl implements CampanhaService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, property));
-        Specification<Campanha> spec = criarFiltroCampanha(tipo, localidade, usuario);
+        Specification<Campanha> spec = criarFiltroCampanha(tipo, localidade, usuario, titulo);
         Page<Campanha> campanhasPage = campanhaRepository.findAll(spec, pageable);
 
         return campanhasPage.getContent().stream()
@@ -115,7 +118,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<CampanhaResponseDTO> findCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort) {
+    public List<CampanhaResponseDTO> findCampanhas(String tipo, String localidade, String usuario, String titulo, int page, int size, String sort) {
         Sort.Direction direction = Sort.Direction.DESC;
         String property = "dtInicio";
         if (sort != null && !sort.isEmpty()) {
@@ -128,7 +131,7 @@ public class CampanhaServiceImpl implements CampanhaService {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, property));
 
-        Specification<Campanha> spec = criarFiltroCampanha(tipo, localidade, usuario);
+        Specification<Campanha> spec = criarFiltroCampanha(tipo, localidade, usuario, titulo);
         Specification<Campanha> ativoSpec = (root, query, criteriaBuilder) ->
                 criteriaBuilder.isTrue(root.get("ativo"));
 
@@ -140,7 +143,6 @@ public class CampanhaServiceImpl implements CampanhaService {
                 .map(campanhaMapper::entityToResponseDto)
                 .collect(Collectors.toList());
     }
-
 
     @Override
     @Transactional(readOnly = true)

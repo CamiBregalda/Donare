@@ -7,42 +7,58 @@ function authHeaders(isJson = true) {
     if (isJson) response['Content-Type'] = 'application/json';
     return response;
 }
+
 let todasCampanhas = [];
 let main;
 let campanhasSeguidasLista;
 let campanhasProximasLista;
 
-async function renderizaCampanhas() {
+
+export async function renderizaCampanhas(listaFiltrada = null) {
     if (!main) {
         console.error('[renderizaCampanhas] main inexistente, abortando');
         return;
     }
+
     try {
-        const usuario = await fetchData();
-        if (!usuario) {
-            console.warn('[renderizaCampanhas] usuário não autenticado');
-            return;
-        }
 
-        const cidadeUsuario = usuario?.idEndereco?.cidade;
+        let exibirCampanhas = [];
 
-        const response = await fetch(`${API_BASE}/campanhas`, {
-            headers: authHeaders(false)
-        });
-        if (!response.ok) throw new Error(`Erro HTTP! Status: ${response.status}`);
+        if (listaFiltrada && Array.isArray(listaFiltrada)) {
+            exibirCampanhas = listaFiltrada
+        } else {
+            const usuario = await fetchData();
+            if (!usuario) {
+                console.warn('[renderizaCampanhas] usuário não autenticado');
+                return;
+            }
 
-        todasCampanhas = await response.json();
+            const cidadeUsuario = usuario?.idEndereco?.cidade;
 
-        const hoje = new Date();
-        const campanhasAtivas = todasCampanhas.filter(c => {
-            const inicio = new Date(c.dtInicio);
-            const fim = new Date(c.dt_fim);
-            return inicio <= hoje && fim >= hoje;
-        });
+            const response = await fetch(`${API_BASE}/campanhas`, {
+                headers: authHeaders(false)
+            });
+
+            if (!response.ok) throw new Error(`Erro HTTP! Status: ${response.status}`);
+
+            todasCampanhas = await response.json();
+
+            const hoje = new Date();
+            const campanhasAtivas = todasCampanhas.filter(c => {
+                const inicio = new Date(c.dtInicio);
+                const fim = new Date(c.dt_fim);
+                return inicio <= hoje && fim >= hoje;
+            });
 
         // 1) Renderiza imediatamente as campanhas (não depende de geolocalização)
         main.innerHTML = '';
-        const categoriasCampanhas = campanhasAtivas.reduce((acc, campanha) => {
+
+        if (!exibirCampanhas.length) {
+            main.innerHTML = '<p>Nenhuma campanha encontrada.</p>';
+            return;
+        }
+
+        const categoriasCampanhas = exibirCampanhas.reduce((acc, campanha) => {
             const categoria = campanha.categoriaCampanha || 'Outros';
             (acc[categoria] = acc[categoria] || []).push(campanha);
             return acc;
@@ -54,10 +70,12 @@ async function renderizaCampanhas() {
             titulo.textContent = nomeCategoria;
             const container = document.createElement('div');
             container.className = 'container-campanha';
+
             for (const campanha of categoriasCampanhas[nomeCategoria]) {
                 const card = await criarCardCampanha(campanha);
                 container.appendChild(card);
             }
+
             section.appendChild(titulo);
             section.appendChild(container);
             main.appendChild(section);
@@ -138,7 +156,7 @@ async function obterCoordenadasUsuario() {
             },
             err => {
                 console.warn('[geolocation] erro/negado:', err?.message);
-                resolve(null); 
+                resolve(null);
             },
             options
         );
@@ -334,6 +352,7 @@ function onMainClick(event) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+
     main = document.querySelector('main');
     campanhasSeguidasLista = document.getElementById('campanhas-seguidas');
     campanhasProximasLista = document.getElementById('campanhas-proximas');
@@ -346,3 +365,5 @@ document.addEventListener('DOMContentLoaded', () => {
     main.addEventListener('click', onMainClick);
     renderizaCampanhas();
 });
+
+window.renderizaCampanhas = renderizaCampanhas;

@@ -11,9 +11,9 @@ import java.util.List;
 public interface CampanhaService {
     CampanhaResponseDTO saveCampanha(CampanhaRequestDTO campanhaRequestDTO, MultipartFile imagemCapa, String organizadorEmail);
 
-    List<CampanhaResponseDTO> ListCampaignHistory(String tipo, String localidade, String usuario, int page, int size, String sort);
+    List<CampanhaResponseDTO> ListCampaignHistory(String tipo, String localidade, String usuario, String titulo, int page, int size, String sort);
 
-    List<CampanhaResponseDTO> findCampanhas(String tipo, String localidade, String usuario, int page, int size, String sort);
+    List<CampanhaResponseDTO> findCampanhas(String tipo, String localidade, String usuario, String titulo, int page, int size, String sort);
 
     CampanhaResponseDTO findCampanhaPorId(Long id);
 

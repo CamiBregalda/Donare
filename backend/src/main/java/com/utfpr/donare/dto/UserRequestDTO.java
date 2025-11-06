@@ -37,14 +37,17 @@ public class UserRequestDTO {
     private Integer tipoUsuario;
 
     @Schema(description = "Dados do endereço do usuário.",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotNull(message = "O endereço é obrigatório.")
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     @Valid
     private EnderecoRequestDto endereco;
 
     @Schema(description = "Senha do usuário. Deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais.",
             example = "Senha@123",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "A senha é obrigatória.")
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String password;
+
+    @Schema(description = "Google Id do usuário, deve ser único.",
+            example = "12345678",
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
+    private String googleId;
 }
