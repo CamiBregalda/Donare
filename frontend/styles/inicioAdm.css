@@ -178,7 +178,7 @@ body {
     height: auto;
     max-height: 95%;
     padding: 30px 40px;
-    overflow: hidden;
+    overflow: auto;
 }
 
 .modal-header {
