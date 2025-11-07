@@ -130,24 +130,59 @@ window.handleCredentialResponse = function (response) {
 
             return res.text();
         })
-        .then(token => {
-            if (!token) {
-                return;
-            }
+            .then(token => {
+                    if (!token) return;
 
-            localStorage.setItem('token', token);
-            localStorage.removeItem('cadastro_google_dados');
+                    localStorage.setItem('token', token);
+                    localStorage.removeItem('cadastro_google_dados');
 
-            const userData = decodeJWT(token)
-
-            localStorage.setItem('usuario', JSON.stringify(userData));
-
-            if (userData && userData.tipoUsuario == 2) {
-                window.location.href = '../pages/inicioAdm.html';
-            } else {
-                window.location.href = '../pages/inicio.html';
-            }
-        })
+                    fetch(`${API_BASE}/usuarios/email/${encodeURIComponent(emailGoogle)}`, {
+                        headers: authHeaders(false)
+                    })
+                    .then(respUser => {
+                        if (respUser && respUser.ok) {
+                            return respUser.json();
+                        }
+                        return Promise.reject(new Error('Não foi possível obter dados completos do usuário'));
+                    })
+                    .then(fullUser => {
+                        try {
+                            localStorage.setItem('usuario', JSON.stringify(fullUser));
+                            if (fullUser && fullUser.midia) {
+                                const src = `data:${fullUser.midiaContentType};base64,${fullUser.midia}`;
+                                window.dispatchEvent(new CustomEvent('user-avatar-updated', { detail: { src } }));
+                            }
+                            if (fullUser && fullUser.tipoUsuario == 2) {
+                                window.location.href = '../pages/inicioAdm.html';
+                            } else {
+                                window.location.href = '../pages/inicio.html';
+                            }
+                        } catch (e) {
+                            console.error('Erro ao processar fullUser:', e);
+                            const userData = decodeJWT(token);
+                            localStorage.setItem('usuario', JSON.stringify(userData));
+                            if (userData && userData.tipoUsuario == 2) {
+                                window.location.href = '../pages/inicioAdm.html';
+                            } else {
+                                window.location.href = '../pages/inicio.html';
+                            }
+                        }
+                    })
+                    .catch(err => {
+                        console.warn('Fallback ao buscar usuário completo:', err);
+                        try {
+                            const userData = decodeJWT(token);
+                            localStorage.setItem('usuario', JSON.stringify(userData));
+                            if (userData && userData.tipoUsuario == 2) {
+                                window.location.href = '../pages/inicioAdm.html';
+                            } else {
+                                window.location.href = '../pages/inicio.html';
+                            }
+                        } catch (e) {
+                            console.error('Erro no fallback do login Google:', e);
+                        }
+                    });
+                })
         .catch(error => {
             console.error('Erro no login com Google:', error);
             alert('Falha ao entrar com Google. Tente novamente.');

@@ -112,9 +112,34 @@ async function handleFormSubmit(e) {
         localStorage.setItem('token', token);
         localStorage.removeItem('cadastro_google_dados');
 
+        // Buscar dados completos do usuário após autenticação
+        try {
+            const respUser = await fetch(`${API_BASE}/usuarios/email/${encodeURIComponent(novoUsuario.email)}`, {
+                headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
+            });
+            if (respUser.ok) {
+                const fullUser = await respUser.json();
+                localStorage.setItem('usuario', JSON.stringify(fullUser));
+
+                if (fullUser && fullUser.midia) {
+                    const src = `data:${fullUser.midiaContentType};base64,${fullUser.midia}`;
+                    window.dispatchEvent(new CustomEvent('user-avatar-updated', { detail: { src } }));
+                }
+
+                if (fullUser && fullUser.tipoUsuario == 2) {
+                    window.location.href = '../pages/inicioAdm.html';
+                } else {
+                    window.location.href = '../pages/inicio.html';
+                }
+                return;
+            }
+        } catch (e) {
+            console.error('Falha ao buscar dados completos do usuário após cadastro Google:', e);
+        }
+
+        // Fallback: usa os dados decodificados do token
         const userData = decodeJWT(token)
         localStorage.setItem('usuario', JSON.stringify(userData));
-
         if (userData && userData.tipoUsuario == 2) {
             window.location.href = '../pages/inicioAdm.html';
         } else {

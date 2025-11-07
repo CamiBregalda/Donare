@@ -103,7 +103,7 @@ document.querySelector('form').addEventListener('submit', function (e) {
             if (!res.ok) {
                 if (res.status === 400 && data.message) {
                     if (data.message.includes('CPF')) {
-                        alert('Este CPF já está cadastrado.');
+                        alert('CPF Invalido.');
                         document.getElementById('cpf-cnpj').classList.add('input-error');
                         document.querySelector('label[for="cpf-cnpj"]').classList.add('label-error');
                         return;
