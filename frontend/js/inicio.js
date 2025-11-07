@@ -52,38 +52,6 @@ export async function renderizaCampanhas(listaFiltrada = null) {
 
             exibirCampanhas = campanhasAtivas;
 
-            // 1) Renderiza imediatamente as campanhas (não depende de geolocalização)
-            main.innerHTML = '';
-
-            if (!exibirCampanhas.length) {
-                main.innerHTML = '<p>Nenhuma campanha encontrada.</p>';
-                return;
-            }
-
-            const categoriasCampanhas = exibirCampanhas.reduce((acc, campanha) => {
-                const categoria = campanha.categoriaCampanha || 'Outros';
-                (acc[categoria] = acc[categoria] || []).push(campanha);
-                return acc;
-            }, {});
-            Object.keys(categoriasCampanhas).forEach(async nomeCategoria => {
-                const section = document.createElement('section');
-                section.className = 'categoria';
-                const titulo = document.createElement('h3');
-                titulo.textContent = nomeCategoria;
-                const container = document.createElement('div');
-                container.className = 'container-campanha';
-
-                for (const campanha of categoriasCampanhas[nomeCategoria]) {
-                    const card = await criarCardCampanha(campanha);
-                    container.appendChild(card);
-                }
-
-                section.appendChild(titulo);
-                section.appendChild(container);
-                main.appendChild(section);
-            });
-
-            // 2) Em paralelo, atualiza listas laterais (seguindo e proximidade)
             atualizarListaCampanhasSeguidas();
 
             carregaCampanhasProximas(usuario, campanhasAtivas, cidadeUsuario).catch(err => {
@@ -91,6 +59,36 @@ export async function renderizaCampanhas(listaFiltrada = null) {
                 atualizarListaCampanhasProximas([]);
             });
         }
+
+        main.innerHTML = '';
+
+        if (!exibirCampanhas.length) {
+            main.innerHTML = '<p>Nenhuma campanha encontrada.</p>';
+            return;
+        }
+
+        const categoriasCampanhas = exibirCampanhas.reduce((acc, campanha) => {
+            const categoria = campanha.categoriaCampanha || 'Outros';
+            (acc[categoria] = acc[categoria] || []).push(campanha);
+            return acc;
+        }, {});
+        Object.keys(categoriasCampanhas).forEach(async nomeCategoria => {
+            const section = document.createElement('section');
+            section.className = 'categoria';
+            const titulo = document.createElement('h3');
+            titulo.textContent = nomeCategoria;
+            const container = document.createElement('div');
+            container.className = 'container-campanha';
+
+            for (const campanha of categoriasCampanhas[nomeCategoria]) {
+                const card = await criarCardCampanha(campanha);
+                container.appendChild(card);
+            }
+
+            section.appendChild(titulo);
+            section.appendChild(container);
+            main.appendChild(section);
+        });
 
     } catch (error) {
         console.error('[renderizaCampanhas] erro:', error);
@@ -354,6 +352,8 @@ function onMainClick(event) {
     }
 }
 
+window.renderizaCampanhas = renderizaCampanhas;
+
 document.addEventListener('DOMContentLoaded', () => {
 
     main = document.querySelector('main');
@@ -367,6 +367,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     main.addEventListener('click', onMainClick);
     renderizaCampanhas();
-
-    window.renderizaCampanhas = renderizaCampanhas;
 });
