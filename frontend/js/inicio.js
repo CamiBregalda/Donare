@@ -50,44 +50,47 @@ export async function renderizaCampanhas(listaFiltrada = null) {
                 return inicio <= hoje && fim >= hoje;
             });
 
-        // 1) Renderiza imediatamente as campanhas (não depende de geolocalização)
-        main.innerHTML = '';
+            exibirCampanhas = campanhasAtivas;
 
-        if (!exibirCampanhas.length) {
-            main.innerHTML = '<p>Nenhuma campanha encontrada.</p>';
-            return;
-        }
+            // 1) Renderiza imediatamente as campanhas (não depende de geolocalização)
+            main.innerHTML = '';
 
-        const categoriasCampanhas = exibirCampanhas.reduce((acc, campanha) => {
-            const categoria = campanha.categoriaCampanha || 'Outros';
-            (acc[categoria] = acc[categoria] || []).push(campanha);
-            return acc;
-        }, {});
-        Object.keys(categoriasCampanhas).forEach(async nomeCategoria => {
-            const section = document.createElement('section');
-            section.className = 'categoria';
-            const titulo = document.createElement('h3');
-            titulo.textContent = nomeCategoria;
-            const container = document.createElement('div');
-            container.className = 'container-campanha';
-
-            for (const campanha of categoriasCampanhas[nomeCategoria]) {
-                const card = await criarCardCampanha(campanha);
-                container.appendChild(card);
+            if (!exibirCampanhas.length) {
+                main.innerHTML = '<p>Nenhuma campanha encontrada.</p>';
+                return;
             }
 
-            section.appendChild(titulo);
-            section.appendChild(container);
-            main.appendChild(section);
-        });
+            const categoriasCampanhas = exibirCampanhas.reduce((acc, campanha) => {
+                const categoria = campanha.categoriaCampanha || 'Outros';
+                (acc[categoria] = acc[categoria] || []).push(campanha);
+                return acc;
+            }, {});
+            Object.keys(categoriasCampanhas).forEach(async nomeCategoria => {
+                const section = document.createElement('section');
+                section.className = 'categoria';
+                const titulo = document.createElement('h3');
+                titulo.textContent = nomeCategoria;
+                const container = document.createElement('div');
+                container.className = 'container-campanha';
 
-        // 2) Em paralelo, atualiza listas laterais (seguindo e proximidade)
-        atualizarListaCampanhasSeguidas();
+                for (const campanha of categoriasCampanhas[nomeCategoria]) {
+                    const card = await criarCardCampanha(campanha);
+                    container.appendChild(card);
+                }
 
-        carregaCampanhasProximas(usuario, campanhasAtivas, cidadeUsuario).catch(err => {
-            console.warn('[proximas] erro:', err);
-            atualizarListaCampanhasProximas([]);
-        });
+                section.appendChild(titulo);
+                section.appendChild(container);
+                main.appendChild(section);
+            });
+
+            // 2) Em paralelo, atualiza listas laterais (seguindo e proximidade)
+            atualizarListaCampanhasSeguidas();
+
+            carregaCampanhasProximas(usuario, campanhasAtivas, cidadeUsuario).catch(err => {
+                console.warn('[proximas] erro:', err);
+                atualizarListaCampanhasProximas([]);
+            });
+        }
 
     } catch (error) {
         console.error('[renderizaCampanhas] erro:', error);
@@ -121,11 +124,11 @@ async function carregaCampanhasProximas(usuario, campanhasAtivas, cidadeUsuario)
 
             try {
                 if ((!Array.isArray(campanhasProximasFiltradas) || campanhasProximasFiltradas.length === 0) && cidadeUsuario) {
-            campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
-                const cidadeCampanha = campanha.endereco?.cidade;
-                return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
-            });
-        }
+                    campanhasProximasFiltradas = campanhasAtivas.filter(campanha => {
+                        const cidadeCampanha = campanha.endereco?.cidade;
+                        return cidadeCampanha && cidadeCampanha.toLowerCase() === cidadeUsuario.toLowerCase();
+                    });
+                }
             } catch (e) {
                 console.warn('[proximas] falha ao buscar todas as campanhas:', e);
             }
@@ -364,6 +367,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     main.addEventListener('click', onMainClick);
     renderizaCampanhas();
-});
 
-window.renderizaCampanhas = renderizaCampanhas;
+    window.renderizaCampanhas = renderizaCampanhas;
+});
