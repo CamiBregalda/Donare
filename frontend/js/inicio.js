@@ -98,7 +98,7 @@ export async function renderizaCampanhas(listaFiltrada = null) {
     }
 }
 
-async function carregaCampanhasProximas(usuario, campanhasAtivas, cidadeUsuario) {
+async function carregaCampanhasProximas(campanhasAtivas, cidadeUsuario) {
     try {
         const coords = await obterCoordenadasUsuario();
 
@@ -181,9 +181,21 @@ async function carregarImagem(campanhaId, imgElement) {
     }
 }
 
+
 function criarItemListaLateral(campanha) {
+
     const li = document.createElement('li');
-    li.textContent = campanha.titulo;
+
+    if (campanha.distancia !== undefined && campanha.distancia !== null) {
+        li.innerHTML = ` 
+        <strong>${campanha.titulo}</strong><br>
+        <small>${campanha.distancia.toFixed(0)} km</small>`;
+    } else {
+        li.textContent = campanha.titulo;
+    }
+
+    console.log(campanha);
+
     li.style.cursor = 'pointer';
     li.addEventListener('click', () => {
         window.location.href = `../pages/ComentariosDetalhes.html?id=${campanha.id}`;
