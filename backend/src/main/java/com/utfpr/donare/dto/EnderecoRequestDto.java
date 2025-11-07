@@ -49,11 +49,11 @@ public class EnderecoRequestDto {
     @Size(min = 3, max = 50, message = "A cidade deve ter entre 3 e 50 caracteres.")
     private String cidade;
 
-    @Schema(description = "Sigla do estado do Brasil (ex: PR, SP, RJ).",
-            example = "PR",
+    @Schema(description = "Estado do Brasil completo (ex: Paraná, São Paulo, Rio de Janeiro).",
+            example = "Paraná",
             requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "O estado é obrigatória.")
-    @Size(min = 2, max = 2, message = "O estado deve ter 2 caracteres.")
+    @NotBlank(message = "O estado é obrigatório.")
+    @Size(min = 3, max = 50, message = "O estado deve ter entre 3 e 50 caracteres.")
     private String estado;
 
     @Schema(description = "Sigla do CEP (ex: 00000000000).",

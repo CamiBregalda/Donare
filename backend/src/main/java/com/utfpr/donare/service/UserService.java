@@ -48,7 +48,7 @@ public class UserService implements UserDetailsService {
         }
 
         if (userRepository.findByCpfOuCnpj(dto.getCpfOuCnpj()).isPresent()) {
-            throw new BadRequestException("O CPF/CNPJ '" + dto.getCpfOuCnpj() + "' já está cadastrado.");
+            throw new BadRequestException("O CPF/CNPJ '" + dto.getCpfOuCnpj() + " já está cadastrado.");
         }
 
         if(dto.getCpfOuCnpj().length() == 11){
@@ -58,7 +58,7 @@ public class UserService implements UserDetailsService {
             verifyCnpjFormatAndThrowException(dto);
         }
         else {
-            throw new BadRequestException("O CPF/CNPJ " + dto.getCpfOuCnpj() + "está com tamanho incorreto.");
+            throw new BadRequestException("O CPF/CNPJ " + dto.getCpfOuCnpj() + " está com tamanho incorreto.");
         }
 
         verifyEmailFormatAndThrowException(dto);
@@ -115,7 +115,7 @@ public class UserService implements UserDetailsService {
             verifyCnpjFormatAndThrowException(dto);
         }
         else {
-            throw new BadRequestException("O CPF/CNPJ " + dto.getCpfOuCnpj() + "está com tamanho incorreto.");
+            throw new BadRequestException("O CPF/CNPJ " + dto.getCpfOuCnpj() + " está com tamanho incorreto.");
         }
 
         verifyEmailFormatAndThrowException(dto);
@@ -191,7 +191,7 @@ public class UserService implements UserDetailsService {
             }
 
             if (cpf.length() != 11) {
-                throw new BadRequestException("O CPF " + dto.getCpfOuCnpj() + "está com tamanho incorreto.");
+                throw new BadRequestException("O CPF " + dto.getCpfOuCnpj() + " está com tamanho incorreto.");
             }
 
             int[] multiplicadores1 = {10, 9, 8, 7, 6, 5, 4, 3, 2};

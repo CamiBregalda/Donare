@@ -27,7 +27,6 @@ public class UserRequestDTO {
             example = "12345678900",
             requiredMode = Schema.RequiredMode.REQUIRED)
     @NotBlank(message = "CPF ou CNPJ é obrigatório.")
-    @Pattern(regexp = "\\d{11}|\\d{14}", message = "CPF deve ter 11 dígitos ou CNPJ 14 dígitos (somente números).")
     private String cpfOuCnpj;
 
     @Schema(description = "Se o usuário é pessoa física ou jurídica",
