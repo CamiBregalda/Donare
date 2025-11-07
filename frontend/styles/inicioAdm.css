@@ -172,13 +172,32 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     background: #7DBFA8;
-    border-radius: 20px;
+    border-radius: 10px;
     width: 90%;
     max-width: 1200px;
     height: auto;
     max-height: 95%;
     padding: 30px 40px;
-    overflow: auto;
+    overflow-y: auto;
+}
+
+.modal-content::-webkit-scrollbar {
+    width: 8px;
+    padding: 50px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+    background: #f1f1f1;       
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+    background-color: #7DBFA8;
+    border-radius: 10px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+    background-color: #5ea68c;
 }
 
 .modal-header {
