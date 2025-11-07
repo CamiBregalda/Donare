@@ -38,8 +38,8 @@ document.querySelector('form').addEventListener('submit', function (e) {
         return;
     }
 
-    if (estado.length != 2) {
-        alert('Lembre-se: a Sigla possuiu dois caracteres');
+    if (estado.length === 2) {
+        alert('Lembre-se: Digite seu estado por extenso');
         document.getElementById('estado').classList.add('input-error');
         document.getElementById('label-estado').classList.add('label-error');
         document.getElementById('estado').focus();
