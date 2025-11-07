@@ -211,7 +211,7 @@ public class UserService implements UserDetailsService {
             resto = soma % 11;
             int digito2 = resto < 2 ? 0 : 11 - resto;
 
-            if(!(digito1 == Integer.parseInt(cpf.substring(9, 10)) && digito2 == Integer.parseInt(cpf.substring(10)))){
+            if(!(digito1 == Integer.parseInt(cpf.substring(9, 10)) && digito2 == Integer.parseInt(cpf.substring(10))) || cpf.chars().distinct().count() == 1){
                 throw new BadRequestException("O CPF " + dto.getCpfOuCnpj() + " está no formato inválido.");
             }
 
