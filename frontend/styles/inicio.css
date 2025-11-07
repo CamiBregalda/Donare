@@ -68,10 +68,27 @@ main {
     display: flex;
     overflow-x: auto;
     gap: 2vw;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 10px;
 }
 
 .container-campanha::-webkit-scrollbar {
     height: 8px;
+}
+
+.container-campanha::-webkit-scrollbar-track {
+    background: #f1f1f1;       
+    border-radius: 10px;
+}
+
+.container-campanha::-webkit-scrollbar-thumb {
+    background-color: #7DBFA8;
+    border-radius: 10px;
+}
+
+.container-campanha::-webkit-scrollbar-thumb:hover {
+    background-color: #5ea68c;
 }
 
 .card {
