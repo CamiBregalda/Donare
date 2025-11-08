@@ -11,8 +11,7 @@ public class UserPasswordRequestDTO {
 
     @Schema(description = "Senha antiga do usuário. Deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais.",
             example = "Senha@123",
-            requiredMode = Schema.RequiredMode.REQUIRED)
-    @NotBlank(message = "A senha antiga é obrigatória.")
+            requiredMode = Schema.RequiredMode.NOT_REQUIRED)
     private String oldPassword;
 
     @Schema(description = "Senha nova do usuário. Deve conter pelo menos 8 caracteres, incluindo letras maiúsculas, minúsculas, números e caracteres especiais.",

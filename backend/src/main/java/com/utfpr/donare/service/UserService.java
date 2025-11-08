@@ -151,14 +151,21 @@ public class UserService implements UserDetailsService {
     public UserResponseDTO updatePassword(Long id, UserPasswordRequestDTO dto) {
         User user = findUserById(id);
 
-        if (dto.getOldPassword() != null && !dto.getOldPassword().isBlank() && dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
+        if ((dto.getOldPassword() == null || dto.getOldPassword().isBlank()) && (user.getGoogleId() == null || user.getGoogleId().isBlank())) {
+            throw new BadRequestException("A senha antiga é obrigatória para atualizar a senha.");
+        }
 
+        if ((user.getGoogleId() != null && !user.getGoogleId().isBlank()) && (user.getPassword() == null || user.getPassword().isBlank()) && (dto.getNewPassword() != null && !dto.getNewPassword().isBlank())) {
+            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
+        } else if (dto.getOldPassword() != null && !dto.getOldPassword().isBlank() && dto.getNewPassword() != null && !dto.getNewPassword().isBlank()) {
             if (passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
                 user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
             }
             else {
-                throw new ResourceNotFoundException("senha antiga informada não encontrada");
+                throw new ResourceNotFoundException("Senha antiga informada não encontrada");
             }
+        } else  {
+            throw new BadRequestException("A nova senha é obrigatória para atualizar a senha.");
         }
 
         User updatedUser = userRepository.save(user);
