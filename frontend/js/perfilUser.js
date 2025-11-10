@@ -15,7 +15,6 @@ function authHeaders(json = true) {
 
 document.addEventListener('DOMContentLoaded', () => {
   fetchUserData();
-  fetchParticipatedCampaigns();
   fetchFollowedCampaigns();
 
   document.getElementById('editProfileBtn').onclick         = abrirModal;
@@ -38,7 +37,6 @@ async function fetchUserData() {
     const end  = data.idEndereco || {};
 
     document.getElementById('inputEnderecoId').value = end.id || '';
-
     document.getElementById('userName').textContent      = data.nome || '';
     document.getElementById('userEmail').textContent     = data.email || '';
     document.getElementById('userCityState').textContent = [end.cidade, end.uf || end.estado].filter(Boolean).join(', ');
@@ -64,24 +62,6 @@ async function fetchUserData() {
   } catch (err) {
     console.error('Erro fetchUserData:', err);
     alert('Não foi possível carregar dados do usuário. Veja console.');
-  }
-}
-
-async function fetchParticipatedCampaigns() {
-  try {
-    const res = await fetch(`${API_BASE}/participacao/byIdUsuario/${userId}`, { headers: authHeaders(false) });
-    if (!res.ok) return;
-    const list = await res.json();
-    const ul   = document.getElementById('donatedCampaigns');
-    ul.innerHTML = '';
-    list.forEach(p => {
-      const li = document.createElement('li');
-      li.className = 'campanha-card';
-      li.innerHTML = `<h4>${p.tituloCampanha}</h4><p>${new Date(p.dataHoraParticipacao).toLocaleDateString()}</p>`;
-      ul.appendChild(li);
-    });
-  } catch (err) {
-    console.error('Erro fetchParticipatedCampaigns:', err);
   }
 }
 
