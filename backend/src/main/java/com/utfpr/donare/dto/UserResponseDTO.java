@@ -41,4 +41,11 @@ public class UserResponseDTO {
 
     @Schema(description = "Tipo de conteúdo da mídia de perfil (ex: image/jpeg, image/png).", example = "image/jpeg")
     private String midiaContentType;
+
+    @Schema(description = "Flag que indica se o usuário possui uma senha cadastrada no banco.", example = "false")
+    private boolean contemSenha;
+
+    public void addHasPassword(User user) {
+        this.contemSenha = (user.getPassword() != null && !user.getPassword().isEmpty());
+    }
 }

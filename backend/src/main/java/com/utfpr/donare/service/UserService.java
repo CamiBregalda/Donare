@@ -285,9 +285,12 @@ public class UserService implements UserDetailsService {
     }
 
     public UserResponseDTO findUsuarioById(Long id) {
-        return userRepository.findById(id)
-                .map(userMapper::toUserResponseDTO)
+        User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Id de usuário não encontrado. ID de busca: " + id));
+
+        UserResponseDTO userResponseDTO = userMapper.toUserResponseDTO(user);
+        userResponseDTO.addHasPassword(user);
+        return userResponseDTO;
     }
 
     private User findUserById(Long id) {
