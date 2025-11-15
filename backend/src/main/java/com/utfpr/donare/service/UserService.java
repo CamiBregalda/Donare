@@ -337,7 +337,10 @@ public class UserService implements UserDetailsService {
 
     public UserResponseDTO findUserResponseDtoByEmail(String email) {
         User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com e-mail: " + email));
-        return userMapper.toUserResponseDTO(user);
+
+        UserResponseDTO userResponseDTO = userMapper.toUserResponseDTO(user);
+        userResponseDTO.addHasPassword(user);
+        return userResponseDTO;
     }
 
     public List<UserResponseDTO> findAllUsersDTO() {
