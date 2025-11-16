@@ -24,8 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const googleData = JSON.parse(googleDataString);
-    console.log('Dados do Google para cadastro:', googleData);
-
     const form = document.querySelector('form');
     form.addEventListener('submit', handleFormSubmit);
 
@@ -66,8 +64,6 @@ async function handleFormSubmit(e) {
         googleId: googleData.googleId
     };
 
-    console.log("Tentando cadastrar usuário:", novoUsuario.nome);
-
     try {
         const formData = new FormData();
         formData.append('user', new Blob(
@@ -86,7 +82,7 @@ async function handleFormSubmit(e) {
         if (!cadastroResponse.ok) {
             if (cadastroResponse.status === 400 && cadastroData.message) {
                 if (cadastroData.message.includes('CPF') || cadastroData.message.includes('CNPJ') || cadastroData.message.includes('Documento')) {
-                    alert(`Este ${tipoDocumentoNome} já está cadastrado`)
+                    alert(cadastroData.message)
                     document.getElementById('cpf-cnpj').classList.add('input-error');
                     return;
                 }
@@ -112,7 +108,6 @@ async function handleFormSubmit(e) {
         localStorage.setItem('token', token);
         localStorage.removeItem('cadastro_google_dados');
 
-        // Buscar dados completos do usuário após autenticação
         try {
             const respUser = await fetch(`${API_BASE}/usuarios/email/${encodeURIComponent(novoUsuario.email)}`, {
                 headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' }
@@ -137,7 +132,6 @@ async function handleFormSubmit(e) {
             console.error('Falha ao buscar dados completos do usuário após cadastro Google:', e);
         }
 
-        // Fallback: usa os dados decodificados do token
         const userData = decodeJWT(token)
         localStorage.setItem('usuario', JSON.stringify(userData));
         if (userData && userData.tipoUsuario == 2) {

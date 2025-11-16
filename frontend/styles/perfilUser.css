@@ -323,6 +323,29 @@ body.modal-ativa .floating-buttons {
   font-size: 0.9rem;
 }
 
+/* Quando o modal de senha exibe apenas o campo de nova senha, centralizamos a mensagem */
+#modalSenha.single .modal-content {
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+#modalSenha.single label {
+  width: 100%;
+  text-align: center;
+}
+
+#modalSenha.single input[type="password"] {
+  width: 100%;
+  max-width: 320px;
+}
+
+#modalSenha.single .modal-footer {
+  justify-content: center;
+}
+
 @media (max-width: 768px) {
   .modal-body {
     flex-direction: column;

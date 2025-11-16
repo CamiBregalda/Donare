@@ -45,7 +45,6 @@ async function fetchUserData() {
       const src = `data:${data.midiaContentType};base64,${data.midia}`;
       document.getElementById('profileImg').src = src;
       document.getElementById('avatarIcon').src = src;
-      // Atualiza o header após carregar do servidor
       window.dispatchEvent(new CustomEvent('user-avatar-updated', { detail: { src } }));
     }
 
@@ -112,6 +111,40 @@ function fecharModal() {
 function abrirModalSenha() {
   document.getElementById('modalSenha').classList.add('show');
   document.body.style.overflow = 'hidden';
+  let usuarioAtual = {};
+  try {
+    usuarioAtual = JSON.parse(localStorage.getItem('usuario') || '{}');
+  } catch (e) {
+    console.warn('abrirModalSenha: erro ao ler usuario do localStorage', e);
+  }
+
+  try {
+    const oldInput = document.getElementById('inputOldPass');
+    const oldLabel = document.querySelector('label[for="inputOldPass"]');
+    const wrapper = oldInput ? (oldInput.closest('.form-group') || oldInput.parentElement) : null;
+
+    const hasSenha = !(usuarioAtual && usuarioAtual.contemSenha === false);
+    const modalSenha = document.getElementById('modalSenha');
+
+    // quando o usuário NÃO tem senha, adicionamos a classe 'single' para ajustar o layout
+    if (!hasSenha) {
+      modalSenha.classList.add('single');
+    } else {
+      modalSenha.classList.remove('single');
+    }
+
+    if (!hasSenha) {
+      if (oldInput) { oldInput.value = ''; oldInput.disabled = true; oldInput.style.display = 'none'; }
+      if (oldLabel)  oldLabel.style.display = 'none';
+      if (!oldLabel && wrapper) wrapper.style.display = 'none';
+    } else {
+      if (oldInput) { oldInput.disabled = false; oldInput.style.display = ''; }
+      if (oldLabel)  oldLabel.style.display = '';
+      if (!oldLabel && wrapper) wrapper.style.display = '';
+    }
+  } catch (e) {
+    console.warn('abrirModalSenha: não foi possível ajustar visibilidade do campo de senha antiga', e);
+  }
 }
 function fecharModalSenha() {
   document.getElementById('modalSenha').classList.remove('show');
@@ -173,7 +206,30 @@ async function updateUserWithPassword() {
       body: formData
     });
     if (!res.ok) {
-      alert(`Erro ${res.status}: ${res.statusText}`);
+      let bodyText = '';
+      let bodyJson = null;
+      try {
+        const contentType = res.headers.get('content-type') || '';
+        bodyText = await res.text();
+        if (contentType.includes('application/json') && bodyText) {
+          try 
+          { bodyJson = JSON.parse(bodyText); } 
+          catch(e) {
+
+           }
+        }
+      } catch (e) {
+        console.warn('Não foi possível ler o corpo da resposta de erro', e);
+      }
+
+      console.error('Erro ao atualizar usuário', { status: res.status, statusText: res.statusText, body: bodyJson || bodyText, userDto, usuario });
+
+      if (usuario && usuario.contemSenha === false) {
+        alert('Adicione uma senha primeiro');
+      } else {
+        const serverMessage = (bodyJson && (bodyJson.message || bodyJson.mensagem)) || bodyText || res.statusText || (`Erro HTTP ${res.status}`);
+        alert(serverMessage);
+      }
       return;
     }
     fecharModalConfirmSenha();
@@ -193,17 +249,36 @@ async function updateUserWithPassword() {
 }
 
 async function updatePassword() {
-  const oldPassword = document.getElementById('inputOldPass').value;
+  const oldPassword = document.getElementById('inputOldPass') ? document.getElementById('inputOldPass').value : '';
   const newPassword = document.getElementById('inputNewPass').value;
+
+  if (!newPassword) {
+    alert('Informe a nova senha.');
+    return;
+  }
+  const payload = (usuario && usuario.contemSenha === false)
+    ? { newPassword }
+    : { oldPassword, newPassword };
+
   try {
     const res = await fetch(`${API_BASE}/usuarios/alterarSenha/${userId}`, {
       method: 'PUT',
       headers: authHeaders(true),
-      body: JSON.stringify({ oldPassword, newPassword })
+      body: JSON.stringify(payload)
     });
     if (!res.ok) {
-      alert(`Erro ${res.status}: ${res.statusText}`);
+      alert(`Erro ao Atualizar senha`);
     } else {
+
+      try {
+        if (usuario && usuario.contemSenha === false) {
+          usuario.contemSenha = true;
+          localStorage.setItem('usuario', JSON.stringify(usuario));
+        }
+      } catch (e) {
+        console.warn('updatePassword: não foi possível atualizar localStorage.usuario', e);
+      }
+
       fecharModalSenha();
       alert('Senha alterada com sucesso!');
     }

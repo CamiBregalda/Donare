@@ -79,8 +79,6 @@ function decodeJWT(token) {
 
 window.handleCredentialResponse = function (response) {
 
-    console.log("Entrou");
-
     const googleToken = response.credential;
     const responsePayload = decodeJWT(googleToken);
 
@@ -99,14 +97,6 @@ window.handleCredentialResponse = function (response) {
     };
     localStorage.setItem('cadastro_google_dados', JSON.stringify(dadosParaCadastro));
 
-    console.log("Decoded JWT ID token fields:");
-    console.log("  Full Name: " + responsePayload.name);
-    console.log("  Given Name: " + responsePayload.given_name);
-    console.log("  Family Name: " + responsePayload.family_name);
-    console.log("  Unique ID: " + responsePayload.sub);
-    console.log("  Profile image URL: " + responsePayload.picture);
-    console.log("  Email: " + responsePayload.email);
-
     fetch(`${API_BASE}/usuarios/authenticate/google`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -117,7 +107,6 @@ window.handleCredentialResponse = function (response) {
     })
         .then(res => {
             if (res.status === 404) {
-                console.log('Usuário não encontrado. Redirecionando para cadastro complementar.');
                 window.location.href = '../pages/cadastroGoogle.html';
                 return null;
             }

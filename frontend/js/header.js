@@ -102,7 +102,6 @@ async function loadGlobalHeader() {
 
 				const paginaAtual = window.location.pathname.split('/').pop();
 				if (paginaAtual === destino) {
-					console.log("Já na página correta, evitando recarregamento.");
 					return;
 				}
 			}
@@ -138,7 +137,6 @@ async function loadGlobalHeader() {
 				const data = await response.json();
 				if (data && data.midia) {
 					avatar.src = `data:${data.midiaContentType};base64,${data.midia}`;
-					console.log('imagem de perfil carregada')
 				}
 			}
 		} catch (error) {

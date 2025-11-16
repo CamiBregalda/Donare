@@ -193,9 +193,6 @@ function criarItemListaLateral(campanha) {
     } else {
         li.textContent = campanha.titulo;
     }
-
-    console.log(campanha);
-
     li.style.cursor = 'pointer';
     li.addEventListener('click', () => {
         window.location.href = `../pages/ComentariosDetalhes.html?id=${campanha.id}`;
