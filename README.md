@@ -62,23 +62,6 @@ Antes de rodar o projeto, certifique-se de que os seguintes softwares estão ins
 
 ---
 
-#### ▶️ Rodando o Backend
-
-Siga os passos abaixo para iniciar o backend da aplicação:
-
-```bash
-# Acesse a pasta do backend
-cd backend
-
-# Suba os containers necessários (ex: banco de dados, etc.)
-docker compose up -d
-
-# Execute o projeto com Maven
-mvn spring-boot:run
-```
-
----
-
 ### 📦 Frontend
 
 A tela inicial é o arquivo `login.html`, localizado na raiz do projeto.
@@ -89,10 +72,6 @@ Todas as telas são protegidas. O usuário só poderá acessá-las se possuir um
 Ao realizar o login com sucesso, o sistema armazena os dados de sessão necessários para garantir o acesso às demais páginas.
 
 ---
+#### ▶️ Rodando o Projeto
 
-#### ▶️ Rodando o Backend
-
-Siga os passos abaixo para iniciar o backend da aplicação:
-1. Clone o repositório ou baixe os arquivos do frontend.
-2. Abra o arquivo `login.html` em seu navegador.
-3. Cadastre uma conta e/ou se autentique no sistena para ter acesso as demais funcionalidades
+##### Acesse a pasta root do projeto e execute o comando ``docker compose up --build``
