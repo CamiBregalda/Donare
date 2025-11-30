@@ -74,4 +74,4 @@ Ao realizar o login com sucesso, o sistema armazena os dados de sessão necessá
 ---
 #### ▶️ Rodando o Projeto
 
-#####Acesse a pasta root do projeto e execute o comando ``docker compose up --build``
+##### Acesse a pasta root do projeto e execute o comando ``docker compose up --build``
