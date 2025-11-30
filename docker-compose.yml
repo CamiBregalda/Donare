@@ -17,7 +17,7 @@ services:
       - donare_network
 
   backend:
-    build: ./backend
+    image: davidmarlon/donare-backend:v1
     container_name: donare_backend
     restart: always
     ports:
@@ -33,7 +33,7 @@ services:
       - donare_network
 
   frontend:
-    build: ./frontend
+    image: davidmarlon/donare-frontend:v1
     container_name: donare_frontend
     restart: always
     ports:
