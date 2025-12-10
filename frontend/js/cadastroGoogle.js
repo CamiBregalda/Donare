@@ -1,4 +1,4 @@
-const API_BASE = 'http://localhost:8080';
+const API_BASE = window.API_URL || 'http://localhost:8080';
 
 function decodeJWT(token) {
     const base64Url = token.split('.')[1];

@@ -1,6 +1,6 @@
 import { fetchData } from "./lib/auth.js";
 
-const API_BASE = 'http://localhost:8080';
+const API_BASE = window.API_URL || 'http://localhost:8080';
 function authHeaders(isJson = true) {
     const token = localStorage.getItem('token') || '';
     const response = { Authorization: `Bearer ${token}` };
@@ -299,7 +299,7 @@ async function atualizarListaCampanhasSeguidas() {
         return;
     }
     try {
-        const response = await fetch(`http://localhost:8080/usuarios/${usuario.id}/campanhas-seguidas`, {
+        const response = await fetch(`${API_BASE}/usuarios/${usuario.id}/campanhas-seguidas`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         if (!response.ok) throw new Error(response.status);
@@ -332,7 +332,7 @@ async function seguirCampanha(idCampanha) {
         return;
     }
     try {
-        const response = await fetch(`http://localhost:8080/usuarios/${usuario.id}/seguir-campanha/${idCampanha}`, {
+        const response = await fetch(`${API_BASE}/usuarios/${usuario.id}/seguir-campanha/${idCampanha}`, {
             method: 'POST',
             headers: { Authorization: `Bearer ${token}` }
         });

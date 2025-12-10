@@ -1,5 +1,7 @@
 import { jwtDecode } from "./jwt-decode.js";
 
+const API_BASE = window.API_URL || 'http://localhost:8080';
+
 export async function fetchData() {
     try {
         const token = localStorage.getItem("token");
@@ -21,7 +23,7 @@ export async function fetchData() {
         }
 
         const email = payload.sub; 
-        const response = await fetch(`http://localhost:8080/usuarios/email/${email}`, {
+        const response = await fetch(`${API_BASE}/usuarios/email/${email}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",

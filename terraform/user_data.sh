@@ -12,6 +12,11 @@ chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
 
 cd /home/ec2-user
 
+# Configura var env
+PUBLIC_IP=$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
+echo "window.API_URL = 'http://${PUBLIC_IP}:8080';" > env-config.js
+chown ec2-user:ec2-user env-config.js
+
 cat <<EOT > docker-compose.yml
 services:
 
@@ -52,6 +57,8 @@ services:
     restart: always
     ports:
       - "3000:80"
+    volumes:
+      - ./env-config.js:/usr/share/nginx/html/env-config.js
     depends_on:
       - backend
     networks:

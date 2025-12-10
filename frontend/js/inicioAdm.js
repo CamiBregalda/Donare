@@ -1,6 +1,4 @@
-const API_CONFIG = {
-    baseURL: 'http://localhost:8080'
-};
+const API_CONFIG = window.API_URL || 'http://localhost:8080';
 
 
 	function authHeaders(isJson = true) {
@@ -51,7 +49,7 @@ function obterEmailDoToken() {
 
 class APIService {
     static async getCampanhas() {
-        const response = await fetch(`${API_CONFIG.baseURL}/campanhas`, {
+        const response = await fetch(`${API_CONFIG}/campanhas`, {
             headers: authHeaders(false) 
         });
         if (!response.ok) throw new Error('Erro ao carregar campanhas');
@@ -71,7 +69,7 @@ class APIService {
         }
         
         const token = localStorage.getItem('token') || '';
-        const response = await fetch(`${API_CONFIG.baseURL}/campanhas`, {
+        const response = await fetch(`${API_CONFIG}/campanhas`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -96,7 +94,7 @@ class APIService {
         }
         
         const token = localStorage.getItem('token') || '';
-        const response = await fetch(`${API_CONFIG.baseURL}/campanhas/${id}`, {
+        const response = await fetch(`${API_CONFIG}/campanhas/${id}`, {
             method: 'PUT',
             headers: {
                 'Authorization': `Bearer ${token}`
@@ -108,7 +106,7 @@ class APIService {
     }
 
     static async deletarCampanha(id) {
-        const response = await fetch(`${API_CONFIG.baseURL}/campanhas/${id}`, {
+        const response = await fetch(`${API_CONFIG}/campanhas/${id}`, {
             method: 'DELETE',
             headers: authHeaders(false)
         });
@@ -116,7 +114,7 @@ class APIService {
     }
 
     static async getCategorias() {
-        const response = await fetch(`${API_CONFIG.baseURL}/campanhas/categorias`, {
+        const response = await fetch(`${API_CONFIG}/campanhas/categorias`, {
             headers: authHeaders(false)
         });
         if (!response.ok) throw new Error('Erro ao carregar categorias');
@@ -127,7 +125,7 @@ class APIService {
 
 class APIServiceNecessidades {
     static async getNecessidadesCampanha(campanhaId) {
-        const response = await fetch(`${API_CONFIG.baseURL}/necessidade/campanhas/${campanhaId}/necessidades`, {
+        const response = await fetch(`${API_CONFIG}/necessidade/campanhas/${campanhaId}/necessidades`, {
             headers: authHeaders(false)
         });
         if (!response.ok) throw new Error('Erro ao carregar necessidades');
@@ -135,7 +133,7 @@ class APIServiceNecessidades {
     }
 
     static async criarNecessidade(campanhaId, necessidade) {
-        const response = await fetch(`${API_CONFIG.baseURL}/necessidade/campanhas/${campanhaId}/necessidade`, {
+        const response = await fetch(`${API_CONFIG}/necessidade/campanhas/${campanhaId}/necessidade`, {
             method: 'POST',
             headers: authHeaders(true),  
             body: JSON.stringify(necessidade)
@@ -145,7 +143,7 @@ class APIServiceNecessidades {
     }
 
     static async atualizarNecessidade(necessidadeId, necessidade) {
-        const response = await fetch(`${API_CONFIG.baseURL}/necessidade/necessidades/${necessidadeId}`, {
+        const response = await fetch(`${API_CONFIG}/necessidade/necessidades/${necessidadeId}`, {
             method: 'PUT',
             headers: authHeaders(true), 
             body: JSON.stringify(necessidade)
@@ -155,7 +153,7 @@ class APIServiceNecessidades {
     }
 
     static async deletarNecessidade(necessidadeId) {
-        const response = await fetch(`${API_CONFIG.baseURL}/necessidade/necessidades/${necessidadeId}`, {
+        const response = await fetch(`${API_CONFIG}/necessidade/necessidades/${necessidadeId}`, {
             method: 'DELETE',
             headers: authHeaders(false) 
         });
@@ -320,7 +318,7 @@ class GerenciadorCampanhas {
 
     async carregarImagemCampanha(campanhaId) {
     try {
-        const response = await fetch(`http://localhost:8080/campanhas/${campanhaId}/imagem`, {
+        const response = await fetch(`${API_CONFIG}/campanhas/${campanhaId}/imagem`, {
             headers: authHeaders(false)
         });
         

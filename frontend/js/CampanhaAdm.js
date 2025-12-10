@@ -1,5 +1,5 @@
 import { fetchData } from "./lib/auth.js";
-const API_BASE = 'http://localhost:8080';
+const API_BASE = window.API_URL || 'http://localhost:8080';
 function authHeaders(isJson = true) {
 	const response = { Authorization: `Bearer ${token}` };
 	if (isJson) response['Content-Type'] = 'application/json';
